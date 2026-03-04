@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión de Rifas - Google Sheets</title>
     <style>
-        /* (Mantén todo tu CSS igual) */
         * {
             margin: 0;
             padding: 0;
@@ -434,7 +433,7 @@
                 <button class="btn btn-success" onclick="saveSale()">💾 Guardar venta</button>
                 <button class="btn" onclick="cancelEdit()" style="display: none;" id="cancelBtn">❌ Cancelar edición</button>
                 <button class="btn" onclick="clearNumberSelection()">🗑️ Limpiar selección</button>
-                <button class="btn" onclick="recargarDesdeGoogleSheets()">🔄 Recargar datos</button>
+                <button class="btn" onclick="cargarDatosDesdeGoogleSheets()">🔄 Recargar datos</button>
             </div>
         </div>
 
@@ -518,8 +517,8 @@
     
     <script>
         // ============ CONFIGURACIÓN ============
-        // >>>>>> ¡¡¡ PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT !!! <<<<<<
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxVVaDL51LJOpcPFhhlEBeHueeWDi8GSw9zzdoGTIM77wL_W_94BFFBI5JGaVn87jaIoQ/exec';
+        // >>>>>> ¡¡¡ CAMBIA ESTA URL POR LA TUYA !!! <<<<<<
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxod31sMOu8JD0KdAyQhFUVlyc2CD14dFYmIjSa1PUhV6Ks1K5zcSNWI9WgWG2U7rg_xQ/exec';
         
         // ============ VARIABLES GLOBALES ============
         let sales = [];
@@ -530,154 +529,96 @@
         // ============ INICIALIZACIÓN ============
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Inicializando sistema...');
-            console.log('URL de conexión:', APPS_SCRIPT_URL);
+            console.log('URL:', APPS_SCRIPT_URL);
             cargarDatosDesdeGoogleSheets();
         });
 
         // ============ FUNCIONES DE GOOGLE SHEETS ============
-        // ============ FUNCIONES DE GOOGLE SHEETS ============
-function cargarDatosDesdeGoogleSheets() {
-    if (cargandoDatos) return;
-    
-    console.log('📥 Intentando cargar desde:', APPS_SCRIPT_URL);
-    
-    mostrarMensajeCarga(true);
-    cargandoDatos = true;
-    
-    // Usar JSONP para evitar problemas de CORS
-    const script = document.createElement('script');
-    const callbackName = 'jsonp_callback_' + Date.now();
-    
-    window[callbackName] = function(data) {
-        console.log('✅ Datos recibidos:', data);
-        
-        if (data.error) {
-            console.error('Error en datos:', data.error);
-            usarDatosLocales();
-        } else if (data.success) {
-            sales = data.ventas || [];
-            totalNumbers = data.totalNumbers || 100;
+        function cargarDatosDesdeGoogleSheets() {
+            if (cargandoDatos) return;
             
-            console.log('✅ Ventas cargadas:', sales.length);
-            console.log('✅ Total números:', totalNumbers);
+            console.log('📥 Cargando desde Google Sheets...');
+            mostrarMensajeCarga(true);
+            cargandoDatos = true;
             
-            localStorage.setItem('raffleSales', JSON.stringify(sales));
-            localStorage.setItem('totalNumbers', totalNumbers);
+            // Usar fetch que es más simple
+            fetch(`${APPS_SCRIPT_URL}?accion=obtenerTodo`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('✅ Datos recibidos:', data);
+                    
+                    if (data.success) {
+                        sales = data.ventas || [];
+                        totalNumbers = data.totalNumbers || 100;
+                        
+                        localStorage.setItem('raffleSales', JSON.stringify(sales));
+                        localStorage.setItem('totalNumbers', totalNumbers);
+                        
+                        document.getElementById('totalNumbers').value = totalNumbers;
+                        
+                        actualizarGrid();
+                        renderSales();
+                        actualizarEstadisticas();
+                        actualizarTags();
+                    } else {
+                        usarDatosLocales();
+                    }
+                    
+                    mostrarMensajeCarga(false);
+                    cargandoDatos = false;
+                })
+                .catch(error => {
+                    console.error('❌ Error:', error);
+                    usarDatosLocales();
+                    mostrarMensajeCarga(false);
+                    cargandoDatos = false;
+                });
+        }
+
+        function guardarEnGoogleSheets() {
+            return new Promise((resolve) => {
+                console.log('☁️ Guardando en Google Sheets...');
+                
+                const datos = {
+                    ventas: sales,
+                    totalNumbers: totalNumbers
+                };
+                
+                fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        accion: 'guardarTodo',
+                        datos: JSON.stringify(datos)
+                    })
+                })
+                .then(() => {
+                    // Con no-cors no podemos leer la respuesta
+                    console.log('✅ Solicitud de guardado enviada');
+                    resolve(true);
+                })
+                .catch(error => {
+                    console.error('❌ Error guardando:', error);
+                    resolve(false);
+                });
+            });
+        }
+
+        function usarDatosLocales() {
+            console.log('⚠️ Usando datos locales');
+            sales = JSON.parse(localStorage.getItem('raffleSales')) || [];
+            totalNumbers = parseInt(localStorage.getItem('totalNumbers')) || 100;
             
             document.getElementById('totalNumbers').value = totalNumbers;
             
             actualizarGrid();
             renderSales();
             actualizarEstadisticas();
-            actualizarTags();
             
-            mostrarMensajeCarga(false);
-        } else {
-            usarDatosLocales();
-        }
-        
-        // Limpiar
-        delete window[callbackName];
-        document.body.removeChild(script);
-        cargandoDatos = false;
-    };
-    
-    script.src = `${APPS_SCRIPT_URL}?accion=obtenerTodo&callback=${callbackName}`;
-    script.onerror = function(error) {
-        console.error('Error en JSONP:', error);
-        usarDatosLocales();
-        delete window[callbackName];
-        document.body.removeChild(script);
-        cargandoDatos = false;
-    };
-    
-    document.body.appendChild(script);
-    
-    // Timeout por si acaso
-    setTimeout(() => {
-        if (window[callbackName]) {
-            console.log('Timeout - usando datos locales');
-            usarDatosLocales();
-            delete window[callbackName];
-            if (script.parentNode) document.body.removeChild(script);
-            cargandoDatos = false;
-        }
-    }, 10000);
-}
-
-function usarDatosLocales() {
-    console.log('⚠️ Usando datos locales');
-    sales = JSON.parse(localStorage.getItem('raffleSales')) || [];
-    totalNumbers = parseInt(localStorage.getItem('totalNumbers')) || 100;
-    
-    document.getElementById('totalNumbers').value = totalNumbers;
-    
-    actualizarGrid();
-    renderSales();
-    actualizarEstadisticas();
-    
-    mostrarMensajeCarga(false);
-    mostrarErrorEnUI('Usando datos locales - sin conexión a Google Sheets');
-}
-
-        async function guardarEnGoogleSheets() {
-            try {
-                console.log('☁️ Guardando en Google Sheets...');
-                
-                const response = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams({
-                        accion: 'guardarVentas',
-                        ventas: JSON.stringify(sales)
-                    })
-                });
-                
-                const data = await response.json();
-                console.log('✅ Respuesta de guardado:', data);
-                
-                if (data.error) {
-                    throw new Error(data.error);
-                }
-                
-                return true;
-                
-            } catch (error) {
-                console.error('❌ Error guardando:', error);
-                return false;
-            }
-        }
-
-        async function guardarConfigEnGoogleSheets() {
-            try {
-                console.log('⚙️ Guardando configuración en Google Sheets...');
-                
-                const response = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams({
-                        accion: 'guardarConfig',
-                        totalNumbers: totalNumbers
-                    })
-                });
-                
-                const data = await response.json();
-                console.log('✅ Configuración guardada:', data);
-                
-                return true;
-                
-            } catch (error) {
-                console.error('❌ Error guardando configuración:', error);
-                return false;
-            }
-        }
-
-        function recargarDesdeGoogleSheets() {
-            cargarDatosDesdeGoogleSheets();
+            mostrarErrorEnUI('Usando datos locales');
         }
 
         // ============ FUNCIÓN PARA AGREGAR NÚMEROS ============
@@ -750,13 +691,8 @@ function usarDatosLocales() {
 
         // ============ FUNCIÓN PRINCIPAL: ACTUALIZAR GRID ============
         function actualizarGrid() {
-            console.log('🎯 Actualizando grid...');
-            
             const grid = document.getElementById('numbersGrid');
-            if (!grid) {
-                console.error('❌ Grid no encontrado');
-                return;
-            }
+            if (!grid) return;
             
             let html = '';
             
@@ -799,7 +735,6 @@ function usarDatosLocales() {
         }
 
         function eliminarTag(num) {
-            console.log('🗑️ Eliminando número:', num);
             selectedNumbers.delete(num);
             actualizarGrid();
             actualizarTags();
@@ -807,7 +742,6 @@ function usarDatosLocales() {
         }
 
         function clearNumberSelection() {
-            console.log('🧹 Limpiando selección');
             selectedNumbers.clear();
             actualizarGrid();
             actualizarTags();
@@ -817,8 +751,6 @@ function usarDatosLocales() {
 
         // ============ GUARDAR VENTA ============
         async function saveSale() {
-            console.log('💾 Guardando venta...');
-            
             if (cargandoDatos) {
                 alert('⏳ Espere, aún cargando datos...');
                 return;
@@ -830,23 +762,13 @@ function usarDatosLocales() {
             const seller = document.getElementById('seller').value.trim();
             const editId = document.getElementById('editId').value;
 
-            if (!name) {
-                alert('⚠️ Por favor ingrese el nombre');
-                return;
-            }
-            
-            if (!contact) {
-                alert('⚠️ Por favor ingrese el número de contacto');
-                return;
-            }
-            
-            if (!seller) {
-                alert('⚠️ Por favor ingrese quién vendió');
+            if (!name || !contact || !seller) {
+                alert('⚠️ Complete todos los campos');
                 return;
             }
 
             if (selectedNumbers.size === 0) {
-                alert('⚠️ Seleccione al menos un número usando el campo de entrada');
+                alert('⚠️ Seleccione al menos un número');
                 return;
             }
 
@@ -869,38 +791,20 @@ function usarDatosLocales() {
 
             if (editId) {
                 const index = sales.findIndex(s => s.id === editId);
-                if (index !== -1) {
-                    sales[index] = saleData;
-                }
-                console.log('✏️ Venta actualizada:', saleData);
+                if (index !== -1) sales[index] = saleData;
             } else {
                 sales.push(saleData);
-                console.log('➕ Nueva venta agregada:', saleData);
             }
 
-            // Guardar en localStorage inmediatamente
             localStorage.setItem('raffleSales', JSON.stringify(sales));
             
-            // Guardar en Google Sheets
             const guardadoExitoso = await guardarEnGoogleSheets();
             
-            // Limpiar formulario
-            document.getElementById('name').value = '';
-            document.getElementById('nick').value = '';
-            document.getElementById('contact').value = '';
-            document.getElementById('seller').value = '';
-            document.getElementById('numbersInput').value = '';
-            document.getElementById('editId').value = '';
-            document.getElementById('formTitle').textContent = '➕ Agregar nueva venta';
-            document.getElementById('cancelBtn').style.display = 'none';
-            
-            selectedNumbers.clear();
+            cancelEdit();
             
             actualizarGrid();
             renderSales();
             actualizarEstadisticas();
-            actualizarTags();
-            document.getElementById('selectedCount').textContent = '0';
             
             if (guardadoExitoso) {
                 alert('✅ Venta guardada correctamente en la nube');
@@ -911,8 +815,6 @@ function usarDatosLocales() {
 
         // ============ EDITAR VENTA ============
         function editSale(id) {
-            console.log('✏️ Editando venta:', id);
-            
             const sale = sales.find(s => s.id === id);
             if (!sale) return;
             
@@ -931,8 +833,6 @@ function usarDatosLocales() {
         }
 
         function cancelEdit() {
-            console.log('❌ Cancelando edición');
-            
             document.getElementById('editId').value = '';
             document.getElementById('formTitle').textContent = '➕ Agregar nueva venta';
             document.getElementById('cancelBtn').style.display = 'none';
@@ -951,10 +851,7 @@ function usarDatosLocales() {
         async function deleteSale(id) {
             if (!confirm('¿Está seguro de eliminar esta venta?')) return;
             
-            console.log('🗑️ Eliminando venta:', id);
-            
             sales = sales.filter(s => s.id !== id);
-            
             localStorage.setItem('raffleSales', JSON.stringify(sales));
             
             const guardadoExitoso = await guardarEnGoogleSheets();
@@ -976,8 +873,6 @@ function usarDatosLocales() {
 
         // ============ ACTUALIZAR CONFIGURACIÓN ============
         async function updateRaffleConfig() {
-            console.log('⚙️ Actualizando configuración...');
-            
             if (cargandoDatos) {
                 alert('⏳ Espere, aún cargando datos...');
                 return;
@@ -993,7 +888,7 @@ function usarDatosLocales() {
             const totalSold = sales.reduce((sum, s) => sum + s.numbers.length, 0);
             
             if (newTotal < totalSold) {
-                alert(`❌ Ya hay ${totalSold} números vendidos. No puede reducir a menos de esa cantidad.`);
+                alert(`❌ Ya hay ${totalSold} números vendidos`);
                 document.getElementById('totalNumbers').value = totalNumbers;
                 return;
             }
@@ -1013,8 +908,7 @@ function usarDatosLocales() {
             localStorage.setItem('raffleSales', JSON.stringify(sales));
             localStorage.setItem('totalNumbers', totalNumbers);
             
-            const guardadoExitoso = await guardarConfigEnGoogleSheets();
-            await guardarEnGoogleSheets();
+            const guardadoExitoso = await guardarEnGoogleSheets();
             
             actualizarGrid();
             renderSales();
@@ -1025,14 +919,12 @@ function usarDatosLocales() {
             if (guardadoExitoso) {
                 alert('✅ Configuración actualizada en la nube');
             } else {
-                alert('⚠️ Configuración actualizada localmente. No se pudo sincronizar con la nube.');
+                alert('⚠️ Configuración actualizada localmente');
             }
         }
 
         // ============ RENDERIZAR TABLA ============
         function renderSales() {
-            console.log('📋 Renderizando tabla...');
-            
             const tbody = document.getElementById('salesTable');
             tbody.innerHTML = '';
             
@@ -1073,94 +965,26 @@ function usarDatosLocales() {
             document.getElementById('availableCount').textContent = available;
         }
 
-function guardarEnGoogleSheets(ventas) {
-    return new Promise((resolve) => {
-        const script = document.createElement('script');
-        const callbackName = 'save_callback_' + Date.now();
-        
-        window[callbackName] = function(data) {
-            console.log('✅ Guardado:', data);
-            delete window[callbackName];
-            document.body.removeChild(script);
-            resolve(true);
-        };
-        
-        script.src = `${APPS_SCRIPT_URL}?accion=guardarVentas&ventas=${encodeURIComponent(JSON.stringify(ventas))}&callback=${callbackName}`;
-        script.onerror = function() {
-            console.log('Error al guardar');
-            delete window[callbackName];
-            document.body.removeChild(script);
-            resolve(false);
-        };
-        
-        document.body.appendChild(script);
-        
-        setTimeout(() => {
-            if (window[callbackName]) {
-                delete window[callbackName];
-                if (script.parentNode) document.body.removeChild(script);
-                resolve(false);
-            }
-        }, 5000);
-    });
-}
-
-function guardarConfigEnGoogleSheets(total) {
-    return new Promise((resolve) => {
-        const script = document.createElement('script');
-        const callbackName = 'config_callback_' + Date.now();
-        
-        window[callbackName] = function(data) {
-            console.log('✅ Config guardada:', data);
-            delete window[callbackName];
-            document.body.removeChild(script);
-            resolve(true);
-        };
-        
-        script.src = `${APPS_SCRIPT_URL}?accion=guardarConfig&totalNumbers=${total}&callback=${callbackName}`;
-        script.onerror = function() {
-            console.log('Error al guardar config');
-            delete window[callbackName];
-            document.body.removeChild(script);
-            resolve(false);
-        };
-        
-        document.body.appendChild(script);
-        
-        setTimeout(() => {
-            if (window[callbackName]) {
-                delete window[callbackName];
-                if (script.parentNode) document.body.removeChild(script);
-                resolve(false);
-            }
-        }, 5000);
-    });
-}
         // ============ FUNCIONES AUXILIARES ============
         function mostrarMensajeCarga(mostrar) {
             const grid = document.getElementById('numbersGrid');
             if (mostrar) {
-                grid.innerHTML = '<div style="grid-column: span 10; text-align: center; padding: 50px; background: #f7fafc; border-radius: 10px;">🔄 Cargando datos desde Google Sheets...</div>';
+                grid.innerHTML = '<div style="grid-column: span 10; text-align: center; padding: 50px;">🔄 Cargando datos...</div>';
             }
         }
 
         function mostrarErrorEnUI(mensaje) {
             const grid = document.getElementById('numbersGrid');
-            grid.innerHTML = `<div style="grid-column: span 10; text-align: center; padding: 50px; background: #fff5f5; color: #c53030; border-radius: 10px; border: 1px solid #fc8181;">
+            grid.innerHTML = `<div style="grid-column: span 10; text-align: center; padding: 50px; color: #f56565;">
                 ❌ ${mensaje}<br>
-                <small style="color: #718096;">Usando datos locales como respaldo</small>
+                <small>Usando datos locales</small>
             </div>`;
         }
 
         // ============ GUARDAR IMAGEN ============
         function saveVisualizationAsImage() {
-            console.log('📸 Guardando imagen...');
-            
             const imageGrid = document.getElementById('imageGrid');
-            if (!imageGrid) {
-                alert('Error: No se encontró el contenedor de la imagen');
-                return;
-            }
+            if (!imageGrid) return;
             
             let html = '';
             for (let i = 1; i <= totalNumbers; i++) {
@@ -1193,19 +1017,16 @@ function guardarConfigEnGoogleSheets(total) {
                     scale: 2,
                     backgroundColor: '#ffffff',
                     logging: false,
-                    windowWidth: 1000,
-                    allowTaint: false,
-                    useCORS: true
+                    windowWidth: 1000
                 }).then(canvas => {
                     const link = document.createElement('a');
                     const fechaArchivo = new Date().toISOString().split('T')[0];
                     link.download = `rifa-resumen-${fechaArchivo}.png`;
                     link.href = canvas.toDataURL('image/png');
                     link.click();
-                    console.log('✅ Imagen guardada correctamente');
                 }).catch(error => {
-                    console.error('❌ Error al guardar imagen:', error);
-                    alert('Error al generar la imagen. Por favor intente de nuevo.');
+                    console.error('Error:', error);
+                    alert('Error al generar la imagen');
                 });
             }, 100);
         }
