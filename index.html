@@ -470,7 +470,31 @@
                 <div class="legend-item"><div class="legend-color sold"></div> Vendido</div>
                 <div class="legend-item"><div class="legend-color available"></div> Disponible</div>
             </div>
-
+<div id="imageContainer" style="position: fixed; top: -9999px; left: -9999px; background: white; padding: 30px; border-radius: 15px; width: 1000px; z-index: -1;">
+    <div style="text-align: center;">
+        <h3 style="color: #333; margin-bottom: 20px; font-size: 1.8em;">🎫 Resumen de Rifas</h3>
+        
+        <!-- Grid para la imagen -->
+        <div id="imageGrid" style="display: grid; grid-template-columns: repeat(10, 1fr); gap: 8px; background: #f7fafc; padding: 20px; border-radius: 10px; margin: 20px 0; border: 2px solid #cbd5e0;"></div>
+        
+        <!-- Leyenda de la imagen -->
+        <div style="display: flex; gap: 30px; justify-content: center; margin: 20px 0; padding: 15px; background: #f7fafc; border-radius: 10px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 25px; height: 25px; background: #f56565; border-radius: 4px;"></div>
+                <span><strong>Vendidos:</strong> <span id="imageSoldCount">0</span></span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 25px; height: 25px; background: #48bb78; border-radius: 4px;"></div>
+                <span><strong>Disponibles:</strong> <span id="imageAvailableCount">0</span></span>
+            </div>
+        </div>
+        
+        <!-- Fecha -->
+        <div style="margin-top: 20px; color: #718096; font-size: 1.1em;">
+            📅 Fecha: <span id="imageDate"></span>
+        </div>
+    </div>
+</div>
             <!-- CUADRÍCULA DE NÚMEROS -->
             <div id="numbersGrid" class="numbers-grid"></div>
         </div>
@@ -917,24 +941,68 @@
 
         // ============ GUARDAR IMAGEN ============
         function saveVisualizationAsImage() {
-            console.log('📸 Guardando imagen...');
-            
-            const element = document.querySelector('.numbers-visualization');
-            
-            html2canvas(element, {
-                scale: 2,
-                backgroundColor: '#ffffff'
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `rifa-${new Date().toISOString().split('T')[0]}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-                console.log('✅ Imagen guardada');
-            }).catch(error => {
-                console.error('❌ Error al guardar imagen:', error);
-                alert('Error al generar la imagen');
-            });
+    console.log('📸 Guardando imagen...');
+    
+    // Actualizar el grid de la imagen con los datos actuales
+    const imageGrid = document.getElementById('imageGrid');
+    if (!imageGrid) {
+        alert('Error: No se encontró el contenedor de la imagen');
+        return;
+    }
+    
+    // Obtener datos actuales
+    const totalNumbers = parseInt(localStorage.getItem('totalNumbers')) || 100;
+    const sales = JSON.parse(localStorage.getItem('raffleSales')) || [];
+    
+    // Generar HTML para el grid
+    let html = '';
+    for (let i = 1; i <= totalNumbers; i++) {
+        const estaVendido = sales.some(s => s.numbers.includes(i));
+        
+        if (estaVendido) {
+            html += `<div style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: #f56565; color: white; border-radius: 8px; font-weight: bold; border: 2px solid #c53030;">${i}</div>`;
+        } else {
+            html += `<div style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: #48bb78; color: white; border-radius: 8px; font-weight: bold; border: 2px solid #2f855a;">${i}</div>`;
         }
-    </script>
-</body>
-</html>
+    }
+    imageGrid.innerHTML = html;
+    
+    // Actualizar contadores
+    const totalSold = sales.reduce((sum, s) => sum + s.numbers.length, 0);
+    const available = totalNumbers - totalSold;
+    document.getElementById('imageSoldCount').textContent = totalSold;
+    document.getElementById('imageAvailableCount').textContent = available;
+    
+    // Actualizar fecha
+    const fecha = new Date().toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    document.getElementById('imageDate').textContent = fecha;
+    
+    // Esperar un momento para que se actualice el DOM
+    setTimeout(() => {
+        const element = document.getElementById('imageContainer');
+        
+        html2canvas(element, {
+            scale: 2,
+            backgroundColor: '#ffffff',
+            logging: false,
+            windowWidth: 1000,
+            allowTaint: false,
+            useCORS: true
+        }).then(canvas => {
+            const link = document.createElement('a');
+            const fechaArchivo = new Date().toISOString().split('T')[0];
+            link.download = `rifa-resumen-${fechaArchivo}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            console.log('✅ Imagen guardada correctamente');
+        }).catch(error => {
+            console.error('❌ Error al guardar imagen:', error);
+            alert('Error al generar la imagen. Por favor intente de nuevo.');
+        });
+    }, 100);
+}
+</script>
