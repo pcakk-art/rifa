@@ -1,669 +1,1127 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Rifas - Google Sheets</title>
+    <style>
+        /* (Mantén todo tu CSS igual) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<script>
-    // ============ CONFIGURACIÓN DE GOOGLE APPS SCRIPT ============
-    // >>>>>> ¡¡¡ PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT !!! <<<<<<
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwEP0c2enShhj1z4Cw57xm05c6vy9GFuQpmJx5KJLmAFQzT7C65HeWRso02qfpXniO_/exec'; 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .config-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+            flex: 1;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #5a67d8;
+        }
+
+        .btn-success {
+            background: #48bb78;
+        }
+
+        .btn-success:hover {
+            background: #38a169;
+        }
+
+        .btn-save-image {
+            background: #9f7aea;
+            width: 100%;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .numbers-input-group {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .numbers-input-group label {
+            font-weight: bold;
+            color: #4a5568;
+            margin-bottom: 10px;
+            display: block;
+            font-size: 1.1em;
+        }
+
+        .numbers-input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .helper-text {
+            color: #718096;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .selected-numbers-box {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .selected-numbers-title {
+            font-weight: bold;
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .number-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            min-height: 50px;
+        }
+
+        .number-tag {
+            background: #667eea;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .number-tag button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+            padding: 0 5px;
+        }
+
+        .number-tag button:hover {
+            color: #feb2b2;
+        }
+
+        .numbers-visualization {
+            background: #fff;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            border: 2px solid #e2e8f0;
+        }
+
+        .visualization-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stats-summary {
+            display: flex;
+            gap: 30px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2em;
+        }
+
+        .stat-color {
+            width: 25px;
+            height: 25px;
+            border-radius: 6px;
+        }
+
+        .stat-color.sold { background: #f56565; }
+        .stat-color.available { background: #48bb78; }
+
+        .numbers-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 8px;
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 2px solid #cbd5e0;
+        }
+
+        .number-box {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1em;
+            border: 2px solid transparent;
+        }
+
+        .number-box.available {
+            background: #48bb78;
+            color: white;
+            border-color: #2f855a;
+        }
+
+        .number-box.sold {
+            background: #f56565;
+            color: white;
+            border-color: #c53030;
+        }
+
+        .legend {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        .legend-color.sold { background: #f56565; }
+        .legend-color.available { background: #48bb78; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 5px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .edit-btn { background: #4299e1; color: white; }
+        .delete-btn { background: #f56565; color: white; }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .summary-box {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 768px) {
+            .numbers-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎫 Sistema de Gestión de Rifas - Google Sheets</h1>
+
+        <div class="config-section">
+            <div class="form-group">
+                <label for="totalNumbers">Cantidad total de números</label>
+                <input type="number" id="totalNumbers" min="1" value="100">
+            </div>
+            <button class="btn" onclick="updateRaffleConfig()">Actualizar configuración</button>
+        </div>
+
+        <div class="form-section">
+            <h2 id="formTitle">➕ Agregar nueva venta</h2>
+            <input type="hidden" id="editId" value="">
+            
+            <div class="summary-box">
+                📊 <span id="selectedCount">0</span> números seleccionados
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="name">Nombre completo</label>
+                    <input type="text" id="name" placeholder="Ej: Juan Pérez">
+                </div>
+                <div class="form-group">
+                    <label for="nick">Nick / Apodo</label>
+                    <input type="text" id="nick" placeholder="Ej: Juancho">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="contact">Número de contacto</label>
+                    <input type="tel" id="contact" placeholder="Ej: 3001234567">
+                </div>
+                <div class="form-group">
+                    <label for="seller">Vendedor</label>
+                    <input type="text" id="seller" placeholder="Nombre de quien vendió">
+                </div>
+            </div>
+
+            <div class="numbers-input-group">
+                <label>🔢 Ingrese números separados por coma</label>
+                <input type="text" id="numbersInput" placeholder="Ej: 1, 5, 23, 45, 67  o  1-10, 15, 20-25">
+                <div class="helper-text">Puede usar comas para separar números o guiones para rangos (ej: 1-10)</div>
+                <button class="btn" onclick="addNumbersFromInput()">➕ Agregar números</button>
+            </div>
+
+            <div class="selected-numbers-box">
+                <div class="selected-numbers-title">📌 Números seleccionados para esta venta:</div>
+                <div id="selectedNumbersTags" class="number-tags"></div>
+                <div id="noNumbersSelected" style="color: #718096; text-align: center; padding: 10px; background: #f7fafc; border-radius: 8px; margin-top: 10px;">
+                    ⚠️ No hay números seleccionados. Use el campo de arriba para agregar números.
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn btn-success" onclick="saveSale()">💾 Guardar venta</button>
+                <button class="btn" onclick="cancelEdit()" style="display: none;" id="cancelBtn">❌ Cancelar edición</button>
+                <button class="btn" onclick="clearNumberSelection()">🗑️ Limpiar selección</button>
+                <button class="btn" onclick="recargarDesdeGoogleSheets()">🔄 Recargar datos</button>
+            </div>
+        </div>
+
+        <div class="numbers-visualization">
+            <div class="visualization-header">
+                <h2>🎯 Visualizador de Números</h2>
+                <button class="btn btn-save-image" onclick="saveVisualizationAsImage()">📸 Guardar imagen</button>
+            </div>
+            
+            <div class="stats-summary">
+                <div class="stat-item">
+                    <div class="stat-color sold"></div>
+                    <span><strong>Vendidos:</strong> <span id="soldCount">0</span></span>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-color available"></div>
+                    <span><strong>Disponibles:</strong> <span id="availableCount">100</span></span>
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item"><div class="legend-color sold"></div> Vendido</div>
+                <div class="legend-item"><div class="legend-color available"></div> Disponible</div>
+            </div>
+
+            <div id="imageContainer" style="position: fixed; top: -9999px; left: -9999px; background: white; padding: 30px; border-radius: 15px; width: 1000px; z-index: -1;">
+                <div style="text-align: center;">
+                    <h3 style="color: #333; margin-bottom: 20px; font-size: 1.8em;">🎫 Resumen de Rifas</h3>
+                    <div id="imageGrid" style="display: grid; grid-template-columns: repeat(10, 1fr); gap: 8px; background: #f7fafc; padding: 20px; border-radius: 10px; margin: 20px 0; border: 2px solid #cbd5e0;"></div>
+                    <div style="display: flex; gap: 30px; justify-content: center; margin: 20px 0; padding: 15px; background: #f7fafc; border-radius: 10px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 25px; height: 25px; background: #f56565; border-radius: 4px;"></div>
+                            <span><strong>Vendidos:</strong> <span id="imageSoldCount">0</span></span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 25px; height: 25px; background: #48bb78; border-radius: 4px;"></div>
+                            <span><strong>Disponibles:</strong> <span id="imageAvailableCount">0</span></span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; color: #718096; font-size: 1.1em;">
+                        📅 Fecha: <span id="imageDate"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="numbersGrid" class="numbers-grid"></div>
+        </div>
+
+        <div class="stats-cards">
+            <div class="stat-card">
+                <h3>📊 Números vendidos</h3>
+                <div class="value" id="totalSold">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>📦 Números disponibles</h3>
+                <div class="value" id="availableNumbers">100</div>
+            </div>
+            <div class="stat-card">
+                <h3>👥 Total compradores</h3>
+                <div class="value" id="totalBuyers">0</div>
+            </div>
+        </div>
+
+        <h2>📋 Ventas Registradas</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Nick</th>
+                    <th>Números</th>
+                    <th>Contacto</th>
+                    <th>Vendedor</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="salesTable"></tbody>
+        </table>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
-    // ============ VARIABLES GLOBALES ============
-    let sales = [];
-    let totalNumbers = 100;
-    let selectedNumbers = new Set();
-    let cargandoDatos = true; // Para evitar acciones mientras se carga
+    <script>
+        // ============ CONFIGURACIÓN ============
+        // >>>>>> ¡¡¡ PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT !!! <<<<<<
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwOlL70sn7bG4Q2NqGqx_hVe8_bOaxwAsS3GSheL48jgfwd6bUedeWQxwN8m8WZGrh6dg/exec';
+        
+        // ============ VARIABLES GLOBALES ============
+        let sales = [];
+        let totalNumbers = 100;
+        let selectedNumbers = new Set();
+        let cargandoDatos = false;
 
-    // ============ INICIALIZACIÓN ============
-    document.addEventListener('DOMContentLoaded', async function() {
-        console.log('🚀 Inicializando sistema con Google Sheets...');
-        await cargarDatosDesdeGoogleSheets();
-        
-        document.getElementById('totalNumbers').value = totalNumbers;
-        
-        // Forzar actualización de todos los componentes
-        actualizarGrid();
-        renderSales();
-        actualizarEstadisticas();
-        actualizarTags();
-    });
-
-    // ============ FUNCIONES PARA GOOGLE SHEETS ============
-    async function cargarDatosDesdeGoogleSheets() {
-    try {
-        cargandoDatos = true;
-        console.log('📥 Intentando conectar a:', APPS_SCRIPT_URL);
-        
-        mostrarMensajeCarga(true);
-        
-        // Construir URL con el parámetro accion
-        const url = `${APPS_SCRIPT_URL}?accion=obtenerTodo`;
-        console.log('URL completa:', url);
-        
-        // Usar JSONP para evitar problemas de CORS
-        const data = await new Promise((resolve, reject) => {
-            const callbackName = 'jsonp_callback_' + Date.now();
-            
-            // Crear función de callback global
-            window[callbackName] = function(response) {
-                console.log('Respuesta JSONP recibida:', response);
-                delete window[callbackName];
-                document.body.removeChild(script);
-                resolve(response);
-            };
-            
-            // Crear script para JSONP
-            const script = document.createElement('script');
-            script.src = `${APPS_SCRIPT_URL}?accion=obtenerTodo&callback=${callbackName}`;
-            
-            script.onerror = function(error) {
-                console.error('Error en JSONP:', error);
-                delete window[callbackName];
-                document.body.removeChild(script);
-                reject(new Error('Error en la conexión JSONP'));
-            };
-            
-            document.body.appendChild(script);
-            
-            // Timeout de 10 segundos
-            setTimeout(() => {
-                if (window[callbackName]) {
-                    console.log('Timeout - eliminando callback');
-                    delete window[callbackName];
-                    document.body.removeChild(script);
-                    reject(new Error('Timeout en la conexión'));
-                }
-            }, 10000);
+        // ============ INICIALIZACIÓN ============
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Inicializando sistema...');
+            console.log('URL de conexión:', APPS_SCRIPT_URL);
+            cargarDatosDesdeGoogleSheets();
         });
-        
-        if (data.error) {
-            throw new Error(data.error);
-        }
-        
-        sales = data.ventas || [];
-        totalNumbers = data.totalNumbers || 100;
-        
-        console.log('✅ Datos cargados:', { ventas: sales.length, totalNumbers });
-        
-        // Guardar en localStorage como respaldo
-        localStorage.setItem('raffleSales', JSON.stringify(sales));
-        localStorage.setItem('totalNumbers', totalNumbers);
-        
-        mostrarMensajeCarga(false);
-        
-        // Actualizar la interfaz
-        actualizarGrid();
-        renderSales();
-        actualizarEstadisticas();
-        
-    } catch (error) {
-        console.error('❌ Error cargando datos:', error);
-        
-        mostrarErrorEnUI('Error de conexión: ' + error.message);
-        
-        // Fallback a localStorage
-        sales = JSON.parse(localStorage.getItem('raffleSales')) || [];
-        totalNumbers = parseInt(localStorage.getItem('totalNumbers')) || 100;
-        
-        alert('⚠️ Usando datos locales. Error: ' + error.message);
-        
-        mostrarMensajeCarga(false);
-        
-        // Actualizar interfaz con datos locales
-        actualizarGrid();
-        renderSales();
-        actualizarEstadisticas();
-    }
-}
-    // ============ FUNCIÓN PARA AGREGAR NÚMEROS ============
-    function addNumbersFromInput() {
-        console.log('🔢 Procesando números...');
-        
-        const input = document.getElementById('numbersInput').value.trim();
-        
-        if (!input) {
-            alert('⚠️ Por favor ingrese algunos números');
-            return;
-        }
 
-        const numerosAgregados = [];
-        const numerosInvalidos = [];
-        const numerosVendidos = [];
-
-        const partes = input.split(',').map(p => p.trim()).filter(p => p.length > 0);
-
-        partes.forEach(parte => {
-            if (parte.includes('-')) {
-                const rango = parte.split('-').map(n => parseInt(n.trim()));
+        // ============ FUNCIONES DE GOOGLE SHEETS ============
+        async function cargarDatosDesdeGoogleSheets() {
+            if (cargandoDatos) return;
+            
+            try {
+                cargandoDatos = true;
+                console.log('📥 Cargando datos desde Google Sheets...');
                 
-                if (rango.length === 2 && !isNaN(rango[0]) && !isNaN(rango[1])) {
-                    const inicio = Math.min(rango[0], rango[1]);
-                    const fin = Math.max(rango[0], rango[1]);
+                mostrarMensajeCarga(true);
+                
+                const response = await fetch(`${APPS_SCRIPT_URL}?accion=obtenerTodo`);
+                const data = await response.json();
+                
+                console.log('📦 Datos recibidos:', data);
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                if (data.success) {
+                    sales = data.ventas || [];
+                    totalNumbers = data.totalNumbers || 100;
                     
-                    for (let i = inicio; i <= fin; i++) {
-                        if (i >= 1 && i <= totalNumbers) {
-                            numerosAgregados.push(i);
-                        } else {
-                            numerosInvalidos.push(i);
-                        }
-                    }
-                } else {
-                    numerosInvalidos.push(parte);
+                    console.log('✅ Ventas cargadas:', sales.length);
+                    console.log('✅ Total números:', totalNumbers);
+                    
+                    // Guardar en localStorage como respaldo
+                    localStorage.setItem('raffleSales', JSON.stringify(sales));
+                    localStorage.setItem('totalNumbers', totalNumbers);
+                    
+                    document.getElementById('totalNumbers').value = totalNumbers;
+                    
+                    // Actualizar toda la interfaz
+                    actualizarGrid();
+                    renderSales();
+                    actualizarEstadisticas();
+                    actualizarTags();
+                    
+                    mostrarMensajeCarga(false);
                 }
-            } else {
-                const num = parseInt(parte);
                 
-                if (!isNaN(num) && num >= 1 && num <= totalNumbers) {
-                    numerosAgregados.push(num);
-                } else {
-                    numerosInvalidos.push(parte);
+            } catch (error) {
+                console.error('❌ Error cargando datos:', error);
+                
+                mostrarErrorEnUI('Error de conexión: ' + error.message);
+                
+                // Fallback a localStorage
+                sales = JSON.parse(localStorage.getItem('raffleSales')) || [];
+                totalNumbers = parseInt(localStorage.getItem('totalNumbers')) || 100;
+                
+                document.getElementById('totalNumbers').value = totalNumbers;
+                
+                actualizarGrid();
+                renderSales();
+                actualizarEstadisticas();
+                
+                alert('⚠️ Usando datos locales. Error: ' + error.message);
+            } finally {
+                cargandoDatos = false;
+            }
+        }
+
+        async function guardarEnGoogleSheets() {
+            try {
+                console.log('☁️ Guardando en Google Sheets...');
+                
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        accion: 'guardarVentas',
+                        ventas: JSON.stringify(sales)
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('✅ Respuesta de guardado:', data);
+                
+                if (data.error) {
+                    throw new Error(data.error);
                 }
+                
+                return true;
+                
+            } catch (error) {
+                console.error('❌ Error guardando:', error);
+                return false;
             }
-        });
+        }
 
-        numerosAgregados.forEach(num => {
-            if (sales.some(s => s.numbers.includes(num))) {
-                numerosVendidos.push(num);
-            } else {
-                selectedNumbers.add(num);
+        async function guardarConfigEnGoogleSheets() {
+            try {
+                console.log('⚙️ Guardando configuración en Google Sheets...');
+                
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        accion: 'guardarConfig',
+                        totalNumbers: totalNumbers
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('✅ Configuración guardada:', data);
+                
+                return true;
+                
+            } catch (error) {
+                console.error('❌ Error guardando configuración:', error);
+                return false;
             }
-        });
-
-        if (numerosInvalidos.length > 0) {
-            alert(`⚠️ Números inválidos o fuera de rango: ${numerosInvalidos.join(', ')}`);
         }
 
-        if (numerosVendidos.length > 0) {
-            alert(`❌ Los siguientes números ya están vendidos: ${numerosVendidos.join(', ')}`);
+        function recargarDesdeGoogleSheets() {
+            cargarDatosDesdeGoogleSheets();
         }
 
-        actualizarGrid();
-        actualizarTags();
-        document.getElementById('selectedCount').textContent = selectedNumbers.size;
-        document.getElementById('numbersInput').value = '';
-    }
-
-    // ============ FUNCIÓN PRINCIPAL: ACTUALIZAR GRID ============
-    function actualizarGrid() {
-        console.log('🎯 Actualizando grid...');
-        
-        const grid = document.getElementById('numbersGrid');
-        if (!grid) {
-            console.error('❌ Grid no encontrado');
-            return;
-        }
-        
-        let html = '';
-        
-        for (let i = 1; i <= totalNumbers; i++) {
-            const estaVendido = sales.some(s => s.numbers.includes(i));
+        // ============ FUNCIÓN PARA AGREGAR NÚMEROS ============
+        function addNumbersFromInput() {
+            console.log('🔢 Procesando números...');
             
-            if (estaVendido) {
-                html += `<div class="number-box sold" title="Vendido">${i}</div>`;
-            } else {
-                html += `<div class="number-box available" title="Disponible">${i}</div>`;
-            }
-        }
-        
-        grid.innerHTML = html;
-        actualizarContadores();
-    }
-
-    // ============ ACTUALIZAR TAGS ============
-    function actualizarTags() {
-        const tags = document.getElementById('selectedNumbersTags');
-        const noNumbers = document.getElementById('noNumbersSelected');
-        
-        if (!tags || !noNumbers) return;
-        
-        tags.innerHTML = '';
-        
-        if (selectedNumbers.size === 0) {
-            noNumbers.style.display = 'block';
-            return;
-        }
-        
-        noNumbers.style.display = 'none';
-        
-        Array.from(selectedNumbers).sort((a, b) => a - b).forEach(num => {
-            const tag = document.createElement('span');
-            tag.className = 'number-tag';
-            tag.innerHTML = `${num} <button onclick="eliminarTag(${num})">×</button>`;
-            tags.appendChild(tag);
-        });
-    }
-
-    function eliminarTag(num) {
-        console.log('🗑️ Eliminando número:', num);
-        selectedNumbers.delete(num);
-        actualizarGrid();
-        actualizarTags();
-        document.getElementById('selectedCount').textContent = selectedNumbers.size;
-    }
-
-    function clearNumberSelection() {
-        console.log('🧹 Limpiando selección');
-        selectedNumbers.clear();
-        actualizarGrid();
-        actualizarTags();
-        document.getElementById('selectedCount').textContent = '0';
-        document.getElementById('numbersInput').value = '';
-    }
-
-    // ============ GUARDAR VENTA ============
-    async function saveSale() {
-        console.log('💾 Guardando venta...');
-        
-        if (cargandoDatos) {
-            alert('⏳ Espere, aún cargando datos...');
-            return;
-        }
-        
-        const name = document.getElementById('name').value.trim();
-        const nick = document.getElementById('nick').value.trim() || '-';
-        const contact = document.getElementById('contact').value.trim();
-        const seller = document.getElementById('seller').value.trim();
-        const editId = document.getElementById('editId').value;
-
-        if (!name) {
-            alert('⚠️ Por favor ingrese el nombre');
-            return;
-        }
-        
-        if (!contact) {
-            alert('⚠️ Por favor ingrese el número de contacto');
-            return;
-        }
-        
-        if (!seller) {
-            alert('⚠️ Por favor ingrese quién vendió');
-            return;
-        }
-
-        if (selectedNumbers.size === 0) {
-            alert('⚠️ Seleccione al menos un número usando el campo de entrada');
-            return;
-        }
-
-        for (let num of selectedNumbers) {
-            if (sales.some(s => s.numbers.includes(num) && s.id !== editId)) {
-                alert(`❌ El número ${num} ya está vendido`);
+            const input = document.getElementById('numbersInput').value.trim();
+            
+            if (!input) {
+                alert('⚠️ Por favor ingrese algunos números');
                 return;
             }
-        }
 
-        const saleData = {
-            id: editId || Date.now().toString(),
-            name: name,
-            nick: nick,
-            numbers: Array.from(selectedNumbers),
-            contact: contact,
-            seller: seller,
-            date: new Date().toISOString()
-        };
+            const numerosAgregados = [];
+            const numerosInvalidos = [];
+            const numerosVendidos = [];
 
-        if (editId) {
-            const index = sales.findIndex(s => s.id === editId);
-            if (index !== -1) {
-                sales[index] = saleData;
-            }
-            console.log('✏️ Venta actualizada:', saleData);
-        } else {
-            sales.push(saleData);
-            console.log('➕ Nueva venta agregada:', saleData);
-        }
+            const partes = input.split(',').map(p => p.trim()).filter(p => p.length > 0);
 
-        // Guardar en Google Sheets
-        const guardadoExitoso = await guardarTodoEnGoogleSheets();
-        
-        // Limpiar formulario
-        document.getElementById('name').value = '';
-        document.getElementById('nick').value = '';
-        document.getElementById('contact').value = '';
-        document.getElementById('seller').value = '';
-        document.getElementById('numbersInput').value = '';
-        document.getElementById('editId').value = '';
-        document.getElementById('formTitle').textContent = '➕ Agregar nueva venta';
-        document.getElementById('cancelBtn').style.display = 'none';
-        
-        selectedNumbers.clear();
-        
-        actualizarGrid();
-        renderSales();
-        actualizarEstadisticas();
-        actualizarTags();
-        document.getElementById('selectedCount').textContent = '0';
-        
-        if (guardadoExitoso) {
-            alert('✅ Venta guardada correctamente en la nube');
-        } else {
-            alert('⚠️ Venta guardada localmente. No se pudo sincronizar con la nube.');
-        }
-    }
-
-    // ============ EDITAR VENTA ============
-    function editSale(id) {
-        console.log('✏️ Editando venta:', id);
-        
-        const sale = sales.find(s => s.id === id);
-        if (!sale) return;
-        
-        document.getElementById('editId').value = sale.id;
-        document.getElementById('name').value = sale.name;
-        document.getElementById('nick').value = sale.nick === '-' ? '' : sale.nick;
-        document.getElementById('contact').value = sale.contact;
-        document.getElementById('seller').value = sale.seller;
-        document.getElementById('formTitle').textContent = '✏️ Editando venta';
-        document.getElementById('cancelBtn').style.display = 'inline-block';
-        
-        selectedNumbers = new Set(sale.numbers);
-        actualizarGrid();
-        actualizarTags();
-        document.getElementById('selectedCount').textContent = selectedNumbers.size;
-    }
-
-    function cancelEdit() {
-        console.log('❌ Cancelando edición');
-        
-        document.getElementById('editId').value = '';
-        document.getElementById('formTitle').textContent = '➕ Agregar nueva venta';
-        document.getElementById('cancelBtn').style.display = 'none';
-        document.getElementById('name').value = '';
-        document.getElementById('nick').value = '';
-        document.getElementById('contact').value = '';
-        document.getElementById('seller').value = '';
-        document.getElementById('numbersInput').value = '';
-        
-        selectedNumbers.clear();
-        actualizarGrid();
-        actualizarTags();
-        document.getElementById('selectedCount').textContent = '0';
-    }
-
-    async function deleteSale(id) {
-        if (!confirm('¿Está seguro de eliminar esta venta?')) return;
-        
-        console.log('🗑️ Eliminando venta:', id);
-        
-        sales = sales.filter(s => s.id !== id);
-        
-        // Guardar en Google Sheets
-        const guardadoExitoso = await guardarTodoEnGoogleSheets();
-        
-        if (document.getElementById('editId').value === id) {
-            cancelEdit();
-        }
-        
-        actualizarGrid();
-        renderSales();
-        actualizarEstadisticas();
-        
-        if (guardadoExitoso) {
-            alert('✅ Venta eliminada de la nube');
-        } else {
-            alert('⚠️ Venta eliminada localmente. No se pudo sincronizar con la nube.');
-        }
-    }
-
-    // ============ ACTUALIZAR CONFIGURACIÓN ============
-    async function updateRaffleConfig() {
-        console.log('⚙️ Actualizando configuración...');
-        
-        if (cargandoDatos) {
-            alert('⏳ Espere, aún cargando datos...');
-            return;
-        }
-        
-        const newTotal = parseInt(document.getElementById('totalNumbers').value);
-        
-        if (!newTotal || newTotal < 1) {
-            alert('⚠️ Ingrese un número válido');
-            return;
-        }
-        
-        const totalSold = sales.reduce((sum, s) => sum + s.numbers.length, 0);
-        
-        if (newTotal < totalSold) {
-            alert(`❌ Ya hay ${totalSold} números vendidos. No puede reducir a menos de esa cantidad.`);
-            document.getElementById('totalNumbers').value = totalNumbers;
-            return;
-        }
-        
-        totalNumbers = newTotal;
-        
-        sales.forEach(s => {
-            s.numbers = s.numbers.filter(n => n <= totalNumbers);
-        });
-        
-        const nuevosSeleccionados = new Set();
-        selectedNumbers.forEach(num => {
-            if (num <= totalNumbers) nuevosSeleccionados.add(num);
-        });
-        selectedNumbers = nuevosSeleccionados;
-        
-        // Guardar en Google Sheets
-        const guardadoExitoso = await guardarTodoEnGoogleSheets();
-        
-        actualizarGrid();
-        renderSales();
-        actualizarEstadisticas();
-        actualizarTags();
-        document.getElementById('selectedCount').textContent = selectedNumbers.size;
-        
-        if (guardadoExitoso) {
-            alert('✅ Configuración actualizada en la nube');
-        } else {
-            alert('⚠️ Configuración actualizada localmente. No se pudo sincronizar con la nube.');
-        }
-    }
-
-    // ============ RENDERIZAR TABLA ============
-    function renderSales() {
-        console.log('📋 Renderizando tabla...');
-        
-        const tbody = document.getElementById('salesTable');
-        tbody.innerHTML = '';
-        
-        sales.sort((a, b) => new Date(b.date) - new Date(a.date));
-        
-        sales.forEach(sale => {
-            const row = tbody.insertRow();
-            row.innerHTML = `
-                <td>${sale.name}</td>
-                <td>${sale.nick}</td>
-                <td>${sale.numbers.sort((a, b) => a - b).join(', ')}</td>
-                <td>${sale.contact}</td>
-                <td>${sale.seller}</td>
-                <td class="action-buttons">
-                    <button class="edit-btn" onclick="editSale('${sale.id}')">Editar</button>
-                    <button class="delete-btn" onclick="deleteSale('${sale.id}')">Eliminar</button>
-                </td>
-            `;
-        });
-    }
-
-    // ============ ACTUALIZAR ESTADÍSTICAS ============
-    function actualizarEstadisticas() {
-        const totalSold = sales.reduce((sum, s) => sum + s.numbers.length, 0);
-        const available = totalNumbers - totalSold;
-        const totalBuyers = sales.length;
-        
-        document.getElementById('totalSold').textContent = totalSold;
-        document.getElementById('availableNumbers').textContent = available;
-        document.getElementById('totalBuyers').textContent = totalBuyers;
-    }
-
-    function actualizarContadores() {
-        const totalSold = sales.reduce((sum, s) => sum + s.numbers.length, 0);
-        const available = totalNumbers - totalSold;
-        
-        document.getElementById('soldCount').textContent = totalSold;
-        document.getElementById('availableCount').textContent = available;
-    }
-
-    // ============ GUARDAR IMAGEN ============
-    function saveVisualizationAsImage() {
-        console.log('📸 Guardando imagen...');
-        
-        const imageGrid = document.getElementById('imageGrid');
-        if (!imageGrid) {
-            alert('Error: No se encontró el contenedor de la imagen');
-            return;
-        }
-        
-        let html = '';
-        for (let i = 1; i <= totalNumbers; i++) {
-            const estaVendido = sales.some(s => s.numbers.includes(i));
-            
-            if (estaVendido) {
-                html += `<div style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: #f56565; color: white; border-radius: 8px; font-weight: bold; border: 2px solid #c53030;">${i}</div>`;
-            } else {
-                html += `<div style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: #48bb78; color: white; border-radius: 8px; font-weight: bold; border: 2px solid #2f855a;">${i}</div>`;
-            }
-        }
-        imageGrid.innerHTML = html;
-        
-        const totalSold = sales.reduce((sum, s) => sum + s.numbers.length, 0);
-        const available = totalNumbers - totalSold;
-        document.getElementById('imageSoldCount').textContent = totalSold;
-        document.getElementById('imageAvailableCount').textContent = available;
-        
-        const fecha = new Date().toLocaleDateString('es-ES', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-        document.getElementById('imageDate').textContent = fecha;
-        
-        setTimeout(() => {
-            const element = document.getElementById('imageContainer');
-            
-            html2canvas(element, {
-                scale: 2,
-                backgroundColor: '#ffffff',
-                logging: false,
-                windowWidth: 1000,
-                allowTaint: false,
-                useCORS: true
-            }).then(canvas => {
-                const link = document.createElement('a');
-                const fechaArchivo = new Date().toISOString().split('T')[0];
-                link.download = `rifa-resumen-${fechaArchivo}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-                console.log('✅ Imagen guardada correctamente');
-            }).catch(error => {
-                console.error('❌ Error al guardar imagen:', error);
-                alert('Error al generar la imagen. Por favor intente de nuevo.');
+            partes.forEach(parte => {
+                if (parte.includes('-')) {
+                    const rango = parte.split('-').map(n => parseInt(n.trim()));
+                    
+                    if (rango.length === 2 && !isNaN(rango[0]) && !isNaN(rango[1])) {
+                        const inicio = Math.min(rango[0], rango[1]);
+                        const fin = Math.max(rango[0], rango[1]);
+                        
+                        for (let i = inicio; i <= fin; i++) {
+                            if (i >= 1 && i <= totalNumbers) {
+                                numerosAgregados.push(i);
+                            } else {
+                                numerosInvalidos.push(i);
+                            }
+                        }
+                    } else {
+                        numerosInvalidos.push(parte);
+                    }
+                } else {
+                    const num = parseInt(parte);
+                    
+                    if (!isNaN(num) && num >= 1 && num <= totalNumbers) {
+                        numerosAgregados.push(num);
+                    } else {
+                        numerosInvalidos.push(parte);
+                    }
+                }
             });
-        }, 100);
-    }
-// Funciones auxiliares para mensajes
-function mostrarMensajeCarga(mostrar) {
-    const grid = document.getElementById('numbersGrid');
-    if (mostrar) {
-        grid.innerHTML = '<div style="grid-column: span 10; text-align: center; padding: 50px; background: #f7fafc; border-radius: 10px;">🔄 Cargando datos desde Google Sheets...</div>';
-    }
-}
 
-function mostrarErrorEnUI(mensaje) {
-    const grid = document.getElementById('numbersGrid');
-    grid.innerHTML = `<div style="grid-column: span 10; text-align: center; padding: 50px; background: #fff5f5; color: #c53030; border-radius: 10px; border: 1px solid #fc8181;">
-        ❌ ${mensaje}<br>
-        <small style="color: #718096;">Usando datos locales como respaldo</small>
-    </div>`;
-}
+            numerosAgregados.forEach(num => {
+                if (sales.some(s => s.numbers.includes(num))) {
+                    numerosVendidos.push(num);
+                } else {
+                    selectedNumbers.add(num);
+                }
+            });
 
-// Modificar la función saveSale para que guarde en Google Sheets
-async function saveSale() {
-    console.log('💾 Guardando venta...');
-    
-    if (cargandoDatos) {
-        alert('⏳ Espere, aún cargando datos...');
-        return;
-    }
-    
-    const name = document.getElementById('name').value.trim();
-    const nick = document.getElementById('nick').value.trim() || '-';
-    const contact = document.getElementById('contact').value.trim();
-    const seller = document.getElementById('seller').value.trim();
-    const editId = document.getElementById('editId').value;
+            if (numerosInvalidos.length > 0) {
+                alert(`⚠️ Números inválidos o fuera de rango: ${numerosInvalidos.join(', ')}`);
+            }
 
-    // Validaciones
-    if (!name || !contact || !seller) {
-        alert('⚠️ Por favor complete todos los campos');
-        return;
-    }
+            if (numerosVendidos.length > 0) {
+                alert(`❌ Los siguientes números ya están vendidos: ${numerosVendidos.join(', ')}`);
+            }
 
-    if (selectedNumbers.size === 0) {
-        alert('⚠️ Seleccione al menos un número');
-        return;
-    }
-
-    // Verificar números no vendidos
-    for (let num of selectedNumbers) {
-        if (sales.some(s => s.numbers.includes(num) && s.id !== editId)) {
-            alert(`❌ El número ${num} ya está vendido`);
-            return;
+            actualizarGrid();
+            actualizarTags();
+            document.getElementById('selectedCount').textContent = selectedNumbers.size;
+            document.getElementById('numbersInput').value = '';
         }
-    }
 
-    const saleData = {
-        id: editId || Date.now().toString(),
-        name: name,
-        nick: nick,
-        numbers: Array.from(selectedNumbers),
-        contact: contact,
-        seller: seller,
-        date: new Date().toISOString()
-    };
-
-    if (editId) {
-        const index = sales.findIndex(s => s.id === editId);
-        if (index !== -1) sales[index] = saleData;
-    } else {
-        sales.push(saleData);
-    }
-
-    // Guardar en Google Sheets usando JSONP
-    try {
-        const saveUrl = `${APPS_SCRIPT_URL}?accion=guardarVentas&ventas=${encodeURIComponent(JSON.stringify(sales))}`;
-        
-        await new Promise((resolve, reject) => {
-            const callbackName = 'save_callback_' + Date.now();
+        // ============ FUNCIÓN PRINCIPAL: ACTUALIZAR GRID ============
+        function actualizarGrid() {
+            console.log('🎯 Actualizando grid...');
             
-            window[callbackName] = function(response) {
-                console.log('Respuesta guardado:', response);
-                delete window[callbackName];
-                document.body.removeChild(script);
-                resolve(response);
+            const grid = document.getElementById('numbersGrid');
+            if (!grid) {
+                console.error('❌ Grid no encontrado');
+                return;
+            }
+            
+            let html = '';
+            
+            for (let i = 1; i <= totalNumbers; i++) {
+                const estaVendido = sales.some(s => s.numbers.includes(i));
+                
+                if (estaVendido) {
+                    html += `<div class="number-box sold" title="Vendido">${i}</div>`;
+                } else {
+                    html += `<div class="number-box available" title="Disponible">${i}</div>`;
+                }
+            }
+            
+            grid.innerHTML = html;
+            actualizarContadores();
+        }
+
+        // ============ ACTUALIZAR TAGS ============
+        function actualizarTags() {
+            const tags = document.getElementById('selectedNumbersTags');
+            const noNumbers = document.getElementById('noNumbersSelected');
+            
+            if (!tags || !noNumbers) return;
+            
+            tags.innerHTML = '';
+            
+            if (selectedNumbers.size === 0) {
+                noNumbers.style.display = 'block';
+                return;
+            }
+            
+            noNumbers.style.display = 'none';
+            
+            Array.from(selectedNumbers).sort((a, b) => a - b).forEach(num => {
+                const tag = document.createElement('span');
+                tag.className = 'number-tag';
+                tag.innerHTML = `${num} <button onclick="eliminarTag(${num})">×</button>`;
+                tags.appendChild(tag);
+            });
+        }
+
+        function eliminarTag(num) {
+            console.log('🗑️ Eliminando número:', num);
+            selectedNumbers.delete(num);
+            actualizarGrid();
+            actualizarTags();
+            document.getElementById('selectedCount').textContent = selectedNumbers.size;
+        }
+
+        function clearNumberSelection() {
+            console.log('🧹 Limpiando selección');
+            selectedNumbers.clear();
+            actualizarGrid();
+            actualizarTags();
+            document.getElementById('selectedCount').textContent = '0';
+            document.getElementById('numbersInput').value = '';
+        }
+
+        // ============ GUARDAR VENTA ============
+        async function saveSale() {
+            console.log('💾 Guardando venta...');
+            
+            if (cargandoDatos) {
+                alert('⏳ Espere, aún cargando datos...');
+                return;
+            }
+            
+            const name = document.getElementById('name').value.trim();
+            const nick = document.getElementById('nick').value.trim() || '-';
+            const contact = document.getElementById('contact').value.trim();
+            const seller = document.getElementById('seller').value.trim();
+            const editId = document.getElementById('editId').value;
+
+            if (!name) {
+                alert('⚠️ Por favor ingrese el nombre');
+                return;
+            }
+            
+            if (!contact) {
+                alert('⚠️ Por favor ingrese el número de contacto');
+                return;
+            }
+            
+            if (!seller) {
+                alert('⚠️ Por favor ingrese quién vendió');
+                return;
+            }
+
+            if (selectedNumbers.size === 0) {
+                alert('⚠️ Seleccione al menos un número usando el campo de entrada');
+                return;
+            }
+
+            for (let num of selectedNumbers) {
+                if (sales.some(s => s.numbers.includes(num) && s.id !== editId)) {
+                    alert(`❌ El número ${num} ya está vendido`);
+                    return;
+                }
+            }
+
+            const saleData = {
+                id: editId || Date.now().toString(),
+                name: name,
+                nick: nick,
+                numbers: Array.from(selectedNumbers),
+                contact: contact,
+                seller: seller,
+                date: new Date().toISOString()
             };
-            
-            const script = document.createElement('script');
-            script.src = `${APPS_SCRIPT_URL}?accion=guardarVentas&ventas=${encodeURIComponent(JSON.stringify(sales))}&callback=${callbackName}`;
-            
-            script.onerror = reject;
-            document.body.appendChild(script);
-            
-            setTimeout(() => reject(new Error('Timeout')), 5000);
-        });
-        
-        console.log('✅ Guardado en Google Sheets');
-        
-    } catch (error) {
-        console.error('Error guardando en Google Sheets:', error);
-        alert('⚠️ Venta guardada localmente. No se pudo sincronizar con la nube.');
-    }
 
-    // Guardar en localStorage
-    localStorage.setItem('raffleSales', JSON.stringify(sales));
-    
-    // Limpiar formulario
-    cancelEdit();
-    
-    // Actualizar interfaz
-    actualizarGrid();
-    renderSales();
-    actualizarEstadisticas();
-    
-    alert('✅ Venta guardada correctamente');
-}
-</script>
+            if (editId) {
+                const index = sales.findIndex(s => s.id === editId);
+                if (index !== -1) {
+                    sales[index] = saleData;
+                }
+                console.log('✏️ Venta actualizada:', saleData);
+            } else {
+                sales.push(saleData);
+                console.log('➕ Nueva venta agregada:', saleData);
+            }
 
+            // Guardar en localStorage inmediatamente
+            localStorage.setItem('raffleSales', JSON.stringify(sales));
+            
+            // Guardar en Google Sheets
+            const guardadoExitoso = await guardarEnGoogleSheets();
+            
+            // Limpiar formulario
+            document.getElementById('name').value = '';
+            document.getElementById('nick').value = '';
+            document.getElementById('contact').value = '';
+            document.getElementById('seller').value = '';
+            document.getElementById('numbersInput').value = '';
+            document.getElementById('editId').value = '';
+            document.getElementById('formTitle').textContent = '➕ Agregar nueva venta';
+            document.getElementById('cancelBtn').style.display = 'none';
+            
+            selectedNumbers.clear();
+            
+            actualizarGrid();
+            renderSales();
+            actualizarEstadisticas();
+            actualizarTags();
+            document.getElementById('selectedCount').textContent = '0';
+            
+            if (guardadoExitoso) {
+                alert('✅ Venta guardada correctamente en la nube');
+            } else {
+                alert('⚠️ Venta guardada localmente. No se pudo sincronizar con la nube.');
+            }
+        }
+
+        // ============ EDITAR VENTA ============
+        function editSale(id) {
+            console.log('✏️ Editando venta:', id);
+            
+            const sale = sales.find(s => s.id === id);
+            if (!sale) return;
+            
+            document.getElementById('editId').value = sale.id;
+            document.getElementById('name').value = sale.name;
+            document.getElementById('nick').value = sale.nick === '-' ? '' : sale.nick;
+            document.getElementById('contact').value = sale.contact;
+            document.getElementById('seller').value = sale.seller;
+            document.getElementById('formTitle').textContent = '✏️ Editando venta';
+            document.getElementById('cancelBtn').style.display = 'inline-block';
+            
+            selectedNumbers = new Set(sale.numbers);
+            actualizarGrid();
+            actualizarTags();
+            document.getElementById('selectedCount').textContent = selectedNumbers.size;
+        }
+
+        function cancelEdit() {
+            console.log('❌ Cancelando edición');
+            
+            document.getElementById('editId').value = '';
+            document.getElementById('formTitle').textContent = '➕ Agregar nueva venta';
+            document.getElementById('cancelBtn').style.display = 'none';
+            document.getElementById('name').value = '';
+            document.getElementById('nick').value = '';
+            document.getElementById('contact').value = '';
+            document.getElementById('seller').value = '';
+            document.getElementById('numbersInput').value = '';
+            
+            selectedNumbers.clear();
+            actualizarGrid();
+            actualizarTags();
+            document.getElementById('selectedCount').textContent = '0';
+        }
+
+        async function deleteSale(id) {
+            if (!confirm('¿Está seguro de eliminar esta venta?')) return;
+            
+            console.log('🗑️ Eliminando venta:', id);
+            
+            sales = sales.filter(s => s.id !== id);
+            
+            localStorage.setItem('raffleSales', JSON.stringify(sales));
+            
+            const guardadoExitoso = await guardarEnGoogleSheets();
+            
+            if (document.getElementById('editId').value === id) {
+                cancelEdit();
+            }
+            
+            actualizarGrid();
+            renderSales();
+            actualizarEstadisticas();
+            
+            if (guardadoExitoso) {
+                alert('✅ Venta eliminada de la nube');
+            } else {
+                alert('⚠️ Venta eliminada localmente. No se pudo sincronizar con la nube.');
+            }
+        }
+
+        // ============ ACTUALIZAR CONFIGURACIÓN ============
+        async function updateRaffleConfig() {
+            console.log('⚙️ Actualizando configuración...');
+            
+            if (cargandoDatos) {
+                alert('⏳ Espere, aún cargando datos...');
+                return;
+            }
+            
+            const newTotal = parseInt(document.getElementById('totalNumbers').value);
+            
+            if (!newTotal || newTotal < 1) {
+                alert('⚠️ Ingrese un número válido');
+                return;
+            }
+            
+            const totalSold = sales.reduce((sum, s) => sum + s.numbers.length, 0);
+            
+            if (newTotal < totalSold) {
+                alert(`❌ Ya hay ${totalSold} números vendidos. No puede reducir a menos de esa cantidad.`);
+                document.getElementById('totalNumbers').value = totalNumbers;
+                return;
+            }
+            
+            totalNumbers = newTotal;
+            
+            sales.forEach(s => {
+                s.numbers = s.numbers.filter(n => n <= totalNumbers);
+            });
+            
+            const nuevosSeleccionados = new Set();
+            selectedNumbers.forEach(num => {
+                if (num <= totalNumbers) nuevosSeleccionados.add(num);
+            });
+            selectedNumbers = nuevosSeleccionados;
+            
+            localStorage.setItem('raffleSales', JSON.stringify(sales));
+            localStorage.setItem('totalNumbers', totalNumbers);
+            
+            const guardadoExitoso = await guardarConfigEnGoogleSheets();
+            await guardarEnGoogleSheets();
+            
+            actualizarGrid();
+            renderSales();
+            actualizarEstadisticas();
+            actualizarTags();
+            document.getElementById('selectedCount').textContent = selectedNumbers.size;
+            
+            if (guardadoExitoso) {
+                alert('✅ Configuración actualizada en la nube');
+            } else {
+                alert('⚠️ Configuración actualizada localmente. No se pudo sincronizar con la nube.');
+            }
+        }
+
+        // ============ RENDERIZAR TABLA ============
+        function renderSales() {
+            console.log('📋 Renderizando tabla...');
+            
+            const tbody = document.getElementById('salesTable');
+            tbody.innerHTML = '';
+            
+            sales.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            sales.forEach(sale => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${sale.name}</td>
+                    <td>${sale.nick}</td>
+                    <td>${sale.numbers.sort((a, b) => a - b).join(', ')}</td>
+                    <td>${sale.contact}</td>
+                    <td>${sale.seller}</td>
+                    <td class="action-buttons">
+                        <button class="edit-btn" onclick="editSale('${sale.id}')">Editar</button>
+                        <button class="delete-btn" onclick="deleteSale('${sale.id}')">Eliminar</button>
+                    </td>
+                `;
+            });
+        }
+
+        // ============ ACTUALIZAR ESTADÍSTICAS ============
+        function actualizarEstadisticas() {
+            const totalSold = sales.reduce((sum, s) => sum + s.numbers.length, 0);
+            const available = totalNumbers - totalSold;
+            const totalBuyers = sales.length;
+            
+            document.getElementById('totalSold').textContent = totalSold;
+            document.getElementById('availableNumbers').textContent = available;
+            document.getElementById('totalBuyers').textContent = totalBuyers;
+        }
+
+        function actualizarContadores() {
+            const totalSold = sales.reduce((sum, s) => sum + s.numbers.length, 0);
+            const available = totalNumbers - totalSold;
+            
+            document.getElementById('soldCount').textContent = totalSold;
+            document.getElementById('availableCount').textContent = available;
+        }
+
+        // ============ FUNCIONES AUXILIARES ============
+        function mostrarMensajeCarga(mostrar) {
+            const grid = document.getElementById('numbersGrid');
+            if (mostrar) {
+                grid.innerHTML = '<div style="grid-column: span 10; text-align: center; padding: 50px; background: #f7fafc; border-radius: 10px;">🔄 Cargando datos desde Google Sheets...</div>';
+            }
+        }
+
+        function mostrarErrorEnUI(mensaje) {
+            const grid = document.getElementById('numbersGrid');
+            grid.innerHTML = `<div style="grid-column: span 10; text-align: center; padding: 50px; background: #fff5f5; color: #c53030; border-radius: 10px; border: 1px solid #fc8181;">
+                ❌ ${mensaje}<br>
+                <small style="color: #718096;">Usando datos locales como respaldo</small>
+            </div>`;
+        }
+
+        // ============ GUARDAR IMAGEN ============
+        function saveVisualizationAsImage() {
+            console.log('📸 Guardando imagen...');
+            
+            const imageGrid = document.getElementById('imageGrid');
+            if (!imageGrid) {
+                alert('Error: No se encontró el contenedor de la imagen');
+                return;
+            }
+            
+            let html = '';
+            for (let i = 1; i <= totalNumbers; i++) {
+                const estaVendido = sales.some(s => s.numbers.includes(i));
+                
+                if (estaVendido) {
+                    html += `<div style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: #f56565; color: white; border-radius: 8px; font-weight: bold; border: 2px solid #c53030;">${i}</div>`;
+                } else {
+                    html += `<div style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: #48bb78; color: white; border-radius: 8px; font-weight: bold; border: 2px solid #2f855a;">${i}</div>`;
+                }
+            }
+            imageGrid.innerHTML = html;
+            
+            const totalSold = sales.reduce((sum, s) => sum + s.numbers.length, 0);
+            const available = totalNumbers - totalSold;
+            document.getElementById('imageSoldCount').textContent = totalSold;
+            document.getElementById('imageAvailableCount').textContent = available;
+            
+            const fecha = new Date().toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('imageDate').textContent = fecha;
+            
+            setTimeout(() => {
+                const element = document.getElementById('imageContainer');
+                
+                html2canvas(element, {
+                    scale: 2,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    windowWidth: 1000,
+                    allowTaint: false,
+                    useCORS: true
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    const fechaArchivo = new Date().toISOString().split('T')[0];
+                    link.download = `rifa-resumen-${fechaArchivo}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    console.log('✅ Imagen guardada correctamente');
+                }).catch(error => {
+                    console.error('❌ Error al guardar imagen:', error);
+                    alert('Error al generar la imagen. Por favor intente de nuevo.');
+                });
+            }, 100);
+        }
+    </script>
+</body>
+</html>
