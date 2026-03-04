@@ -365,6 +365,14 @@
             font-size: 1.2em;
         }
 
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
         @media (max-width: 768px) {
             .numbers-grid {
                 grid-template-columns: repeat(5, 1fr);
@@ -376,6 +384,7 @@
     <div class="container">
         <h1>🎫 Sistema de Gestión de Rifas - Google Sheets</h1>
 
+        <!-- Configuración -->
         <div class="config-section">
             <div class="form-group">
                 <label for="totalNumbers">Cantidad total de números</label>
@@ -384,6 +393,7 @@
             <button class="btn" onclick="updateRaffleConfig()">Actualizar configuración</button>
         </div>
 
+        <!-- Formulario de ventas -->
         <div class="form-section">
             <h2 id="formTitle">➕ Agregar nueva venta</h2>
             <input type="hidden" id="editId" value="">
@@ -414,6 +424,7 @@
                 </div>
             </div>
 
+            <!-- Campo para ingresar números -->
             <div class="numbers-input-group">
                 <label>🔢 Ingrese números separados por coma</label>
                 <input type="text" id="numbersInput" placeholder="Ej: 1, 5, 23, 45, 67  o  1-10, 15, 20-25">
@@ -421,6 +432,7 @@
                 <button class="btn" onclick="addNumbersFromInput()">➕ Agregar números</button>
             </div>
 
+            <!-- Números seleccionados -->
             <div class="selected-numbers-box">
                 <div class="selected-numbers-title">📌 Números seleccionados para esta venta:</div>
                 <div id="selectedNumbersTags" class="number-tags"></div>
@@ -437,6 +449,7 @@
             </div>
         </div>
 
+        <!-- Visualizador de números -->
         <div class="numbers-visualization">
             <div class="visualization-header">
                 <h2>🎯 Visualizador de Números</h2>
@@ -459,6 +472,7 @@
                 <div class="legend-item"><div class="legend-color available"></div> Disponible</div>
             </div>
 
+            <!-- Contenedor oculto para la imagen -->
             <div id="imageContainer" style="position: fixed; top: -9999px; left: -9999px; background: white; padding: 30px; border-radius: 15px; width: 1000px; z-index: -1;">
                 <div style="text-align: center;">
                     <h3 style="color: #333; margin-bottom: 20px; font-size: 1.8em;">🎫 Resumen de Rifas</h3>
@@ -479,9 +493,11 @@
                 </div>
             </div>
 
+            <!-- Grid de números -->
             <div id="numbersGrid" class="numbers-grid"></div>
         </div>
 
+        <!-- Estadísticas -->
         <div class="stats-cards">
             <div class="stat-card">
                 <h3>📊 Números vendidos</h3>
@@ -497,6 +513,15 @@
             </div>
         </div>
 
+        <!-- Botones de exportación -->
+        <div class="export-buttons">
+            <button class="btn" onclick="exportarVentasPorNumero()" style="background: #48bb78;">📊 Exportar por número (TXT)</button>
+            <button class="btn" onclick="exportarVentasCSV()" style="background: #4299e1;">📥 Exportar CSV</button>
+            <button class="btn" onclick="exportarVentasHTML()" style="background: #9f7aea;">🖨️ Exportar HTML</button>
+            <button class="btn" onclick="mostrarVistaPreviaPorNumero()" style="background: #ed8936;">👁️ Vista previa</button>
+        </div>
+
+        <!-- Tabla de ventas -->
         <h2>📋 Ventas Registradas</h2>
         <table>
             <thead>
@@ -541,7 +566,6 @@
             mostrarMensajeCarga(true);
             cargandoDatos = true;
             
-            // Usar fetch que es más simple
             fetch(`${APPS_SCRIPT_URL}?accion=obtenerTodo`)
                 .then(response => response.json())
                 .then(data => {
@@ -596,7 +620,6 @@
                     })
                 })
                 .then(() => {
-                    // Con no-cors no podemos leer la respuesta
                     console.log('✅ Solicitud de guardado enviada');
                     resolve(true);
                 })
@@ -979,6 +1002,201 @@
                 ❌ ${mensaje}<br>
                 <small>Usando datos locales</small>
             </div>`;
+        }
+
+        // ============ FUNCIONES DE EXPORTACIÓN ============
+        function exportarVentasPorNumero() {
+            console.log('📊 Exportando ventas ordenadas por número...');
+            
+            const ventasPorNumero = [];
+            
+            sales.forEach(venta => {
+                venta.numbers.forEach(numero => {
+                    ventasPorNumero.push({
+                        numero: numero,
+                        nombre: venta.name,
+                        nick: venta.nick,
+                        contacto: venta.contact,
+                        vendedor: venta.seller,
+                        fecha: new Date(venta.date).toLocaleDateString()
+                    });
+                });
+            });
+            
+            ventasPorNumero.sort((a, b) => a.numero - b.numero);
+            
+            let contenido = "NÚMERO\tNOMBRE\tNICK\tCONTACTO\tVENDEDOR\tFECHA\n";
+            ventasPorNumero.forEach(item => {
+                contenido += `${item.numero}\t${item.nombre}\t${item.nick}\t${item.contacto}\t${item.vendedor}\t${item.fecha}\n`;
+            });
+            
+            const totalVendidos = ventasPorNumero.length;
+            const disponibles = totalNumbers - totalVendidos;
+            
+            contenido += "\n========================================\n";
+            contenido += `RESUMEN:\n`;
+            contenido += `Total números vendidos: ${totalVendidos}\n`;
+            contenido += `Números disponibles: ${disponibles}\n`;
+            contenido += `Total compradores: ${sales.length}\n`;
+            contenido += `Fecha de exportación: ${new Date().toLocaleString()}\n`;
+            
+            descargarArchivo(contenido, `ventas-por-numero-${new Date().toISOString().split('T')[0]}.txt`, 'text/plain');
+        }
+
+        function exportarVentasCSV() {
+            console.log('📥 Exportando CSV completo...');
+            
+            let csv = "Número,Nombre,Nick,Contacto,Vendedor,Fecha\n";
+            
+            const todasLasVentas = [];
+            sales.forEach(venta => {
+                venta.numbers.forEach(numero => {
+                    todasLasVentas.push({
+                        numero: numero,
+                        nombre: venta.name,
+                        nick: venta.nick,
+                        contacto: venta.contact,
+                        vendedor: venta.seller,
+                        fecha: new Date(venta.date).toLocaleDateString()
+                    });
+                });
+            });
+            
+            todasLasVentas.sort((a, b) => a.numero - b.numero);
+            
+            todasLasVentas.forEach(item => {
+                csv += `${item.numero},"${item.nombre}","${item.nick}","${item.contacto}","${item.vendedor}","${item.fecha}"\n`;
+            });
+            
+            descargarArchivo(csv, `ventas-completas-${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
+        }
+
+        function exportarVentasHTML() {
+            console.log('🖨️ Generando vista HTML...');
+            
+            const ventasPorNumero = [];
+            
+            sales.forEach(venta => {
+                venta.numbers.forEach(numero => {
+                    ventasPorNumero.push({
+                        numero: numero,
+                        nombre: venta.name,
+                        nick: venta.nick,
+                        contacto: venta.contact,
+                        vendedor: venta.seller,
+                        fecha: new Date(venta.date).toLocaleDateString()
+                    });
+                });
+            });
+            
+            ventasPorNumero.sort((a, b) => a.numero - b.numero);
+            
+            let html = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Reporte de Ventas por Número</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 30px; }
+                    h1 { color: #667eea; }
+                    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+                    th { background: #667eea; color: white; padding: 12px; text-align: left; }
+                    td { padding: 10px; border-bottom: 1px solid #ddd; }
+                    tr:hover { background: #f5f5f5; }
+                    .resumen { background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; }
+                    .numero { font-weight: bold; color: #667eea; }
+                </style>
+            </head>
+            <body>
+                <h1>🎫 Reporte de Ventas por Número</h1>
+                
+                <div class="resumen">
+                    <h3>📊 Resumen</h3>
+                    <p><strong>Total números vendidos:</strong> ${ventasPorNumero.length}</p>
+                    <p><strong>Números disponibles:</strong> ${totalNumbers - ventasPorNumero.length}</p>
+                    <p><strong>Total compradores:</strong> ${sales.length}</p>
+                    <p><strong>Fecha de exportación:</strong> ${new Date().toLocaleString()}</p>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Nombre</th>
+                            <th>Nick</th>
+                            <th>Contacto</th>
+                            <th>Vendedor</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            ventasPorNumero.forEach(item => {
+                html += `
+                    <tr>
+                        <td class="numero">${item.numero}</td>
+                        <td>${item.nombre}</td>
+                        <td>${item.nick}</td>
+                        <td>${item.contacto}</td>
+                        <td>${item.vendedor}</td>
+                        <td>${item.fecha}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                    </tbody>
+                </table>
+                <p style="margin-top: 30px; color: #718096; text-align: center;">Reporte generado automáticamente</p>
+            </body>
+            </html>
+            `;
+            
+            descargarArchivo(html, `reporte-ventas-${new Date().toISOString().split('T')[0]}.html`, 'text/html');
+        }
+
+        function mostrarVistaPreviaPorNumero() {
+            const ventasPorNumero = [];
+            
+            sales.forEach(venta => {
+                venta.numbers.forEach(numero => {
+                    ventasPorNumero.push({
+                        numero: numero,
+                        nombre: venta.name,
+                        nick: venta.nick,
+                        contacto: venta.contact,
+                        vendedor: venta.seller
+                    });
+                });
+            });
+            
+            ventasPorNumero.sort((a, b) => a.numero - b.numero);
+            
+            let preview = "📋 VISTA PREVIA - VENTAS POR NÚMERO\n";
+            preview += "================================\n\n";
+            
+            ventasPorNumero.forEach(item => {
+                preview += `${item.numero.toString().padStart(3, ' ')} | ${item.nombre.padEnd(20)} | ${item.nick.padEnd(10)} | ${item.contacto.padEnd(12)} | ${item.vendedor}\n`;
+            });
+            
+            preview += "\n================================\n";
+            preview += `Total: ${ventasPorNumero.length} números vendidos\n`;
+            
+            // Mostrar en un alert (con scroll)
+            alert(preview);
+        }
+
+        function descargarArchivo(contenido, nombreArchivo, tipo) {
+            const blob = new Blob([contenido], { type: tipo });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = nombreArchivo;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
         }
 
         // ============ GUARDAR IMAGEN ============
