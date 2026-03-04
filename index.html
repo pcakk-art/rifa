@@ -519,7 +519,7 @@
     <script>
         // ============ CONFIGURACIÓN ============
         // >>>>>> ¡¡¡ PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT !!! <<<<<<
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwOlL70sn7bG4Q2NqGqx_hVe8_bOaxwAsS3GSheL48jgfwd6bUedeWQxwN8m8WZGrh6dg/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxVVaDL51LJOpcPFhhlEBeHueeWDi8GSw9zzdoGTIM77wL_W_94BFFBI5JGaVn87jaIoQ/exec';
         
         // ============ VARIABLES GLOBALES ============
         let sales = [];
@@ -535,66 +535,90 @@
         });
 
         // ============ FUNCIONES DE GOOGLE SHEETS ============
-        async function cargarDatosDesdeGoogleSheets() {
-            if (cargandoDatos) return;
+        // ============ FUNCIONES DE GOOGLE SHEETS ============
+function cargarDatosDesdeGoogleSheets() {
+    if (cargandoDatos) return;
+    
+    console.log('📥 Intentando cargar desde:', APPS_SCRIPT_URL);
+    
+    mostrarMensajeCarga(true);
+    cargandoDatos = true;
+    
+    // Usar JSONP para evitar problemas de CORS
+    const script = document.createElement('script');
+    const callbackName = 'jsonp_callback_' + Date.now();
+    
+    window[callbackName] = function(data) {
+        console.log('✅ Datos recibidos:', data);
+        
+        if (data.error) {
+            console.error('Error en datos:', data.error);
+            usarDatosLocales();
+        } else if (data.success) {
+            sales = data.ventas || [];
+            totalNumbers = data.totalNumbers || 100;
             
-            try {
-                cargandoDatos = true;
-                console.log('📥 Cargando datos desde Google Sheets...');
-                
-                mostrarMensajeCarga(true);
-                
-                const response = await fetch(`${APPS_SCRIPT_URL}?accion=obtenerTodo`);
-                const data = await response.json();
-                
-                console.log('📦 Datos recibidos:', data);
-                
-                if (data.error) {
-                    throw new Error(data.error);
-                }
-                
-                if (data.success) {
-                    sales = data.ventas || [];
-                    totalNumbers = data.totalNumbers || 100;
-                    
-                    console.log('✅ Ventas cargadas:', sales.length);
-                    console.log('✅ Total números:', totalNumbers);
-                    
-                    // Guardar en localStorage como respaldo
-                    localStorage.setItem('raffleSales', JSON.stringify(sales));
-                    localStorage.setItem('totalNumbers', totalNumbers);
-                    
-                    document.getElementById('totalNumbers').value = totalNumbers;
-                    
-                    // Actualizar toda la interfaz
-                    actualizarGrid();
-                    renderSales();
-                    actualizarEstadisticas();
-                    actualizarTags();
-                    
-                    mostrarMensajeCarga(false);
-                }
-                
-            } catch (error) {
-                console.error('❌ Error cargando datos:', error);
-                
-                mostrarErrorEnUI('Error de conexión: ' + error.message);
-                
-                // Fallback a localStorage
-                sales = JSON.parse(localStorage.getItem('raffleSales')) || [];
-                totalNumbers = parseInt(localStorage.getItem('totalNumbers')) || 100;
-                
-                document.getElementById('totalNumbers').value = totalNumbers;
-                
-                actualizarGrid();
-                renderSales();
-                actualizarEstadisticas();
-                
-                alert('⚠️ Usando datos locales. Error: ' + error.message);
-            } finally {
-                cargandoDatos = false;
-            }
+            console.log('✅ Ventas cargadas:', sales.length);
+            console.log('✅ Total números:', totalNumbers);
+            
+            localStorage.setItem('raffleSales', JSON.stringify(sales));
+            localStorage.setItem('totalNumbers', totalNumbers);
+            
+            document.getElementById('totalNumbers').value = totalNumbers;
+            
+            actualizarGrid();
+            renderSales();
+            actualizarEstadisticas();
+            actualizarTags();
+            
+            mostrarMensajeCarga(false);
+        } else {
+            usarDatosLocales();
         }
+        
+        // Limpiar
+        delete window[callbackName];
+        document.body.removeChild(script);
+        cargandoDatos = false;
+    };
+    
+    script.src = `${APPS_SCRIPT_URL}?accion=obtenerTodo&callback=${callbackName}`;
+    script.onerror = function(error) {
+        console.error('Error en JSONP:', error);
+        usarDatosLocales();
+        delete window[callbackName];
+        document.body.removeChild(script);
+        cargandoDatos = false;
+    };
+    
+    document.body.appendChild(script);
+    
+    // Timeout por si acaso
+    setTimeout(() => {
+        if (window[callbackName]) {
+            console.log('Timeout - usando datos locales');
+            usarDatosLocales();
+            delete window[callbackName];
+            if (script.parentNode) document.body.removeChild(script);
+            cargandoDatos = false;
+        }
+    }, 10000);
+}
+
+function usarDatosLocales() {
+    console.log('⚠️ Usando datos locales');
+    sales = JSON.parse(localStorage.getItem('raffleSales')) || [];
+    totalNumbers = parseInt(localStorage.getItem('totalNumbers')) || 100;
+    
+    document.getElementById('totalNumbers').value = totalNumbers;
+    
+    actualizarGrid();
+    renderSales();
+    actualizarEstadisticas();
+    
+    mostrarMensajeCarga(false);
+    mostrarErrorEnUI('Usando datos locales - sin conexión a Google Sheets');
+}
 
         async function guardarEnGoogleSheets() {
             try {
@@ -1049,6 +1073,69 @@
             document.getElementById('availableCount').textContent = available;
         }
 
+function guardarEnGoogleSheets(ventas) {
+    return new Promise((resolve) => {
+        const script = document.createElement('script');
+        const callbackName = 'save_callback_' + Date.now();
+        
+        window[callbackName] = function(data) {
+            console.log('✅ Guardado:', data);
+            delete window[callbackName];
+            document.body.removeChild(script);
+            resolve(true);
+        };
+        
+        script.src = `${APPS_SCRIPT_URL}?accion=guardarVentas&ventas=${encodeURIComponent(JSON.stringify(ventas))}&callback=${callbackName}`;
+        script.onerror = function() {
+            console.log('Error al guardar');
+            delete window[callbackName];
+            document.body.removeChild(script);
+            resolve(false);
+        };
+        
+        document.body.appendChild(script);
+        
+        setTimeout(() => {
+            if (window[callbackName]) {
+                delete window[callbackName];
+                if (script.parentNode) document.body.removeChild(script);
+                resolve(false);
+            }
+        }, 5000);
+    });
+}
+
+function guardarConfigEnGoogleSheets(total) {
+    return new Promise((resolve) => {
+        const script = document.createElement('script');
+        const callbackName = 'config_callback_' + Date.now();
+        
+        window[callbackName] = function(data) {
+            console.log('✅ Config guardada:', data);
+            delete window[callbackName];
+            document.body.removeChild(script);
+            resolve(true);
+        };
+        
+        script.src = `${APPS_SCRIPT_URL}?accion=guardarConfig&totalNumbers=${total}&callback=${callbackName}`;
+        script.onerror = function() {
+            console.log('Error al guardar config');
+            delete window[callbackName];
+            document.body.removeChild(script);
+            resolve(false);
+        };
+        
+        document.body.appendChild(script);
+        
+        setTimeout(() => {
+            if (window[callbackName]) {
+                delete window[callbackName];
+                if (script.parentNode) document.body.removeChild(script);
+                resolve(false);
+            }
+        }, 5000);
+    });
+}
         // ============ FUNCIONES AUXILIARES ============
         function mostrarMensajeCarga(mostrar) {
             const grid = document.getElementById('numbersGrid');
