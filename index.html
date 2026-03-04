@@ -3,721 +3,1560 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión de Rifas</title>
+    <title>Control de Gastos V4.1</title>
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 10px;
+            color: #333;
         }
-
         .container {
-            max-width: 1400px;
+            max-width: 400px;
             margin: 0 auto;
             background: white;
             border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
-
-        h1 {
-            color: #333;
-            margin-bottom: 30px;
-            text-align: center;
-            font-size: 2.5em;
-        }
-
-        h2 {
-            color: #4a5568;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-        }
-
-        .config-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 20px;
-            align-items: end;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group label {
-            margin-bottom: 5px;
-            color: #555;
-            font-weight: 500;
-        }
-
-        .form-group input, .form-group select {
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .btn {
-            background: #667eea;
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: background 0.3s;
+            padding: 20px;
+            text-align: center;
         }
-
-        .btn:hover {
-            background: #5a67d8;
-        }
-
-        .btn-danger {
-            background: #e53e3e;
-        }
-
-        .btn-danger:hover {
-            background: #c53030;
-        }
-
-        .btn-success {
-            background: #48bb78;
-        }
-
-        .btn-success:hover {
-            background: #38a169;
-        }
-
+        .content { padding: 20px; }
         .form-section {
             background: #f8f9fa;
-            padding: 25px;
+            padding: 15px;
             border-radius: 10px;
-            margin-bottom: 30px;
+            margin-bottom: 15px;
         }
-
         .form-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .summary {
-            background: #e2e8f0;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-            font-size: 1.1em;
-        }
-
-        .summary span {
-            font-weight: bold;
-            color: #4a5568;
-        }
-
-        /* Visualizador de números en cuadrícula */
-        .numbers-visualization {
-            background: #fff;
-            border-radius: 15px;
-            padding: 25px;
-            margin: 30px 0;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            border: 2px solid #e2e8f0;
-        }
-
-        .stats-summary {
             display: flex;
-            gap: 30px;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #f7fafc;
-            border-radius: 10px;
-            justify-content: center;
-        }
-
-        .stat-item {
-            display: flex;
-            align-items: center;
+            flex-direction: column;
             gap: 10px;
-            font-size: 1.2em;
+            margin-bottom: 10px;
         }
-
-        .stat-color {
-            width: 25px;
-            height: 25px;
-            border-radius: 6px;
-        }
-
-        .stat-color.sold {
-            background: linear-gradient(135deg, #f56565, #c53030);
-            box-shadow: 0 2px 4px rgba(197, 48, 48, 0.3);
-        }
-
-        .stat-color.available {
-            background: linear-gradient(135deg, #48bb78, #2f855a);
-            box-shadow: 0 2px 4px rgba(47, 133, 90, 0.3);
-        }
-
-        .numbers-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-            gap: 8px;
-            background: #edf2f7;
-            padding: 20px;
-            border-radius: 12px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .number-box {
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: white;
-            border: 2px solid #cbd5e0;
+        input, select, button {
+            padding: 12px;
+            border: 2px solid #e9ecef;
             border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.9em;
-            color: #2d3748;
-            transition: all 0.2s;
-            cursor: default;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            font-size: 14px;
         }
-
-        .number-box.sold {
-            background: linear-gradient(135deg, #feb2b2, #fc8181);
-            border-color: #c53030;
-            color: #742a2a;
-            font-weight: 700;
-            box-shadow: 0 2px 8px rgba(197, 48, 48, 0.3);
-            transform: scale(1.02);
-        }
-
-        .number-box.available {
-            background: linear-gradient(135deg, #9ae6b4, #68d391);
-            border-color: #2f855a;
-            color: #22543d;
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
             font-weight: 600;
         }
-
-        .number-box:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 1;
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
         }
-
-        .legend {
-            display: flex;
-            gap: 30px;
-            justify-content: center;
-            margin: 20px 0 10px;
+        .stat-card {
+            background: white;
             padding: 15px;
-            background: #f7fafc;
             border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            text-align: center;
         }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .stat-value {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
         }
-
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
+        .stat-label {
+            font-size: 0.8em;
+            color: #666;
         }
-
-        .legend-color.sold {
-            background: linear-gradient(135deg, #f56565, #c53030);
-        }
-
-        .legend-color.available {
-            background: linear-gradient(135deg, #48bb78, #2f855a);
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 10px;
             background: white;
             border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-
-        th {
-            background: #667eea;
-            color: white;
-            padding: 15px;
+        th, td {
+            padding: 8px;
             text-align: left;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 12px;
+        }
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             font-weight: 600;
         }
-
-        td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        tr:hover {
-            background: #f7fafc;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .edit-btn, .delete-btn {
-            padding: 5px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: opacity 0.3s;
-        }
-
-        .edit-btn {
-            background: #4299e1;
-            color: white;
-        }
-
         .delete-btn {
-            background: #f56565;
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+        }
+        .message {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .offline-indicator {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 10px;
+            z-index: 1000;
+            display: none;
+        }
+        .offline-indicator.online { background: #28a745; }
+        .nav-section {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+        }
+        .nav-btn {
+            flex: 1;
+            min-width: 90px;
+            padding: 8px;
+            font-size: 10px;
+            white-space: nowrap;
+        }
+        .nav-btn.active {
+            background: #28a745;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .stats-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        .stat-tab {
+            flex: 1;
+            padding: 8px;
+            font-size: 10px;
+            background: #f8f9fa;
+            color: #333;
+        }
+        .stat-tab.active {
+            background: #667eea;
             color: white;
         }
-
-        .edit-btn:hover, .delete-btn:hover {
-            opacity: 0.8;
-        }
-
-        .stats-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-        }
-
-        .stat-card {
-            background: #fff;
-            padding: 20px;
+        .savings-section {
+            background: #e8f5e8;
+            padding: 15px;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            text-align: center;
+            margin: 10px 0;
         }
-
-        .stat-card h3 {
-            color: #4a5568;
-            margin-bottom: 10px;
-            font-size: 1.1em;
+        .debt-item {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 5px 0;
+            border-left: 4px solid #ffc107;
         }
-
-        .stat-card .value {
-            font-size: 2em;
-            font-weight: bold;
-            color: #667eea;
+        .chart-container {
+            height: 200px;
+            margin: 15px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 10px;
         }
-
-        @media (max-width: 768px) {
-            .config-section {
-                grid-template-columns: 1fr;
-            }
-            
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .numbers-grid {
-                grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
-            }
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        .table-container table {
+            width: 100%;
+            font-size: 11px;
+        }
+        .table-container th {
+            font-size: 10px;
+            padding: 5px 3px;
+        }
+        .table-container td {
+            padding: 5px 3px;
+            word-wrap: break-word;
         }
     </style>
 </head>
 <body>
+    <div class="offline-indicator" id="offlineIndicator">📶 Sin conexión</div>
+    
     <div class="container">
-        <h1>🎫 Sistema de Gestión de Rifas</h1>
-
-        <!-- Configuración inicial de la rifa -->
-        <div class="config-section">
-            <div class="form-group">
-                <label for="totalNumbers">Cantidad total de números</label>
-                <input type="number" id="totalNumbers" min="1" value="100">
-            </div>
-            <div class="form-group">
-                <label for="unitPrice">Valor unitario por número</label>
-                <input type="number" id="unitPrice" min="0" step="1000" value="5000">
-            </div>
-            <div class="form-group">
-                <button class="btn" onclick="updateRaffleConfig()">Actualizar configuración</button>
+        <div class="header">
+            <h1>💰 Control de Gastos V4.1</h1>
+            <p>Gestiona tus finanzas</p>
+        </div>
+        
+        <!-- Multi-user section -->
+        <div class="form-section">
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <select id="currentUser" onchange="switchUser()" style="flex: 1;"></select>
+                <button onclick="addNewUser()" class="btn" style="min-width: 80px;">+ Usuario</button>
             </div>
         </div>
+        
+        <!-- Navigation -->
+        <div class="nav-section">
+            <button class="btn nav-btn active" onclick="showSection('gastos')">💸 Gastos</button>
+            <button class="btn nav-btn" onclick="showSection('ingresos')">💰 Ingresos</button>
+            <button class="btn nav-btn" onclick="showSection('deudas')">📋 Deudas</button>
+            <button class="btn nav-btn" onclick="showSection('presupuesto')">💰 Presupuesto</button>
+            <button class="btn nav-btn" onclick="showSection('estadisticas')">📊 Estadísticas</button>
+            <button class="btn nav-btn" onclick="showSection('datos')">📤 Datos</button>
+            <button class="btn nav-btn" onclick="showSection('consejos')">🤖 Consejos</button>
+        </div>
 
-        <!-- Formulario para agregar/editar ventas -->
-        <div class="form-section">
-            <h2 id="formTitle">Agregar nueva venta</h2>
-            <input type="hidden" id="editId" value="">
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="name">Nombre completo</label>
-                    <input type="text" id="name" placeholder="Ej: Juan Pérez">
+        <!-- Gastos Section -->
+        <div id="section-gastos" class="content-section active">
+            <div class="form-section">
+                <h3>➕ Agregar Gasto</h3>
+                <input type="date" id="fecha">
+                <select id="categoria">
+                    <option value="">Selecciona categoría</option>
+                    <option value="Comida">🍽️ Comida</option>
+                    <option value="Transporte">🚗 Transporte</option>
+                    <option value="Gastos Personales">👤 Gastos Personales</option>
+                    <option value="Gastos Fijos">🏠 Gastos Fijos</option>
+                    <option value="Otros">📦 Otros</option>
+                </select>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <input type="text" id="descripcion" placeholder="Descripción del gasto" style="flex: 1;">
+                    <span onclick="showHelp('gasto')" style="cursor: pointer; background: #667eea; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px;">?</span>
                 </div>
-                <div class="form-group">
-                    <label for="nick">Nick / Apodo</label>
-                    <input type="text" id="nick" placeholder="Ej: Juancho">
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <input type="number" id="monto" placeholder="Monto" step="0.01" style="flex: 1;">
+                    <span onclick="showHelp('monto')" style="cursor: pointer; background: #667eea; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px;">?</span>
                 </div>
-                <div class="form-group">
-                    <label for="numbers">Números comprados</label>
-                    <input type="number" id="numbers" min="1" placeholder="Cantidad de números">
+                <select id="frecuencia">
+                    <option value="unico">Único</option>
+                    <option value="diario">Diario</option>
+                    <option value="semanal">Semanal</option>
+                    <option value="quincenal">Quincenal</option>
+                    <option value="mensual">Mensual</option>
+                </select>
+                <button onclick="addExpense()" class="btn">Agregar Gasto</button>
+            </div>
+            
+            <div class="table-section">
+                <h3>📋 Gastos Recientes</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">Fecha</th>
+                                <th style="width: 20%;">Categoría</th>
+                                <th style="width: 25%;">Descripción</th>
+                                <th style="width: 15%;">Monto</th>
+                                <th style="width: 15%;">Frecuencia</th>
+                                <th style="width: 10%;">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expensesTable">
+                            <tr>
+                                <td colspan="6" style="text-align: center;">Sin gastos</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="contact">Número de contacto</label>
-                    <input type="tel" id="contact" placeholder="Ej: 3001234567">
+            
+            <div id="message"></div>
+        </div>
+        
+        <!-- Ingresos Section -->
+        <div id="section-ingresos" class="content-section">
+            <div class="form-section">
+                <h3>💰 Agregar Ingreso</h3>
+                <input type="date" id="fechaIngreso">
+                <select id="tipoIngreso">
+                    <option value="salario">💼 Salario</option>
+                    <option value="freelance">💻 Freelance</option>
+                    <option value="inversion">📈 Inversión</option>
+                    <option value="regalo">🎁 Regalo</option>
+                    <option value="venta">🛒 Venta</option>
+                    <option value="otro">📦 Otro</option>
+                </select>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <input type="text" id="descripcionIngreso" placeholder="Descripción del ingreso" style="flex: 1;">
+                    <span onclick="showHelp('ingreso')" style="cursor: pointer; background: #667eea; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px;">?</span>
                 </div>
-                <div class="form-group">
-                    <label for="value">Valor pagado</label>
-                    <input type="number" id="value" min="0" step="1000" placeholder="Valor total">
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <input type="number" id="montoIngreso" placeholder="Monto" step="0.01" style="flex: 1;">
+                    <span onclick="showHelp('montoIngreso')" style="cursor: pointer; background: #667eea; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px;">?</span>
                 </div>
-                <div class="form-group">
-                    <label for="seller">Quién vendió</label>
-                    <select id="seller">
-                        <option value="Ana">Ana</option>
-                        <option value="Carlos">Carlos</option>
-                        <option value="María">María</option>
-                        <option value="Juan">Juan</option>
+                <select id="frecuenciaIngreso">
+                    <option value="unico">Único</option>
+                    <option value="semanal">Semanal</option>
+                    <option value="quincenal">Quincenal</option>
+                    <option value="mensual">Mensual</option>
+                </select>
+                <button onclick="addIncome()" class="btn">Agregar Ingreso</button>
+            </div>
+            
+            <div class="table-section">
+                <h3>📋 Ingresos Recientes</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Tipo</th>
+                                <th>Descripción</th>
+                                <th>Monto</th>
+                                <th>Frecuencia</th>
+                            </tr>
+                        </thead>
+                        <tbody id="incomeTable">
+                            <tr>
+                                <td colspan="5" style="text-align: center;">Sin ingresos</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Deudas Section -->
+        <div id="section-deudas" class="content-section">
+            <div class="form-section">
+                <h3>📋 Agregar Deuda</h3>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <input type="text" id="acreedor" placeholder="Acreedor (banco, persona, etc.)" style="flex: 1;">
+                    <span onclick="showHelp('acreedor')" style="cursor: pointer; background: #667eea; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px;">?</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <input type="number" id="montoDeuda" placeholder="Monto total" step="0.01" style="flex: 1;">
+                    <span onclick="showHelp('montoDeuda')" style="cursor: pointer; background: #667eea; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px;">?</span>
+                </div>
+                <input type="date" id="fechaVencimiento" placeholder="Fecha de vencimiento">
+                <input type="number" id="cuotas" placeholder="Número de cuotas (opcional)" min="1">
+                <input type="text" id="descripcionDeuda" placeholder="Descripción (opcional)">
+                <button onclick="addDebt()" class="btn">Agregar Deuda</button>
+            </div>
+            
+            <div class="table-section">
+                <h3>📋 Deudas Pendientes</h3>
+                <div id="debtsContainer">
+                    <p style="text-align: center; color: #666;">Sin deudas registradas</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Presupuesto Section -->
+        <div id="section-presupuesto" class="content-section">
+            <div class="form-section">
+                <h3>💰 Presupuesto Mensual</h3>
+                <div class="input-group">
+                    <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 10px;">
+                        <input type="number" id="presupuesto" placeholder="Presupuesto mensual" step="0.01" style="flex: 1;">
+                        <span onclick="showHelp('presupuesto')" style="cursor: pointer; background: #667eea; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px;">?</span>
+                    </div>
+                    <button onclick="setBudget()" class="btn">Establecer</button>
+                </div>
+            </div>
+            
+            <div class="savings-section">
+                <h4>🎯 Meta de Ahorro Mensual</h4>
+                <p style="font-size: 12px; color: #666; margin-bottom: 10px;">Establece cuánto quieres ahorrar cada mes. Te ayudaremos a monitorear tu progreso y te alertaremos si te estás pasando en gastos.</p>
+                <div class="input-group">
+                    <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 10px;">
+                        <input type="number" id="savingsGoal" placeholder="Meta de ahorro mensual" step="0.01" style="flex: 1;">
+                        <span onclick="showHelp('ahorro')" style="cursor: pointer; background: #667eea; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px;">?</span>
+                    </div>
+                    <button onclick="setSavingsGoal()" class="btn">Establecer Meta</button>
+                </div>
+                <div id="savingsProgress" style="margin-top: 15px;"></div>
+                <div id="savingsAlert" style="margin-top: 10px;"></div>
+            </div>
+            
+            <div class="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalMensual">$0.00</div>
+                        <div class="stat-label">Total Mensual</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="disponible">$0.00</div>
+                        <div class="stat-label">Disponible</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Estadísticas Section -->
+        <div id="section-estadisticas" class="content-section">
+            <div class="stats-tabs">
+                <button class="btn stat-tab active" onclick="showStats('resumen')">📊 Resumen</button>
+                <button class="btn stat-tab" onclick="showStats('categorias')">📈 Categorías</button>
+                <button class="btn stat-tab" onclick="showStats('tendencias')">📉 Tendencias</button>
+            </div>
+            
+            <div id="stats-content">
+                <!-- Content will be dynamically generated -->
+            </div>
+        </div>
+        
+        <!-- Datos Section -->
+        <div id="section-datos" class="content-section">
+            <div class="form-section">
+                <h3>📤 Exportar Datos</h3>
+                <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Descarga todos tus datos financieros en formato CSV para respaldo o análisis externo.</p>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button onclick="exportAllData()" class="btn" style="flex: 1; min-width: 120px;">📥 Exportar Todo</button>
+                    <button onclick="exportExpenses()" class="btn" style="flex: 1; min-width: 120px;">💸 Solo Gastos</button>
+                    <button onclick="exportIncome()" class="btn" style="flex: 1; min-width: 120px;">💰 Solo Ingresos</button>
+                    <button onclick="exportDebts()" class="btn" style="flex: 1; min-width: 120px;">📋 Solo Deudas</button>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3>📥 Importar Datos</h3>
+                <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Importa datos desde un archivo CSV. Los datos se agregarán a los existentes (no los reemplazarán).</p>
+                <div style="margin-bottom: 15px;">
+                    <input type="file" id="importFile" accept=".csv" style="margin-bottom: 10px;">
+                    <select id="importType" style="margin-bottom: 10px;">
+                        <option value="expenses">Gastos</option>
+                        <option value="income">Ingresos</option>
+                        <option value="debts">Deudas</option>
                     </select>
                 </div>
+                <button onclick="importData()" class="btn">📥 Importar Archivo</button>
             </div>
-            <div class="summary">
-                <p>Resumen: <span id="numbersSummary">0</span> números seleccionados | Valor unitario: $<span id="unitPriceDisplay">5000</span> | Total a pagar: $<span id="totalDisplay">0</span></p>
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn btn-success" onclick="saveSale()">Guardar venta</button>
-                <button class="btn" onclick="cancelEdit()" style="display: none;" id="cancelBtn">Cancelar edición</button>
-            </div>
-        </div>
-
-        <!-- Visualizador de números en cuadrícula -->
-        <div class="numbers-visualization">
-            <h2>🎯 Visualizador de Números</h2>
             
-            <div class="stats-summary">
-                <div class="stat-item">
-                    <div class="stat-color sold"></div>
-                    <span><strong>Vendidos:</strong> <span id="soldCount">0</span></span>
+            <div class="form-section">
+                <h3>🔄 Respaldo y Restauración</h3>
+                <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Crea un respaldo completo de todos tus datos o restaura desde un respaldo anterior.</p>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button onclick="createBackup()" class="btn" style="flex: 1; min-width: 120px;">💾 Crear Respaldo</button>
+                    <button onclick="restoreBackup()" class="btn" style="flex: 1; min-width: 120px;">🔄 Restaurar</button>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-color available"></div>
-                    <span><strong>Disponibles:</strong> <span id="availableCount">100</span></span>
+                <input type="file" id="backupFile" accept=".json" style="display: none;">
+            </div>
+            
+            <div class="form-section">
+                <h3>📈 Formato de Archivos CSV</h3>
+                <div style="font-size: 11px; color: #666;">
+                    <p><strong>Gastos:</strong> Fecha,Categoría,Descripción,Monto,Frecuencia</p>
+                    <p><strong>Ingresos:</strong> Fecha,Tipo,Descripción,Monto,Frecuencia</p>
+                    <p><strong>Deudas:</strong> Acreedor,MontoTotal,FechaVencimiento,Cuotas,Descripción</p>
+                    <p style="margin-top: 10px;"><em>Nota: Las fechas deben estar en formato YYYY-MM-DD</em></p>
                 </div>
             </div>
-
-            <div class="legend">
-                <div class="legend-item">
-                    <div class="legend-color sold"></div>
-                    <span>Números Vendidos</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color available"></div>
-                    <span>Números Disponibles</span>
-                </div>
+        </div>
+        
+        <!-- Consejos Section -->
+        <div id="section-consejos" class="content-section">
+            <div class="form-section">
+                <h3>🤖 Asesor Financiero IA</h3>
+                <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Consejos personalizados basados en tu historial financiero para mejorar tus finanzas el próximo mes.</p>
+                <button onclick="generateAdvice()" class="btn" style="width: 100%; margin-bottom: 20px;">💡 Generar Consejos Personalizados</button>
             </div>
-
-            <div id="numbersGrid" class="numbers-grid">
-                <!-- Los números se generarán aquí dinámicamente -->
+            
+            <div id="financial-advice" style="display: none;">
+                <!-- Financial Health Score -->
+                <div class="form-section">
+                    <h3>📈 Puntuación de Salud Financiera</h3>
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                        <div style="flex: 1; background: #f0f0f0; border-radius: 10px; height: 20px; overflow: hidden;">
+                            <div id="health-score-bar" style="height: 100%; background: linear-gradient(90deg, #ff4444, #ffaa00, #44ff44); transition: width 0.3s;"></div>
+                        </div>
+                        <div id="health-score-text" style="font-weight: bold; font-size: 18px;">0/100</div>
+                    </div>
+                    <div id="health-description" style="font-size: 12px; color: #666;"></div>
+                </div>
+                
+                <!-- Savings Optimization -->
+                <div class="form-section">
+                    <h3>💰 Optimización de Ahorros</h3>
+                    <div id="savings-advice"></div>
+                </div>
+                
+                <!-- Expense Reduction -->
+                <div class="form-section">
+                    <h3>📉 Reducción de Gastos</h3>
+                    <div id="expense-advice"></div>
+                </div>
+                
+                <!-- Monthly Projections -->
+                <div class="form-section">
+                    <h3>🗓️ Proyecciones del Próximo Mes</h3>
+                    <div id="monthly-projections"></div>
+                </div>
+                
+                <!-- Action Plan -->
+                <div class="form-section">
+                    <h3>🎯 Plan de Acción</h3>
+                    <div id="action-plan"></div>
+                </div>
             </div>
         </div>
 
-        <!-- Estadísticas -->
-        <div class="stats-cards">
-            <div class="stat-card">
-                <h3>Total vendido</h3>
-                <div class="value" id="totalSold">0</div>
-            </div>
-            <div class="stat-card">
-                <h3>Números disponibles</h3>
-                <div class="value" id="availableNumbers">100</div>
-            </div>
-            <div class="stat-card">
-                <h3>Total recaudado</h3>
-                <div class="value" id="totalCollected">$0</div>
-            </div>
-        </div>
-
-        <!-- Tabla de ventas -->
-        <h2>📊 Ventas Registradas</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Nick</th>
-                    <th>Números</th>
-                    <th>Contacto</th>
-                    <th>Valor pagado</th>
-                    <th>Vendió</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="salesTable">
-                <!-- Las ventas se cargarán aquí dinámicamente -->
-            </tbody>
-        </table>
+        
+        <div id="message"></div>
     </div>
 
     <script>
-        // Variables globales
-        let sales = JSON.parse(localStorage.getItem('raffleSales')) || [];
-        let totalNumbers = parseInt(localStorage.getItem('totalNumbers')) || 100;
-        let unitPrice = parseInt(localStorage.getItem('unitPrice')) || 5000;
-
-        // Inicialización
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('totalNumbers').value = totalNumbers;
-            document.getElementById('unitPrice').value = unitPrice;
-            document.getElementById('unitPriceDisplay').textContent = unitPrice.toLocaleString('es-CO');
-            updateNumbersSummary();
-            renderSales();
-            updateStats();
-            renderNumbersGrid();
+        let currentUserData = 'default';
+        let users = JSON.parse(localStorage.getItem('users') || '{"default": {"name": "Usuario Principal", "expenses": [], "income": [], "debts": [], "budget": 0, "savingsGoal": 0}}');
+        let expenses = users[currentUserData].expenses || [];
+        let income = users[currentUserData].income || [];
+        let debts = users[currentUserData].debts || [];
+        let budget = users[currentUserData].budget || 0;
+        let savingsGoal = users[currentUserData].savingsGoal || 0;
+        
+        // Inicializar
+        document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+        document.getElementById('fechaIngreso').value = new Date().toISOString().split('T')[0];
+        
+        const presupuestoEl = document.getElementById('presupuesto');
+        const savingsGoalEl = document.getElementById('savingsGoal');
+        if (presupuestoEl) presupuestoEl.value = budget;
+        if (savingsGoalEl) savingsGoalEl.value = savingsGoal;
+        
+        loadUsers();
+        showSection('gastos');
+        updateStats();
+        updateSavingsProgress();
+        renderTable();
+        
+        // Auto-save every 30 seconds
+        setInterval(saveUserData, 30000);
+        
+        // Save on page unload
+        window.addEventListener('beforeunload', saveUserData);
+        window.addEventListener('pagehide', saveUserData);
+        
+        // Detectar conexión
+        window.addEventListener('online', () => {
+            document.getElementById('offlineIndicator').style.display = 'none';
+        });
+        
+        window.addEventListener('offline', () => {
+            const indicator = document.getElementById('offlineIndicator');
+            indicator.style.display = 'block';
+            indicator.textContent = '📶 Sin conexión';
         });
 
-        // Actualizar configuración de la rifa
-        function updateRaffleConfig() {
-            const newTotalNumbers = parseInt(document.getElementById('totalNumbers').value);
-            const newUnitPrice = parseInt(document.getElementById('unitPrice').value);
-            
-            if (newTotalNumbers && newUnitPrice) {
-                totalNumbers = newTotalNumbers;
-                unitPrice = newUnitPrice;
-                
-                localStorage.setItem('totalNumbers', totalNumbers);
-                localStorage.setItem('unitPrice', unitPrice);
-                
-                document.getElementById('unitPriceDisplay').textContent = unitPrice.toLocaleString('es-CO');
-                updateNumbersSummary();
-                updateStats();
-                renderSales();
-                renderNumbersGrid();
-                
-                alert('Configuración actualizada correctamente');
-            }
-        }
+        function addExpense() {
+            const fecha = document.getElementById('fecha').value;
+            const categoria = document.getElementById('categoria').value;
+            const descripcion = document.getElementById('descripcion').value;
+            const monto = parseFloat(document.getElementById('monto').value);
+            const frecuencia = document.getElementById('frecuencia').value;
 
-        // Actualizar resumen de números
-        function updateNumbersSummary() {
-            const numbers = parseInt(document.getElementById('numbers').value) || 0;
-            document.getElementById('numbersSummary').textContent = numbers;
-            const total = numbers * unitPrice;
-            document.getElementById('totalDisplay').textContent = total.toLocaleString('es-CO');
-        }
-
-        // Escuchar cambios en el campo de números
-        document.getElementById('numbers').addEventListener('input', updateNumbersSummary);
-
-        // Renderizar cuadrícula de números
-        function renderNumbersGrid() {
-            const grid = document.getElementById('numbersGrid');
-            const soldNumbers = sales.reduce((total, sale) => total + sale.numbers, 0);
-            
-            grid.innerHTML = '';
-            
-            for (let i = 1; i <= totalNumbers; i++) {
-                const numberBox = document.createElement('div');
-                numberBox.className = 'number-box';
-                numberBox.textContent = i;
-                
-                // Determinar si el número está vendido (simulado - los primeros 'soldNumbers' números están vendidos)
-                // Nota: En una implementación real, deberías llevar un registro de qué números específicos están vendidos
-                if (i <= soldNumbers) {
-                    numberBox.classList.add('sold');
-                } else {
-                    numberBox.classList.add('available');
-                }
-                
-                grid.appendChild(numberBox);
-            }
-            
-            // Actualizar contadores
-            document.getElementById('soldCount').textContent = soldNumbers;
-            document.getElementById('availableCount').textContent = totalNumbers - soldNumbers;
-        }
-
-        // Guardar venta
-        function saveSale() {
-            const name = document.getElementById('name').value.trim();
-            const nick = document.getElementById('nick').value.trim();
-            const numbers = parseInt(document.getElementById('numbers').value);
-            const contact = document.getElementById('contact').value.trim();
-            const value = parseInt(document.getElementById('value').value);
-            const seller = document.getElementById('seller').value;
-            const editId = document.getElementById('editId').value;
-
-            // Validaciones
-            if (!name || !numbers || !contact || !value) {
-                alert('Por favor complete todos los campos');
+            if (!fecha || !categoria || !descripcion || !monto) {
+                showMessage('Completa todos los campos', 'error');
                 return;
             }
 
-            // Calcular números vendidos actualmente
-            const numbersSold = sales.reduce((total, sale) => total + (sale.id !== editId ? sale.numbers : 0), 0);
-            
-            if (editId) {
-                // Editando venta existente
-                const oldSale = sales.find(s => s.id === editId);
-                const numbersDiff = numbers - oldSale.numbers;
-                
-                if (numbersSold + numbersDiff > totalNumbers) {
-                    alert(`No hay suficientes números disponibles. Disponibles: ${totalNumbers - numbersSold}`);
-                    return;
-                }
-            } else {
-                // Nueva venta
-                if (numbersSold + numbers > totalNumbers) {
-                    alert(`No hay suficientes números disponibles. Disponibles: ${totalNumbers - numbersSold}`);
-                    return;
-                }
-            }
-
-            const saleData = {
-                id: editId || Date.now().toString(),
-                name,
-                nick,
-                numbers,
-                contact,
-                value,
-                seller,
-                date: new Date().toISOString()
+            const expense = {
+                id: Date.now(),
+                fecha,
+                categoria,
+                descripcion,
+                monto,
+                frecuencia,
+                timestamp: new Date().toISOString()
             };
 
-            if (editId) {
-                // Actualizar venta existente
-                const index = sales.findIndex(s => s.id === editId);
-                if (index !== -1) {
-                    sales[index] = saleData;
+            users[currentUserData].expenses.unshift(expense);
+            expenses = users[currentUserData].expenses;
+            saveUserData();
+            
+            // Limpiar formulario
+            document.getElementById('categoria').value = '';
+            document.getElementById('descripcion').value = '';
+            document.getElementById('monto').value = '';
+            
+            updateStats();
+            renderExpenseTable();
+            showMessage('Gasto agregado correctamente', 'success');
+        }
+
+        function addIncome() {
+            const fecha = document.getElementById('fechaIngreso').value;
+            const tipo = document.getElementById('tipoIngreso').value;
+            const descripcion = document.getElementById('descripcionIngreso').value;
+            const monto = parseFloat(document.getElementById('montoIngreso').value);
+            const frecuencia = document.getElementById('frecuenciaIngreso').value;
+
+            if (!fecha || !tipo || !descripcion || !monto) {
+                showMessage('Completa todos los campos', 'error');
+                return;
+            }
+
+            const incomeItem = {
+                id: Date.now(),
+                fecha,
+                tipo,
+                descripcion,
+                monto,
+                frecuencia,
+                timestamp: new Date().toISOString()
+            };
+
+            users[currentUserData].income.unshift(incomeItem);
+            income = users[currentUserData].income;
+            saveUserData();
+            
+            // Limpiar formulario
+            document.getElementById('tipoIngreso').value = 'salario';
+            document.getElementById('descripcionIngreso').value = '';
+            document.getElementById('montoIngreso').value = '';
+            
+            updateStats();
+            renderIncomeTable();
+            showMessage('Ingreso agregado correctamente', 'success');
+        }
+
+        function addDebt() {
+            const acreedor = document.getElementById('acreedor').value;
+            const monto = parseFloat(document.getElementById('montoDeuda').value);
+            const fechaVencimiento = document.getElementById('fechaVencimiento').value;
+            const cuotas = parseInt(document.getElementById('cuotas').value) || 1;
+            const descripcion = document.getElementById('descripcionDeuda').value;
+
+            if (!acreedor || !monto) {
+                showMessage('Completa acreedor y monto', 'error');
+                return;
+            }
+
+            const debt = {
+                id: Date.now(),
+                acreedor,
+                montoTotal: monto,
+                montoRestante: monto,
+                fechaVencimiento,
+                cuotas,
+                cuotasPagadas: 0,
+                descripcion,
+                timestamp: new Date().toISOString()
+            };
+
+            users[currentUserData].debts.unshift(debt);
+            debts = users[currentUserData].debts;
+            saveUserData();
+            
+            // Limpiar formulario
+            document.getElementById('acreedor').value = '';
+            document.getElementById('montoDeuda').value = '';
+            document.getElementById('fechaVencimiento').value = '';
+            document.getElementById('cuotas').value = '';
+            document.getElementById('descripcionDeuda').value = '';
+            
+            updateStats();
+            renderDebtsTable();
+            showMessage('Deuda agregada correctamente', 'success');
+        }
+
+        function setBudget() {
+            const budgetValue = parseFloat(document.getElementById('presupuesto').value);
+            if (budgetValue > 0) {
+                users[currentUserData].budget = budgetValue;
+                saveUserData();
+                updateStats();
+                showMessage('Presupuesto establecido', 'success');
+            }
+        }
+
+        function setSavingsGoal() {
+            const goalValue = parseFloat(document.getElementById('savingsGoal').value);
+            if (goalValue > 0) {
+                users[currentUserData].savingsGoal = goalValue;
+                saveUserData();
+                updateSavingsProgress();
+                showMessage('Meta de ahorro establecida', 'success');
+            }
+        }
+        
+        function updateSavingsProgress() {
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            const monthlyIncome = income.filter(i => i.fecha.startsWith(currentMonth));
+            const monthlyExpenses = expenses.filter(e => e.fecha.startsWith(currentMonth));
+            
+            const totalIncome = monthlyIncome.reduce((sum, i) => sum + i.monto, 0);
+            const totalExpenses = monthlyExpenses.reduce((sum, e) => sum + e.monto, 0);
+            const currentSavings = totalIncome - totalExpenses;
+            const goal = savingsGoal;
+            
+            const progressContainer = document.getElementById('savingsProgress');
+            const alertContainer = document.getElementById('savingsAlert');
+            
+            if (goal > 0) {
+                const percentage = Math.min((currentSavings / goal) * 100, 100);
+                const color = percentage >= 100 ? '#28a745' : percentage >= 50 ? '#ffc107' : '#dc3545';
+                
+                progressContainer.innerHTML = `
+                    <div style="margin: 10px 0;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>Progreso: ${formatMoney(currentSavings)} / ${formatMoney(goal)}</span>
+                            <span>${percentage.toFixed(1)}%</span>
+                        </div>
+                        <div style="background: #e9ecef; height: 10px; border-radius: 5px;">
+                            <div style="background: ${color}; height: 100%; width: ${percentage}%; border-radius: 5px; transition: width 0.3s;"></div>
+                        </div>
+                    </div>
+                `;
+                
+                // Alertas y sugerencias
+                if (currentSavings < 0) {
+                    alertContainer.innerHTML = `
+                        <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; font-size: 12px;">
+                            ⚠️ <strong>Alerta:</strong> Estás gastando más de lo que ingresas. Revisa tus gastos en la pestaña de Estadísticas.
+                        </div>
+                    `;
+                } else if (currentSavings < goal * 0.5) {
+                    alertContainer.innerHTML = `
+                        <div style="background: #fff3cd; color: #856404; padding: 10px; border-radius: 5px; font-size: 12px;">
+                            📈 <strong>Sugerencia:</strong> Estás por debajo del 50% de tu meta. Considera reducir gastos no esenciales.
+                        </div>
+                    `;
+                } else if (currentSavings >= goal) {
+                    alertContainer.innerHTML = `
+                        <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; font-size: 12px;">
+                            🎉 <strong>¡Felicidades!</strong> Has alcanzado tu meta de ahorro este mes.
+                        </div>
+                    `;
+                } else {
+                    alertContainer.innerHTML = `
+                        <div style="background: #d1ecf1; color: #0c5460; padding: 10px; border-radius: 5px; font-size: 12px;">
+                            💪 <strong>Buen progreso:</strong> Vas por buen camino para alcanzar tu meta de ahorro.
+                        </div>
+                    `;
                 }
             } else {
-                // Agregar nueva venta
-                sales.push(saleData);
+                progressContainer.innerHTML = '<p style="color: #666; font-size: 12px;">Establece una meta para ver el progreso</p>';
+                if (alertContainer) alertContainer.innerHTML = '';
             }
+        }
 
-            // Guardar en localStorage
-            localStorage.setItem('raffleSales', JSON.stringify(sales));
+        function addNewUser() {
+            const userName = prompt('Nombre del nuevo usuario:');
+            if (userName && userName.trim()) {
+                const userId = 'user_' + Date.now();
+                users[userId] = {
+                    name: userName.trim(),
+                    expenses: [],
+                    income: [],
+                    debts: [],
+                    budget: 0,
+                    savingsGoal: 0
+                };
+                saveUserData();
+                loadUsers();
+                document.getElementById('currentUser').value = userId;
+                switchUser();
+                showMessage('Usuario creado correctamente', 'success');
+            }
+        }
 
-            // Limpiar formulario
-            clearForm();
-            cancelEdit();
-
-            // Actualizar tabla y estadísticas
-            renderSales();
+        function switchUser() {
+            currentUserData = document.getElementById('currentUser').value;
+            expenses = users[currentUserData].expenses || [];
+            income = users[currentUserData].income || [];
+            debts = users[currentUserData].debts || [];
+            budget = users[currentUserData].budget || 0;
+            savingsGoal = users[currentUserData].savingsGoal || 0;
+            
+            const presupuestoEl = document.getElementById('presupuesto');
+            const savingsGoalEl = document.getElementById('savingsGoal');
+            if (presupuestoEl) presupuestoEl.value = budget;
+            if (savingsGoalEl) savingsGoalEl.value = savingsGoal;
+            
             updateStats();
-            renderNumbersGrid();
+            updateSavingsProgress();
+            renderTable();
         }
 
-        // Editar venta
-        function editSale(id) {
-            const sale = sales.find(s => s.id === id);
-            if (sale) {
-                document.getElementById('editId').value = sale.id;
-                document.getElementById('name').value = sale.name;
-                document.getElementById('nick').value = sale.nick || '';
-                document.getElementById('numbers').value = sale.numbers;
-                document.getElementById('contact').value = sale.contact;
-                document.getElementById('value').value = sale.value;
-                document.getElementById('seller').value = sale.seller;
-                document.getElementById('formTitle').textContent = 'Editar venta';
-                document.getElementById('cancelBtn').style.display = 'inline-block';
-                updateNumbersSummary();
-            }
-        }
-
-        // Cancelar edición
-        function cancelEdit() {
-            document.getElementById('editId').value = '';
-            document.getElementById('formTitle').textContent = 'Agregar nueva venta';
-            document.getElementById('cancelBtn').style.display = 'none';
-            clearForm();
-        }
-
-        // Limpiar formulario
-        function clearForm() {
-            document.getElementById('name').value = '';
-            document.getElementById('nick').value = '';
-            document.getElementById('numbers').value = '';
-            document.getElementById('contact').value = '';
-            document.getElementById('value').value = '';
-            document.getElementById('seller').value = 'Ana';
-            updateNumbersSummary();
-        }
-
-        // Eliminar venta
-        function deleteSale(id) {
-            if (confirm('¿Está seguro de eliminar esta venta?')) {
-                sales = sales.filter(s => s.id !== id);
-                localStorage.setItem('raffleSales', JSON.stringify(sales));
-                renderSales();
-                updateStats();
-                renderNumbersGrid();
-            }
-        }
-
-        // Renderizar tabla de ventas
-        function renderSales() {
-            const tbody = document.getElementById('salesTable');
-            tbody.innerHTML = '';
-
-            sales.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-            sales.forEach(sale => {
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td>${sale.name}</td>
-                    <td>${sale.nick || '-'}</td>
-                    <td>${sale.numbers}</td>
-                    <td>${sale.contact}</td>
-                    <td>$${sale.value.toLocaleString('es-CO')}</td>
-                    <td>${sale.seller}</td>
-                    <td class="action-buttons">
-                        <button class="edit-btn" onclick="editSale('${sale.id}')">Editar</button>
-                        <button class="delete-btn" onclick="deleteSale('${sale.id}')">Eliminar</button>
-                    </td>
-                `;
+        function loadUsers() {
+            const userSelect = document.getElementById('currentUser');
+            userSelect.innerHTML = '';
+            
+            Object.keys(users).forEach(userId => {
+                const option = document.createElement('option');
+                option.value = userId;
+                option.textContent = users[userId].name;
+                userSelect.appendChild(option);
             });
         }
 
-        // Actualizar estadísticas
-        function updateStats() {
-            const totalSold = sales.reduce((total, sale) => total + sale.numbers, 0);
-            const totalCollected = sales.reduce((total, sale) => total + sale.value, 0);
-            const availableNumbers = totalNumbers - totalSold;
+        function saveUserData() {
+            localStorage.setItem('users', JSON.stringify(users));
+        }
 
-            document.getElementById('totalSold').textContent = totalSold;
-            document.getElementById('availableNumbers').textContent = availableNumbers;
-            document.getElementById('totalCollected').textContent = `$${totalCollected.toLocaleString('es-CO')}`;
+        function showSection(section) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             
-            // Actualizar también los contadores del visualizador
-            document.getElementById('soldCount').textContent = totalSold;
-            document.getElementById('availableCount').textContent = availableNumbers;
+            // Mostrar sección seleccionada
+            document.getElementById('section-' + section).style.display = 'block';
+            
+            // Mark active button
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach((btn, index) => {
+                if ((section === 'gastos' && index === 0) ||
+                    (section === 'ingresos' && index === 1) ||
+                    (section === 'deudas' && index === 2) ||
+                    (section === 'presupuesto' && index === 3) ||
+                    (section === 'estadisticas' && index === 4) ||
+                    (section === 'datos' && index === 5) ||
+                    (section === 'consejos' && index === 6)) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            if (section === 'estadisticas') {
+                showStats('resumen');
+            }
+        }
+
+        function showStats(type) {
+            document.querySelectorAll('.stat-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const content = document.getElementById('stats-content');
+            
+            switch(type) {
+                case 'resumen':
+                    content.innerHTML = generateResumenStats();
+                    break;
+                case 'categorias':
+                    content.innerHTML = generateCategoryStats();
+                    break;
+                case 'tendencias':
+                    content.innerHTML = generateTrendStats();
+                    break;
+            }
+        }
+
+        function generateResumenStats() {
+            const totalIngresos = income.reduce((sum, i) => sum + i.monto, 0);
+            const totalGastos = expenses.reduce((sum, e) => sum + e.monto, 0);
+            const totalDeudas = debts.reduce((sum, d) => sum + d.montoRestante, 0);
+            const disponible = totalIngresos - totalGastos - totalDeudas;
+            
+            return `
+                <div class="savings-section">
+                    <h4>💰 Resumen Financiero</h4>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">${formatMoney(totalIngresos)}</div>
+                            <div class="stat-label">Total Ingresos</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${formatMoney(totalGastos)}</div>
+                            <div class="stat-label">Total Gastos</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${formatMoney(totalDeudas)}</div>
+                            <div class="stat-label">Deudas Pendientes</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" style="color: ${disponible >= 0 ? '#28a745' : '#dc3545'}">${formatMoney(disponible)}</div>
+                            <div class="stat-label">Disponible</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateCategoryStats() {
+            const categoryTotals = {};
+            expenses.forEach(expense => {
+                categoryTotals[expense.categoria] = (categoryTotals[expense.categoria] || 0) + expense.monto;
+            });
+            
+            let html = '<div class="form-section"><h4>📈 Gastos por Categoría</h4>';
+            Object.entries(categoryTotals).forEach(([category, total]) => {
+                const percentage = ((total / expenses.reduce((sum, e) => sum + e.monto, 0)) * 100).toFixed(1);
+                html += `
+                    <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                        <strong>${category}</strong>: ${formatMoney(total)} (${percentage}%)
+                        <div style="background: #e9ecef; height: 8px; border-radius: 4px; margin-top: 5px;">
+                            <div style="background: #667eea; height: 100%; width: ${percentage}%; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            return html;
+        }
+
+        function generateTrendStats() {
+            const monthlyExpenses = {};
+            const monthlyIncome = {};
+            
+            expenses.forEach(expense => {
+                const month = expense.fecha.substring(0, 7);
+                monthlyExpenses[month] = (monthlyExpenses[month] || 0) + expense.monto;
+            });
+            
+            income.forEach(incomeItem => {
+                const month = incomeItem.fecha.substring(0, 7);
+                monthlyIncome[month] = (monthlyIncome[month] || 0) + incomeItem.monto;
+            });
+            
+            const allMonths = [...new Set([...Object.keys(monthlyExpenses), ...Object.keys(monthlyIncome)])].sort();
+            
+            let html = '<div class="form-section"><h4>📉 Tendencias Mensuales</h4>';
+            
+            if (allMonths.length === 0) {
+                html += '<p style="text-align: center; color: #666;">No hay datos suficientes para mostrar tendencias</p>';
+            } else {
+                // Gráfico simple con barras
+                html += '<div style="margin: 15px 0;">';
+                allMonths.forEach(month => {
+                    const expenseAmount = monthlyExpenses[month] || 0;
+                    const incomeAmount = monthlyIncome[month] || 0;
+                    const balance = incomeAmount - expenseAmount;
+                    const maxAmount = Math.max(expenseAmount, incomeAmount) || 1;
+                    
+                    html += `
+                        <div style="margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">${month}</div>
+                            <div style="margin: 5px 0;">
+                                <div style="display: flex; justify-content: space-between; font-size: 12px;">
+                                    <span>Ingresos: ${formatMoney(incomeAmount)}</span>
+                                    <span style="width: ${(incomeAmount/maxAmount)*100}%; background: #28a745; height: 8px; border-radius: 4px;"></span>
+                                </div>
+                            </div>
+                            <div style="margin: 5px 0;">
+                                <div style="display: flex; justify-content: space-between; font-size: 12px;">
+                                    <span>Gastos: ${formatMoney(expenseAmount)}</span>
+                                    <span style="width: ${(expenseAmount/maxAmount)*100}%; background: #dc3545; height: 8px; border-radius: 4px;"></span>
+                                </div>
+                            </div>
+                            <div style="font-size: 12px; font-weight: bold; color: ${balance >= 0 ? '#28a745' : '#dc3545'};">
+                                Balance: ${formatMoney(balance)}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                // Sugerencias basadas en tendencias
+                const lastMonth = allMonths[allMonths.length - 1];
+                const lastExpenses = monthlyExpenses[lastMonth] || 0;
+                const avgExpenses = Object.values(monthlyExpenses).reduce((a, b) => a + b, 0) / Object.keys(monthlyExpenses).length;
+                
+                html += '<div style="margin-top: 20px; padding: 15px; background: #e8f4f8; border-radius: 8px;">';
+                html += '<h5>💡 Sugerencias:</h5>';
+                
+                if (lastExpenses > avgExpenses * 1.2) {
+                    html += '<p style="font-size: 12px;">• Tus gastos del último mes están 20% por encima del promedio. Revisa las categorías de mayor gasto.</p>';
+                } else if (lastExpenses < avgExpenses * 0.8) {
+                    html += '<p style="font-size: 12px;">• ¡Excelente! Tus gastos del último mes están por debajo del promedio.</p>';
+                }
+                
+                html += '</div>';
+                html += '</div>';
+            }
+            
+            html += '</div>';
+            return html;
+        }
+
+        function deleteExpense(id) {
+            if (confirm('¿Eliminar este gasto?')) {
+                users[currentUserData].expenses = users[currentUserData].expenses.filter(e => e.id !== id);
+                expenses = users[currentUserData].expenses;
+                saveUserData();
+                updateStats();
+                renderTable();
+                showMessage('Gasto eliminado', 'success');
+            }
+        }
+
+        function payDebt(debtId) {
+            const debt = debts.find(d => d.id === debtId);
+            if (!debt) return;
+            
+            if (debt.cuotasPagadas < debt.cuotas) {
+                const cuotaAmount = debt.montoTotal / debt.cuotas;
+                debt.cuotasPagadas++;
+                debt.montoRestante = Math.max(0, debt.montoRestante - cuotaAmount);
+                
+                // Update the user data
+                users[currentUserData].debts = debts;
+                saveUserData();
+                renderDebtsTable();
+                updateStats();
+                showMessage(`Cuota pagada. Restante: ${formatMoney(debt.montoRestante)}`, 'success');
+            }
+        }
+
+        function updateStats() {
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            const monthlyExpenses = expenses.filter(e => e.fecha.startsWith(currentMonth));
+            const monthlyIncome = income.filter(i => i.fecha.startsWith(currentMonth));
+            
+            const totalGastos = monthlyExpenses.reduce((sum, e) => sum + e.monto, 0);
+            const totalIngresos = monthlyIncome.reduce((sum, i) => sum + i.monto, 0);
+            const disponible = totalIngresos - totalGastos;
+
+            const totalElement = document.getElementById('totalMensual');
+            const disponibleElement = document.getElementById('disponible');
+            
+            if (totalElement) totalElement.textContent = formatMoney(totalGastos);
+            if (disponibleElement) {
+                disponibleElement.textContent = formatMoney(disponible);
+                disponibleElement.style.color = disponible < 0 ? '#dc3545' : '#28a745';
+            }
+            
+            updateSavingsProgress();
+        }
+
+        function renderTable() {
+            renderExpenseTable();
+            renderIncomeTable();
+            renderDebtsTable();
+        }
+        
+        function renderExpenseTable() {
+            const tbody = document.getElementById('expensesTable');
+            if (!tbody) return;
+            
+            if (expenses.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Sin gastos</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            expenses.slice(0, 10).forEach(expense => {
+                const row = `
+                    <tr>
+                        <td style="font-size: 11px;">${expense.fecha}</td>
+                        <td style="font-size: 11px;">${expense.categoria}</td>
+                        <td style="font-size: 11px;">${expense.descripcion}</td>
+                        <td style="font-size: 11px;">${formatMoney(expense.monto)}</td>
+                        <td style="font-size: 11px;">${expense.frecuencia || 'único'}</td>
+                        <td><button onclick="deleteExpense(${expense.id})" class="btn-delete" style="font-size: 10px; padding: 2px 5px;">🗑️</button></td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="message ${type}">${message}</div>`;
+            setTimeout(() => messageDiv.innerHTML = '', 3000);
+        }
+
+        function generateAdvice() {
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            
+            // Calculate financial metrics
+            const monthlyExpenses = calculateMonthlyExpenses(currentMonth, currentYear);
+            const monthlyIncome = calculateMonthlyIncome(currentMonth, currentYear);
+            const totalDebts = debts.reduce((sum, debt) => sum + debt.montoRestante, 0);
+            const netIncome = monthlyIncome - monthlyExpenses;
+            const savingsRate = monthlyIncome > 0 ? (netIncome / monthlyIncome) * 100 : 0;
+            
+            // Calculate financial health score
+            let healthScore = 0;
+            if (savingsRate > 20) healthScore += 30;
+            else if (savingsRate > 10) healthScore += 20;
+            else if (savingsRate > 0) healthScore += 10;
+            
+            if (totalDebts < monthlyIncome * 2) healthScore += 25;
+            else if (totalDebts < monthlyIncome * 5) healthScore += 15;
+            
+            if (monthlyExpenses < monthlyIncome * 0.8) healthScore += 25;
+            else if (monthlyExpenses < monthlyIncome) healthScore += 15;
+            
+            const expenseVariability = calculateExpenseVariability();
+            if (expenseVariability < 0.3) healthScore += 20;
+            else if (expenseVariability < 0.5) healthScore += 10;
+            
+            // Update health score display
+            const healthBar = document.getElementById('health-score-bar');
+            const healthText = document.getElementById('health-score-text');
+            const healthDesc = document.getElementById('health-description');
+            
+            healthBar.style.width = healthScore + '%';
+            healthText.textContent = Math.round(healthScore) + '/100';
+            
+            if (healthScore >= 80) {
+                healthDesc.textContent = '¡Excelente! Tienes una salud financiera muy sólida.';
+                healthBar.style.background = '#44ff44';
+            } else if (healthScore >= 60) {
+                healthDesc.textContent = 'Buena salud financiera, pero hay áreas de mejora.';
+                healthBar.style.background = 'linear-gradient(90deg, #ffaa00, #44ff44)';
+            } else if (healthScore >= 40) {
+                healthDesc.textContent = 'Salud financiera regular, necesitas hacer algunos ajustes.';
+                healthBar.style.background = '#ffaa00';
+            } else {
+                healthDesc.textContent = 'Atención: Tu salud financiera necesita mejoras urgentes.';
+                healthBar.style.background = '#ff4444';
+            }
+            
+            // Generate advice sections
+            generateSavingsAdvice(savingsRate, netIncome, monthlyIncome);
+            generateExpenseAdvice(monthlyExpenses, monthlyIncome);
+            generateMonthlyProjections(monthlyIncome, monthlyExpenses, savingsRate);
+            generateActionPlan(healthScore, savingsRate, totalDebts, monthlyIncome);
+            
+            // Show advice section
+            document.getElementById('financial-advice').style.display = 'block';
+            showMessage('Consejos generados exitosamente', 'success');
+        }
+        
+        function generateSavingsAdvice(savingsRate, netIncome, monthlyIncome) {
+            const savingsDiv = document.getElementById('savings-advice');
+            let advice = '';
+            
+            if (savingsRate < 10) {
+                advice += '<div style="background: #ffe6e6; padding: 10px; border-radius: 5px; margin-bottom: 10px;">';
+                advice += '<strong>⚠️ Alerta de Ahorro:</strong> Tu tasa de ahorro es muy baja (' + savingsRate.toFixed(1) + '%). ';
+                advice += 'Recomendación: Intenta ahorrar al menos el 10% de tus ingresos.</div>';
+                
+                if (monthlyIncome > 0) {
+                    const targetSavings = monthlyIncome * 0.1;
+                    const currentSavings = Math.max(0, netIncome);
+                    const needed = targetSavings - currentSavings;
+                    advice += '<p><strong>Meta sugerida:</strong> Ahorra $' + targetSavings.toFixed(2) + ' mensuales.</p>';
+                    if (needed > 0) {
+                        advice += '<p><strong>Necesitas reducir gastos en:</strong> $' + needed.toFixed(2) + ' para alcanzar esta meta.</p>';
+                    }
+                }
+            } else if (savingsRate < 20) {
+                advice += '<div style="background: #fff3cd; padding: 10px; border-radius: 5px; margin-bottom: 10px;">';
+                advice += '<strong>📈 Buen progreso:</strong> Tu tasa de ahorro es del ' + savingsRate.toFixed(1) + '%. ';
+                advice += 'Intenta llegar al 20% para una salud financiera óptima.</div>';
+            } else {
+                advice += '<div style="background: #d4edda; padding: 10px; border-radius: 5px; margin-bottom: 10px;">';
+                advice += '<strong>✅ Excelente:</strong> Tu tasa de ahorro del ' + savingsRate.toFixed(1) + '% es muy buena. ';
+                advice += '¡Sigue así!</div>';
+            }
+            
+            // Specific savings strategies
+            advice += '<h4>Estrategias de Ahorro:</h4><ul>';
+            advice += '<li><strong>Regla 50/30/20:</strong> 50% necesidades, 30% deseos, 20% ahorros</li>';
+            advice += '<li><strong>Ahorro automático:</strong> Configura transferencias automáticas a tu cuenta de ahorros</li>';
+            advice += '<li><strong>Fondo de emergencia:</strong> Mantén 3-6 meses de gastos en emergencias</li>';
+            advice += '</ul>';
+            
+            savingsDiv.innerHTML = advice;
+        }
+        
+        function generateExpenseAdvice(monthlyExpenses, monthlyIncome) {
+            const expenseDiv = document.getElementById('expense-advice');
+            const categoryTotals = calculateCategoryTotals();
+            const sortedCategories = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]);
+            
+            let advice = '';
+            
+            if (sortedCategories.length > 0) {
+                advice += '<h4>Análisis por Categorías:</h4>';
+                
+                sortedCategories.slice(0, 3).forEach((category, index) => {
+                    const [name, amount] = category;
+                    const percentage = monthlyIncome > 0 ? (amount / monthlyIncome) * 100 : 0;
+                    
+                    advice += '<div style="background: #f8f9fa; padding: 8px; border-radius: 5px; margin-bottom: 8px;">';
+                    advice += '<strong>' + name + ':</strong> $' + amount.toFixed(2) + ' (' + percentage.toFixed(1) + '% de ingresos)';
+                    
+                    // Category-specific advice
+                    if (name === 'Comida' && percentage > 15) {
+                        advice += '<br><small style="color: #666;">🍽️ Sugerencia: Cocina más en casa, planifica menús semanales</small>';
+                    } else if (name === 'Transporte' && percentage > 15) {
+                        advice += '<br><small style="color: #666;">🚗 Sugerencia: Considera transporte público o compartir viajes</small>';
+                    } else if (name === 'Gastos Personales' && percentage > 10) {
+                        advice += '<br><small style="color: #666;">🛍️ Sugerencia: Revisa compras impulsivas, usa lista de compras</small>';
+                    }
+                    
+                    advice += '</div>';
+                });
+            }
+            
+            // General expense reduction tips
+            advice += '<h4>Consejos Generales:</h4><ul>';
+            advice += '<li><strong>Revisión mensual:</strong> Analiza tus gastos cada mes</li>';
+            advice += '<li><strong>Regla 24 horas:</strong> Espera un día antes de compras grandes</li>';
+            advice += '<li><strong>Suscripciones:</strong> Cancela servicios que no uses regularmente</li>';
+            advice += '<li><strong>Comparar precios:</strong> Busca mejores ofertas antes de comprar</li>';
+            advice += '</ul>';
+            
+            expenseDiv.innerHTML = advice;
+        }
+        
+        function generateMonthlyProjections(monthlyIncome, monthlyExpenses, savingsRate) {
+            const projDiv = document.getElementById('monthly-projections');
+            
+            const projectedSavings = monthlyIncome - monthlyExpenses;
+            const annualSavings = projectedSavings * 12;
+            
+            let projections = '';
+            
+            projections += '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">';
+            projections += '<div style="background: #e3f2fd; padding: 10px; border-radius: 5px; text-align: center;">';
+            projections += '<div style="font-size: 18px; font-weight: bold; color: #1976d2;">$' + projectedSavings.toFixed(2) + '</div>';
+            projections += '<div style="font-size: 12px; color: #666;">Ahorro Mensual Proyectado</div></div>';
+            
+            projections += '<div style="background: #f3e5f5; padding: 10px; border-radius: 5px; text-align: center;">';
+            projections += '<div style="font-size: 18px; font-weight: bold; color: #7b1fa2;">$' + annualSavings.toFixed(2) + '</div>';
+            projections += '<div style="font-size: 12px; color: #666;">Ahorro Anual Proyectado</div></div></div>';
+            
+            // Scenarios
+            projections += '<h4>Escenarios de Mejora:</h4>';
+            
+            const scenarios = [
+                { reduction: 0.1, name: 'Reducción 10% gastos' },
+                { reduction: 0.2, name: 'Reducción 20% gastos' },
+                { increase: 0.1, name: 'Aumento 10% ingresos' }
+            ];
+            
+            scenarios.forEach(scenario => {
+                let newExpenses = monthlyExpenses;
+                let newIncome = monthlyIncome;
+                
+                if (scenario.reduction) {
+                    newExpenses = monthlyExpenses * (1 - scenario.reduction);
+                } else if (scenario.increase) {
+                    newIncome = monthlyIncome * (1 + scenario.increase);
+                }
+                
+                const newSavings = newIncome - newExpenses;
+                const improvement = newSavings - projectedSavings;
+                
+                projections += '<div style="background: #f8f9fa; padding: 8px; border-radius: 5px; margin-bottom: 5px;">';
+                projections += '<strong>' + scenario.name + ':</strong> ';
+                projections += '+$' + improvement.toFixed(2) + ' mensuales (+$' + (improvement * 12).toFixed(2) + ' anuales)';
+                projections += '</div>';
+            });
+            
+            projDiv.innerHTML = projections;
+        }
+        
+        function generateActionPlan(healthScore, savingsRate, totalDebts, monthlyIncome) {
+            const actionDiv = document.getElementById('action-plan');
+            let plan = '<ol>';
+            
+            // Priority actions based on financial health
+            if (totalDebts > monthlyIncome * 3) {
+                plan += '<li><strong>Prioridad Alta:</strong> Crea un plan de pago de deudas. Considera el método "bola de nieve" o "avalancha".</li>';
+            }
+            
+            if (savingsRate < 10) {
+                plan += '<li><strong>Prioridad Alta:</strong> Establece un presupuesto estricto y reduce gastos no esenciales.</li>';
+            }
+            
+            plan += '<li><strong>Esta semana:</strong> Revisa todos tus gastos del mes pasado y identifica 3 áreas de reducción.</li>';
+            plan += '<li><strong>Próximos 30 días:</strong> Implementa el método 50/30/20 para distribuir tus ingresos.</li>';
+            
+            if (healthScore < 60) {
+                plan += '<li><strong>Urgente:</strong> Crea un fondo de emergencia mínimo de $' + (monthlyIncome * 0.5).toFixed(2) + '.</li>';
+            }
+            
+            plan += '<li><strong>Largo plazo:</strong> Establece metas financieras específicas para los próximos 6 meses.</li>';
+            plan += '<li><strong>Seguimiento:</strong> Revisa tu progreso cada semana usando esta aplicación.</li>';
+            plan += '</ol>';
+            
+            // Quick wins
+            plan += '<h4>Victorias Rápidas (Esta Semana):</h4><ul>';
+            plan += '<li>📱 Revisa y cancela suscripciones no utilizadas</li>';
+            plan += '<li>🍽️ Planifica 3 comidas caseras para reducir gastos de comida</li>';
+            plan += '<li>💰 Configura una transferencia automática de ahorro (aunque sea pequeña)</li>';
+            plan += '<li>📈 Establece alertas de gastos en tu banco</li>';
+            plan += '</ul>';
+            
+            actionDiv.innerHTML = plan;
+        }
+        
+        function calculateCategoryTotals() {
+            const totals = {};
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            
+            expenses.forEach(expense => {
+                const expenseDate = new Date(expense.fecha);
+                if (expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear) {
+                    totals[expense.categoria] = (totals[expense.categoria] || 0) + expense.monto;
+                }
+            });
+            
+            return totals;
+        }
+        
+        function calculateExpenseVariability() {
+            if (expenses.length < 3) return 0;
+            
+            const monthlyTotals = {};
+            expenses.forEach(expense => {
+                const date = new Date(expense.fecha);
+                const monthKey = date.getFullYear() + '-' + (date.getMonth() + 1);
+                monthlyTotals[monthKey] = (monthlyTotals[monthKey] || 0) + expense.monto;
+            });
+            
+            const values = Object.values(monthlyTotals);
+            if (values.length < 2) return 0;
+            
+            const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
+            const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
+            const stdDev = Math.sqrt(variance);
+            
+            return mean > 0 ? stdDev / mean : 0;
+        }
+        
+        function calculateMonthlyExpenses(month, year) {
+            return expenses
+                .filter(expense => {
+                    const expenseDate = new Date(expense.fecha);
+                    return expenseDate.getMonth() === month && expenseDate.getFullYear() === year;
+                })
+                .reduce((sum, expense) => sum + expense.monto, 0);
+        }
+        
+        function calculateMonthlyIncome(month, year) {
+            return income
+                .filter(inc => {
+                    const incomeDate = new Date(inc.fecha);
+                    return incomeDate.getMonth() === month && incomeDate.getFullYear() === year;
+                })
+                .reduce((sum, inc) => sum + inc.monto, 0);
+        }
+
+        function renderIncomeTable() {
+            const tbody = document.getElementById('incomeTable');
+            if (!tbody) return;
+            
+            if (income.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Sin ingresos</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            income.slice(0, 10).forEach(incomeItem => {
+                const row = `
+                    <tr>
+                        <td style="font-size: 11px;">${incomeItem.fecha}</td>
+                        <td style="font-size: 11px;">${incomeItem.tipo}</td>
+                        <td style="font-size: 11px;">${incomeItem.descripcion}</td>
+                        <td style="font-size: 11px;">${formatMoney(incomeItem.monto)}</td>
+                        <td style="font-size: 11px;">${incomeItem.frecuencia || 'único'}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function renderDebtsTable() {
+            const container = document.getElementById('debtsContainer');
+            if (!container) return;
+            
+            if (debts.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666;">Sin deudas registradas</p>';
+                return;
+            }
+
+            let html = '';
+            debts.forEach(debt => {
+                const progress = ((debt.montoTotal - debt.montoRestante) / debt.montoTotal) * 100;
+                html += `
+                    <div class="debt-item" style="margin-bottom: 10px; padding: 10px; background: #fff3cd; border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                            <strong>${debt.acreedor}</strong>
+                            <span style="font-size: 12px; color: #666;">${formatMoney(debt.montoRestante)} / ${formatMoney(debt.montoTotal)}</span>
+                        </div>
+                        <div style="background: #e9ecef; height: 8px; border-radius: 4px; margin-bottom: 5px;">
+                            <div style="background: #28a745; height: 100%; width: ${progress}%; border-radius: 4px;"></div>
+                        </div>
+                        <div style="font-size: 11px; color: #666;">
+                            ${debt.descripcion || 'Sin descripción'} - Vence: ${debt.fechaVencimiento || 'No especificado'}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function exportAllData() {
+            const allData = {
+                expenses: expenses,
+                income: income,
+                debts: debts,
+                budget: budget,
+                savingsGoal: savingsGoal,
+                exportDate: new Date().toISOString()
+            };
+            
+            const jsonContent = JSON.stringify(allData, null, 2);
+            downloadFile(jsonContent, 'control-gastos-completo.json', 'application/json');
+            showMessage('Datos exportados correctamente', 'success');
+        }
+        
+        function exportExpenses() {
+            if (expenses.length === 0) {
+                showMessage('No hay gastos para exportar', 'error');
+                return;
+            }
+            
+            let csvContent = 'Fecha,Categoria,Descripcion,Monto,Frecuencia\n';
+            expenses.forEach(expense => {
+                csvContent += `${expense.fecha},${expense.categoria},"${expense.descripcion}",${expense.monto},${expense.frecuencia}\n`;
+            });
+            
+            downloadFile(csvContent, 'gastos.csv', 'text/csv');
+            showMessage('Gastos exportados correctamente', 'success');
+        }
+        
+        function exportIncome() {
+            if (income.length === 0) {
+                showMessage('No hay ingresos para exportar', 'error');
+                return;
+            }
+            
+            let csvContent = 'Fecha,Tipo,Descripcion,Monto,Frecuencia\n';
+            income.forEach(incomeItem => {
+                csvContent += `${incomeItem.fecha},${incomeItem.tipo},"${incomeItem.descripcion}",${incomeItem.monto},${incomeItem.frecuencia}\n`;
+            });
+            
+            downloadFile(csvContent, 'ingresos.csv', 'text/csv');
+            showMessage('Ingresos exportados correctamente', 'success');
+        }
+        
+        function exportDebts() {
+            if (debts.length === 0) {
+                showMessage('No hay deudas para exportar', 'error');
+                return;
+            }
+            
+            let csvContent = 'Acreedor,MontoTotal,MontoRestante,FechaVencimiento,Cuotas,Descripcion\n';
+            debts.forEach(debt => {
+                csvContent += `"${debt.acreedor}",${debt.montoTotal},${debt.montoRestante},${debt.fechaVencimiento || ''},${debt.cuotas},"${debt.descripcion || ''}"\n`;
+            });
+            
+            downloadFile(csvContent, 'deudas.csv', 'text/csv');
+            showMessage('Deudas exportadas correctamente', 'success');
+        }
+        
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        function importData() {
+            const fileInput = document.getElementById('importFile');
+            const importType = document.getElementById('importType').value;
+            
+            if (!fileInput.files[0]) {
+                showMessage('Selecciona un archivo para importar', 'error');
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const content = e.target.result;
+                    
+                    if (file.name.endsWith('.json')) {
+                        const data = JSON.parse(content);
+                        if (data.expenses) expenses.push(...data.expenses);
+                        if (data.income) income.push(...data.income);
+                        if (data.debts) debts.push(...data.debts);
+                    } else {
+                        // CSV import
+                        const lines = content.split('\n');
+                        const headers = lines[0].split(',');
+                        
+                        for (let i = 1; i < lines.length; i++) {
+                            if (lines[i].trim()) {
+                                const values = lines[i].split(',');
+                                
+                                if (importType === 'expenses' && values.length >= 5) {
+                                    expenses.push({
+                                        id: Date.now() + i,
+                                        fecha: values[0],
+                                        categoria: values[1],
+                                        descripcion: values[2].replace(/"/g, ''),
+                                        monto: parseFloat(values[3]),
+                                        frecuencia: values[4]
+                                    });
+                                } else if (importType === 'income' && values.length >= 5) {
+                                    income.push({
+                                        id: Date.now() + i,
+                                        fecha: values[0],
+                                        tipo: values[1],
+                                        descripcion: values[2].replace(/"/g, ''),
+                                        monto: parseFloat(values[3]),
+                                        frecuencia: values[4]
+                                    });
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Update user data
+                    users[currentUserData].expenses = expenses;
+                    users[currentUserData].income = income;
+                    users[currentUserData].debts = debts;
+                    saveUserData();
+                    
+                    renderTable();
+                    updateStats();
+                    showMessage('Datos importados correctamente', 'success');
+                    
+                } catch (error) {
+                    showMessage('Error al importar archivo: ' + error.message, 'error');
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // Registrar Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(registration => console.log('SW registrado'))
+                .catch(error => console.log('Error SW:', error));
         }
     </script>
 </body>
