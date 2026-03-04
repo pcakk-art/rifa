@@ -45,16 +45,16 @@
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 30px;
-            display: grid;
-            grid-template-columns: 1fr auto;
+            display: flex;
             gap: 20px;
-            align-items: end;
+            align-items: flex-end;
+            flex-wrap: wrap;
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
-            margin-bottom: 15px;
+            min-width: 200px;
         }
 
         .form-group label {
@@ -68,12 +68,6 @@
             border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
         }
 
         .btn {
@@ -85,19 +79,10 @@
             cursor: pointer;
             font-size: 16px;
             font-weight: 600;
-            transition: background 0.3s;
         }
 
         .btn:hover {
             background: #5a67d8;
-        }
-
-        .btn-danger {
-            background: #e53e3e;
-        }
-
-        .btn-danger:hover {
-            background: #c53030;
         }
 
         .btn-success {
@@ -110,12 +95,6 @@
 
         .btn-save-image {
             background: #9f7aea;
-            margin-top: 15px;
-            width: 100%;
-        }
-
-        .btn-save-image:hover {
-            background: #805ad5;
         }
 
         .form-section {
@@ -132,18 +111,25 @@
             margin-bottom: 20px;
         }
 
-        .selected-numbers-preview {
-            background: #e2e8f0;
+        /* Estilos para los números seleccionados */
+        .selected-numbers-box {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
             padding: 15px;
-            border-radius: 8px;
             margin: 15px 0;
+        }
+
+        .selected-numbers-title {
+            font-weight: bold;
+            color: #4a5568;
+            margin-bottom: 10px;
         }
 
         .number-tags {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin-top: 10px;
             min-height: 40px;
         }
 
@@ -165,7 +151,6 @@
             color: white;
             cursor: pointer;
             font-size: 1.2em;
-            line-height: 1;
             padding: 0 3px;
         }
 
@@ -173,14 +158,66 @@
             color: #feb2b2;
         }
 
-        /* Visualizador de números en cuadrícula */
+        /* CUADRÍCULA DE NÚMEROS - ESTILO CORREGIDO */
         .numbers-visualization {
             background: #fff;
             border-radius: 15px;
             padding: 25px;
             margin: 30px 0;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             border: 2px solid #e2e8f0;
+        }
+
+        .numbers-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 8px;
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #cbd5e0;
+        }
+
+        .number-box {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .number-box.available {
+            background: #48bb78;
+            color: white;
+            border-color: #2f855a;
+        }
+
+        .number-box.available:hover {
+            background: #38a169;
+            transform: scale(1.05);
+        }
+
+        .number-box.sold {
+            background: #f56565;
+            color: white;
+            border-color: #c53030;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .number-box.selected {
+            background: #ed8936;
+            color: white;
+            border-color: #dd6b20;
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(237, 137, 54, 0.5);
         }
 
         .stats-summary {
@@ -191,14 +228,13 @@
             border-radius: 10px;
             justify-content: center;
             margin-bottom: 20px;
-            flex-wrap: wrap;
         }
 
         .stat-item {
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 1.2em;
+            font-size: 1.1em;
         }
 
         .stat-color {
@@ -207,67 +243,9 @@
             border-radius: 6px;
         }
 
-        .stat-color.sold {
-            background: #f56565;
-        }
-
-        .stat-color.available {
-            background: #48bb78;
-        }
-
-        .stat-color.selected {
-            background: #ed8936;
-        }
-
-        .numbers-grid {
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            gap: 5px;
-            background: #edf2f7;
-            padding: 20px;
-            border-radius: 12px;
-            max-height: 400px;
-            overflow-y: auto;
-            margin-top: 20px;
-        }
-
-        .number-box {
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.9em;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .number-box.sold {
-            background: #f56565;
-            color: white;
-            border: 2px solid #c53030;
-            cursor: not-allowed;
-            opacity: 0.8;
-        }
-
-        .number-box.selected {
-            background: #ed8936;
-            color: white;
-            border: 2px solid #dd6b20;
-            transform: scale(1.05);
-        }
-
-        .number-box.available {
-            background: #48bb78;
-            color: white;
-            border: 2px solid #2f855a;
-        }
-
-        .number-box.available:hover {
-            transform: scale(1.1);
-            background: #38a169;
-        }
+        .stat-color.sold { background: #f56565; }
+        .stat-color.available { background: #48bb78; }
+        .stat-color.selected { background: #ed8936; }
 
         .legend {
             display: flex;
@@ -291,18 +269,9 @@
             height: 20px;
             border-radius: 4px;
         }
-
-        .legend-color.sold {
-            background: #f56565;
-        }
-
-        .legend-color.available {
-            background: #48bb78;
-        }
-
-        .legend-color.selected {
-            background: #ed8936;
-        }
+        .legend-color.sold { background: #f56565; }
+        .legend-color.available { background: #48bb78; }
+        .legend-color.selected { background: #ed8936; }
 
         table {
             width: 100%;
@@ -319,7 +288,6 @@
             color: white;
             padding: 15px;
             text-align: left;
-            font-weight: 600;
         }
 
         td {
@@ -337,18 +305,10 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-weight: 500;
         }
 
-        .edit-btn {
-            background: #4299e1;
-            color: white;
-        }
-
-        .delete-btn {
-            background: #f56565;
-            color: white;
-        }
+        .edit-btn { background: #4299e1; color: white; }
+        .delete-btn { background: #f56565; color: white; }
 
         .stats-cards {
             display: grid;
@@ -365,12 +325,6 @@
             text-align: center;
         }
 
-        .stat-card h3 {
-            color: #4a5568;
-            margin-bottom: 10px;
-            font-size: 1.1em;
-        }
-
         .stat-card .value {
             font-size: 2em;
             font-weight: bold;
@@ -383,21 +337,11 @@
             padding: 15px;
             border-radius: 8px;
             margin: 15px 0;
-            font-size: 1.2em;
             text-align: center;
-        }
-
-        .summary-box span {
-            font-weight: bold;
-            font-size: 1.4em;
-            margin: 0 5px;
+            font-size: 1.2em;
         }
 
         @media (max-width: 768px) {
-            .config-section {
-                grid-template-columns: 1fr;
-            }
-            
             .numbers-grid {
                 grid-template-columns: repeat(5, 1fr);
             }
@@ -417,7 +361,7 @@
             <button class="btn" onclick="updateRaffleConfig()">Actualizar</button>
         </div>
 
-        <!-- Formulario de venta -->
+        <!-- Formulario -->
         <div class="form-section">
             <h2 id="formTitle">➕ Agregar nueva venta</h2>
             <input type="hidden" id="editId" value="">
@@ -446,19 +390,16 @@
                     <label>Vendedor</label>
                     <input type="text" id="seller" placeholder="Nombre del vendedor" list="sellers">
                     <datalist id="sellers">
-                        <option value="Ana">
-                        <option value="Carlos">
-                        <option value="María">
-                        <option value="Juan">
+                        <option value="Ana"><option value="Carlos"><option value="María"><option value="Juan">
                     </datalist>
                 </div>
             </div>
 
-            <!-- Números seleccionados -->
-            <div class="selected-numbers-preview">
-                <strong>Números seleccionados:</strong>
+            <!-- Números seleccionados (tags) -->
+            <div class="selected-numbers-box">
+                <div class="selected-numbers-title">📌 Números seleccionados:</div>
                 <div id="selectedNumbersTags" class="number-tags"></div>
-                <div id="noNumbersSelected" style="color: #718096; text-align: center; padding: 10px;">
+                <div id="noNumbersSelected" style="color: #718096; text-align: center; padding: 10px; background: #f7fafc; border-radius: 8px; margin-top: 10px;">
                     ⚠️ Haz clic en los números de la cuadrícula para seleccionarlos
                 </div>
             </div>
@@ -470,13 +411,11 @@
             </div>
         </div>
 
-        <!-- Visualizador de números -->
-        <div class="numbers-visualization" id="visualizationContainer">
+        <!-- CUADRÍCULA DE NÚMEROS (AHORA SÍ VISIBLE) -->
+        <div class="numbers-visualization">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2>🎯 Visualizador de Números</h2>
-                <button class="btn btn-save-image" onclick="saveVisualizationAsImage()">
-                    📸 Guardar imagen
-                </button>
+                <h2>🎯 Selecciona los números</h2>
+                <button class="btn btn-save-image" onclick="saveVisualizationAsImage()">📸 Guardar imagen</button>
             </div>
             
             <div class="stats-summary">
@@ -491,12 +430,12 @@
             </div>
 
             <div class="legend">
-                <div class="legend-item"><div class="legend-color sold"></div> Vendidos</div>
-                <div class="legend-item"><div class="legend-color available"></div> Disponibles</div>
-                <div class="legend-item"><div class="legend-color selected"></div> Seleccionados</div>
+                <div class="legend-item"><div class="legend-color sold"></div> Vendido</div>
+                <div class="legend-item"><div class="legend-color available"></div> Disponible</div>
+                <div class="legend-item"><div class="legend-color selected"></div> Seleccionado</div>
             </div>
 
-            <!-- CUADRÍCULA DE NÚMEROS -->
+            <!-- ESTA ES LA CUADRÍCULA QUE DEBE VERSE -->
             <div id="numbersGrid" class="numbers-grid"></div>
         </div>
 
@@ -516,17 +455,12 @@
             </div>
         </div>
 
-        <!-- Tabla de ventas -->
+        <!-- Tabla -->
         <h2>📋 Ventas Registradas</h2>
         <table>
             <thead>
                 <tr>
-                    <th>Nombre</th>
-                    <th>Nick</th>
-                    <th>Números</th>
-                    <th>Contacto</th>
-                    <th>Vendedor</th>
-                    <th>Acciones</th>
+                    <th>Nombre</th><th>Nick</th><th>Números</th><th>Contacto</th><th>Vendedor</th><th>Acciones</th>
                 </tr>
             </thead>
             <tbody id="salesTable"></tbody>
@@ -536,106 +470,101 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <script>
-        // ============ VARIABLES GLOBALES ============
+        // ============ VARIABLES ============
         let sales = JSON.parse(localStorage.getItem('raffleSales')) || [];
         let totalNumbers = parseInt(localStorage.getItem('totalNumbers')) || 100;
         let selectedNumbers = new Set();
 
         // ============ INICIALIZACIÓN ============
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Iniciando aplicación...');
             document.getElementById('totalNumbers').value = totalNumbers;
-            renderNumbersGrid(); // Esto crea la cuadrícula
+            actualizarGrid(); // Mostrar la cuadrícula
             renderSales();
-            updateStats();
-            updateSelectedDisplay();
+            actualizarEstadisticas();
+            actualizarTags();
         });
 
-        // ============ FUNCIÓN CRÍTICA: RENDERIZAR CUADRÍCULA ============
-        function renderNumbersGrid() {
+        // ============ FUNCIÓN PRINCIPAL: ACTUALIZAR GRID ============
+        function actualizarGrid() {
             const grid = document.getElementById('numbersGrid');
-            if (!grid) {
-                console.error('No se encontró el grid');
-                return;
-            }
+            if (!grid) return;
             
-            grid.innerHTML = ''; // Limpiar grid
+            let html = '';
             
             for (let i = 1; i <= totalNumbers; i++) {
-                const box = document.createElement('div');
-                box.className = 'number-box';
-                box.textContent = i;
+                const estaVendido = sales.some(s => s.numbers.includes(i));
+                const estaSeleccionado = selectedNumbers.has(i);
                 
-                // Verificar si está vendido
-                const isSold = sales.some(sale => sale.numbers.includes(i));
-                
-                if (isSold) {
-                    box.className = 'number-box sold';
-                } else if (selectedNumbers.has(i)) {
-                    box.className = 'number-box selected';
-                    box.onclick = () => toggleNumber(i);
+                let clase = 'number-box ';
+                if (estaVendido) {
+                    clase += 'sold';
+                } else if (estaSeleccionado) {
+                    clase += 'selected';
                 } else {
-                    box.className = 'number-box available';
-                    box.onclick = () => toggleNumber(i);
+                    clase += 'available';
                 }
                 
-                grid.appendChild(box);
+                html += `<div class="${clase}" onclick="seleccionarNumero(${i})">${i}</div>`;
             }
             
-            console.log('Grid renderizado con', totalNumbers, 'números');
+            grid.innerHTML = html;
+            actualizarContadores();
         }
 
-        // ============ SELECCIÓN DE NÚMEROS ============
-        function toggleNumber(num) {
-            if (sales.some(sale => sale.numbers.includes(num))) {
+        // ============ SELECCIONAR NÚMERO ============
+        function seleccionarNumero(num) {
+            // Verificar si está vendido
+            if (sales.some(s => s.numbers.includes(num))) {
                 alert(`El número ${num} ya está vendido`);
                 return;
             }
             
+            // Seleccionar o deseleccionar
             if (selectedNumbers.has(num)) {
                 selectedNumbers.delete(num);
             } else {
                 selectedNumbers.add(num);
             }
             
-            renderNumbersGrid();
-            updateSelectedDisplay();
+            actualizarGrid();
+            actualizarTags();
+            document.getElementById('selectedCount').textContent = selectedNumbers.size;
         }
 
-        function updateSelectedDisplay() {
+        // ============ ACTUALIZAR TAGS ============
+        function actualizarTags() {
             const tags = document.getElementById('selectedNumbersTags');
             const noNumbers = document.getElementById('noNumbersSelected');
-            const countSpan = document.getElementById('selectedCount');
             
             tags.innerHTML = '';
             
             if (selectedNumbers.size === 0) {
                 noNumbers.style.display = 'block';
-                countSpan.textContent = '0';
                 return;
             }
             
             noNumbers.style.display = 'none';
-            countSpan.textContent = selectedNumbers.size;
             
             Array.from(selectedNumbers).sort((a,b) => a-b).forEach(num => {
                 const tag = document.createElement('span');
                 tag.className = 'number-tag';
-                tag.innerHTML = `${num} <button onclick="removeNumber(${num})">×</button>`;
+                tag.innerHTML = `${num} <button onclick="eliminarTag(${num})">×</button>`;
                 tags.appendChild(tag);
             });
         }
 
-        function removeNumber(num) {
+        function eliminarTag(num) {
             selectedNumbers.delete(num);
-            renderNumbersGrid();
-            updateSelectedDisplay();
+            actualizarGrid();
+            actualizarTags();
+            document.getElementById('selectedCount').textContent = selectedNumbers.size;
         }
 
         function clearNumberSelection() {
             selectedNumbers.clear();
-            renderNumbersGrid();
-            updateSelectedDisplay();
+            actualizarGrid();
+            actualizarTags();
+            document.getElementById('selectedCount').textContent = '0';
         }
 
         // ============ GUARDAR VENTA ============
@@ -672,4 +601,36 @@
             };
 
             if (editId) {
-              
+                const index = sales.findIndex(s => s.id === editId);
+                if (index !== -1) sales[index] = saleData;
+            } else {
+                sales.push(saleData);
+            }
+
+            localStorage.setItem('raffleSales', JSON.stringify(sales));
+            
+            // Limpiar formulario
+            document.getElementById('name').value = '';
+            document.getElementById('nick').value = '';
+            document.getElementById('contact').value = '';
+            document.getElementById('seller').value = '';
+            document.getElementById('editId').value = '';
+            document.getElementById('formTitle').textContent = '➕ Agregar nueva venta';
+            document.getElementById('cancelBtn').style.display = 'none';
+            
+            selectedNumbers.clear();
+            actualizarGrid();
+            renderSales();
+            actualizarEstadisticas();
+            actualizarTags();
+            document.getElementById('selectedCount').textContent = '0';
+            
+            alert('✅ Venta guardada');
+        }
+
+        // ============ EDITAR VENTA ============
+        function editSale(id) {
+            const sale = sales.find(s => s.id === id);
+            if (!sale) return;
+            
+            do
