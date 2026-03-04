@@ -55,6 +55,7 @@
             display: flex;
             flex-direction: column;
             min-width: 200px;
+            flex: 1;
         }
 
         .form-group label {
@@ -68,6 +69,12 @@
             border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
         }
 
         .btn {
@@ -79,6 +86,8 @@
             cursor: pointer;
             font-size: 16px;
             font-weight: 600;
+            transition: background 0.3s;
+            white-space: nowrap;
         }
 
         .btn:hover {
@@ -95,6 +104,11 @@
 
         .btn-save-image {
             background: #9f7aea;
+            width: 100%;
+        }
+
+        .btn-save-image:hover {
+            background: #805ad5;
         }
 
         .form-section {
@@ -111,9 +125,44 @@
             margin-bottom: 20px;
         }
 
-        /* Estilos para los números seleccionados */
-        .selected-numbers-box {
+        /* Estilo para el campo de números */
+        .numbers-input-group {
             background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .numbers-input-group label {
+            font-weight: bold;
+            color: #4a5568;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .numbers-input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .numbers-input-group input:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+
+        .helper-text {
+            color: #718096;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .selected-numbers-box {
+            background: #f7fafc;
             border: 2px solid #e2e8f0;
             border-radius: 10px;
             padding: 15px;
@@ -158,7 +207,7 @@
             color: #feb2b2;
         }
 
-        /* CUADRÍCULA DE NÚMEROS - ESTILO CORREGIDO */
+        /* CUADRÍCULA DE NÚMEROS */
         .numbers-visualization {
             background: #fff;
             border-radius: 15px;
@@ -166,6 +215,42 @@
             margin: 30px 0;
             border: 2px solid #e2e8f0;
         }
+
+        .visualization-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stats-summary {
+            display: flex;
+            gap: 30px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1em;
+        }
+
+        .stat-color {
+            width: 25px;
+            height: 25px;
+            border-radius: 6px;
+        }
+
+        .stat-color.sold { background: #f56565; }
+        .stat-color.available { background: #48bb78; }
 
         .numbers-grid {
             display: grid;
@@ -188,8 +273,6 @@
             border-radius: 8px;
             font-weight: bold;
             font-size: 1em;
-            cursor: pointer;
-            transition: all 0.2s;
             border: 2px solid transparent;
         }
 
@@ -199,53 +282,12 @@
             border-color: #2f855a;
         }
 
-        .number-box.available:hover {
-            background: #38a169;
-            transform: scale(1.05);
-        }
-
         .number-box.sold {
             background: #f56565;
             color: white;
             border-color: #c53030;
-            cursor: not-allowed;
             opacity: 0.7;
         }
-
-        .number-box.selected {
-            background: #ed8936;
-            color: white;
-            border-color: #dd6b20;
-            transform: scale(1.05);
-            box-shadow: 0 0 10px rgba(237, 137, 54, 0.5);
-        }
-
-        .stats-summary {
-            display: flex;
-            gap: 30px;
-            padding: 15px;
-            background: #f7fafc;
-            border-radius: 10px;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.1em;
-        }
-
-        .stat-color {
-            width: 25px;
-            height: 25px;
-            border-radius: 6px;
-        }
-
-        .stat-color.sold { background: #f56565; }
-        .stat-color.available { background: #48bb78; }
-        .stat-color.selected { background: #ed8936; }
 
         .legend {
             display: flex;
@@ -271,7 +313,6 @@
         }
         .legend-color.sold { background: #f56565; }
         .legend-color.available { background: #48bb78; }
-        .legend-color.selected { background: #ed8936; }
 
         table {
             width: 100%;
@@ -345,6 +386,15 @@
             .numbers-grid {
                 grid-template-columns: repeat(5, 1fr);
             }
+            
+            .config-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -358,7 +408,7 @@
                 <label for="totalNumbers">Cantidad total de números</label>
                 <input type="number" id="totalNumbers" min="1" value="100">
             </div>
-            <button class="btn" onclick="updateRaffleConfig()">Actualizar</button>
+            <button class="btn" onclick="updateRaffleConfig()">Actualizar configuración</button>
         </div>
 
         <!-- Formulario -->
@@ -372,50 +422,55 @@
             
             <div class="form-row">
                 <div class="form-group">
-                    <label>Nombre completo</label>
+                    <label for="name">Nombre completo</label>
                     <input type="text" id="name" placeholder="Ej: Juan Pérez">
                 </div>
                 <div class="form-group">
-                    <label>Nick / Apodo</label>
+                    <label for="nick">Nick / Apodo</label>
                     <input type="text" id="nick" placeholder="Ej: Juancho">
                 </div>
             </div>
             
             <div class="form-row">
                 <div class="form-group">
-                    <label>Número de contacto</label>
+                    <label for="contact">Número de contacto</label>
                     <input type="tel" id="contact" placeholder="Ej: 3001234567">
                 </div>
                 <div class="form-group">
-                    <label>Vendedor</label>
-                    <input type="text" id="seller" placeholder="Nombre del vendedor" list="sellers">
-                    <datalist id="sellers">
-                        <option value="Ana"><option value="Carlos"><option value="María"><option value="Juan">
-                    </datalist>
+                    <label for="seller">Vendedor</label>
+                    <input type="text" id="seller" placeholder="Nombre de quien vendió">
                 </div>
+            </div>
+
+            <!-- NUEVO: Campo para ingresar números separados por coma -->
+            <div class="numbers-input-group">
+                <label>🔢 Ingrese números separados por coma</label>
+                <input type="text" id="numbersInput" placeholder="Ej: 1, 5, 23, 45, 67" oninput="processNumbersInput()">
+                <div class="helper-text">Puede ingresar números sueltos o rangos (ej: 1-10)</div>
+                <button class="btn" onclick="addNumbersFromInput()" style="margin-top: 10px;">➕ Agregar números</button>
             </div>
 
             <!-- Números seleccionados (tags) -->
             <div class="selected-numbers-box">
-                <div class="selected-numbers-title">📌 Números seleccionados:</div>
+                <div class="selected-numbers-title">📌 Números seleccionados para esta venta:</div>
                 <div id="selectedNumbersTags" class="number-tags"></div>
                 <div id="noNumbersSelected" style="color: #718096; text-align: center; padding: 10px; background: #f7fafc; border-radius: 8px; margin-top: 10px;">
-                    ⚠️ Haz clic en los números de la cuadrícula para seleccionarlos
+                    ⚠️ No hay números seleccionados. Use el campo de arriba para agregar números.
                 </div>
             </div>
             
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <button class="btn btn-success" onclick="saveSale()">💾 Guardar venta</button>
-                <button class="btn" onclick="cancelEdit()" style="display: none;" id="cancelBtn">❌ Cancelar</button>
+                <button class="btn" onclick="cancelEdit()" style="display: none;" id="cancelBtn">❌ Cancelar edición</button>
                 <button class="btn" onclick="clearNumberSelection()">🗑️ Limpiar selección</button>
             </div>
         </div>
 
-        <!-- CUADRÍCULA DE NÚMEROS (AHORA SÍ VISIBLE) -->
+        <!-- Visualizador de números -->
         <div class="numbers-visualization">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2>🎯 Selecciona los números</h2>
-                <button class="btn btn-save-image" onclick="saveVisualizationAsImage()">📸 Guardar imagen</button>
+            <div class="visualization-header">
+                <h2>🎯 Visualizador de Números</h2>
+                <button class="btn btn-save-image" onclick="saveVisualizationAsImage()">📸 Guardar imagen del resumen</button>
             </div>
             
             <div class="stats-summary">
@@ -432,10 +487,9 @@
             <div class="legend">
                 <div class="legend-item"><div class="legend-color sold"></div> Vendido</div>
                 <div class="legend-item"><div class="legend-color available"></div> Disponible</div>
-                <div class="legend-item"><div class="legend-color selected"></div> Seleccionado</div>
             </div>
 
-            <!-- ESTA ES LA CUADRÍCULA QUE DEBE VERSE -->
+            <!-- Cuadrícula de números -->
             <div id="numbersGrid" class="numbers-grid"></div>
         </div>
 
@@ -455,12 +509,17 @@
             </div>
         </div>
 
-        <!-- Tabla -->
+        <!-- Tabla de ventas -->
         <h2>📋 Ventas Registradas</h2>
         <table>
             <thead>
                 <tr>
-                    <th>Nombre</th><th>Nick</th><th>Números</th><th>Contacto</th><th>Vendedor</th><th>Acciones</th>
+                    <th>Nombre</th>
+                    <th>Nick</th>
+                    <th>Números</th>
+                    <th>Contacto</th>
+                    <th>Vendedor</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody id="salesTable"></tbody>
@@ -470,7 +529,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <script>
-        // ============ VARIABLES ============
+        // ============ VARIABLES GLOBALES ============
         let sales = JSON.parse(localStorage.getItem('raffleSales')) || [];
         let totalNumbers = parseInt(localStorage.getItem('totalNumbers')) || 100;
         let selectedNumbers = new Set();
@@ -478,11 +537,77 @@
         // ============ INICIALIZACIÓN ============
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('totalNumbers').value = totalNumbers;
-            actualizarGrid(); // Mostrar la cuadrícula
+            actualizarGrid();
             renderSales();
             actualizarEstadisticas();
             actualizarTags();
         });
+
+        // ============ FUNCIONES PARA INGRESAR NÚMEROS ============
+        function processNumbersInput() {
+            // Esta función puede usarse para validar en tiempo real si se desea
+        }
+
+        function addNumbersFromInput() {
+            const input = document.getElementById('numbersInput').value.trim();
+            if (!input) {
+                alert('Por favor ingrese algunos números');
+                return;
+            }
+
+            // Procesar la entrada: separar por comas y espacios
+            const parts = input.split(',').map(p => p.trim()).filter(p => p.length > 0);
+            const numerosAAgregar = new Set();
+
+            parts.forEach(part => {
+                // Verificar si es un rango (ej: 1-10)
+                if (part.includes('-')) {
+                    const range = part.split('-').map(n => parseInt(n.trim()));
+                    if (range.length === 2 && !isNaN(range[0]) && !isNaN(range[1])) {
+                        const start = Math.min(range[0], range[1]);
+                        const end = Math.max(range[0], range[1]);
+                        for (let i = start; i <= end; i++) {
+                            if (i >= 1 && i <= totalNumbers) {
+                                numerosAAgregar.add(i);
+                            }
+                        }
+                    }
+                } else {
+                    // Número individual
+                    const num = parseInt(part);
+                    if (!isNaN(num) && num >= 1 && num <= totalNumbers) {
+                        numerosAAgregar.add(num);
+                    }
+                }
+            });
+
+            if (numerosAAgregar.size === 0) {
+                alert('No se encontraron números válidos');
+                return;
+            }
+
+            // Verificar que no estén vendidos
+            const numerosVendidos = [];
+            numerosAAgregar.forEach(num => {
+                if (sales.some(s => s.numbers.includes(num))) {
+                    numerosVendidos.push(num);
+                }
+            });
+
+            if (numerosVendidos.length > 0) {
+                alert(`Los siguientes números ya están vendidos: ${numerosVendidos.join(', ')}`);
+                return;
+            }
+
+            // Agregar los números válidos
+            numerosAAgregar.forEach(num => selectedNumbers.add(num));
+            
+            // Actualizar UI
+            actualizarGrid();
+            actualizarTags();
+            document.getElementById('selectedCount').textContent = selectedNumbers.size;
+            document.getElementById('numbersInput').value = ''; // Limpiar input
+        }
 
         // ============ FUNCIÓN PRINCIPAL: ACTUALIZAR GRID ============
         function actualizarGrid() {
@@ -493,42 +618,19 @@
             
             for (let i = 1; i <= totalNumbers; i++) {
                 const estaVendido = sales.some(s => s.numbers.includes(i));
-                const estaSeleccionado = selectedNumbers.has(i);
                 
                 let clase = 'number-box ';
                 if (estaVendido) {
                     clase += 'sold';
-                } else if (estaSeleccionado) {
-                    clase += 'selected';
                 } else {
                     clase += 'available';
                 }
                 
-                html += `<div class="${clase}" onclick="seleccionarNumero(${i})">${i}</div>`;
+                html += `<div class="${clase}">${i}</div>`;
             }
             
             grid.innerHTML = html;
             actualizarContadores();
-        }
-
-        // ============ SELECCIONAR NÚMERO ============
-        function seleccionarNumero(num) {
-            // Verificar si está vendido
-            if (sales.some(s => s.numbers.includes(num))) {
-                alert(`El número ${num} ya está vendido`);
-                return;
-            }
-            
-            // Seleccionar o deseleccionar
-            if (selectedNumbers.has(num)) {
-                selectedNumbers.delete(num);
-            } else {
-                selectedNumbers.add(num);
-            }
-            
-            actualizarGrid();
-            actualizarTags();
-            document.getElementById('selectedCount').textContent = selectedNumbers.size;
         }
 
         // ============ ACTUALIZAR TAGS ============
@@ -547,90 +649,4 @@
             
             Array.from(selectedNumbers).sort((a,b) => a-b).forEach(num => {
                 const tag = document.createElement('span');
-                tag.className = 'number-tag';
-                tag.innerHTML = `${num} <button onclick="eliminarTag(${num})">×</button>`;
-                tags.appendChild(tag);
-            });
-        }
-
-        function eliminarTag(num) {
-            selectedNumbers.delete(num);
-            actualizarGrid();
-            actualizarTags();
-            document.getElementById('selectedCount').textContent = selectedNumbers.size;
-        }
-
-        function clearNumberSelection() {
-            selectedNumbers.clear();
-            actualizarGrid();
-            actualizarTags();
-            document.getElementById('selectedCount').textContent = '0';
-        }
-
-        // ============ GUARDAR VENTA ============
-        function saveSale() {
-            const name = document.getElementById('name').value.trim();
-            const nick = document.getElementById('nick').value.trim() || '-';
-            const contact = document.getElementById('contact').value.trim();
-            const seller = document.getElementById('seller').value.trim();
-            const editId = document.getElementById('editId').value;
-
-            if (!name || !contact || !seller) {
-                alert('Complete todos los campos');
-                return;
-            }
-
-            if (selectedNumbers.size === 0) {
-                alert('Seleccione al menos un número');
-                return;
-            }
-
-            // Verificar números no vendidos
-            for (let num of selectedNumbers) {
-                if (sales.some(s => s.numbers.includes(num) && s.id !== editId)) {
-                    alert(`El número ${num} ya está vendido`);
-                    return;
-                }
-            }
-
-            const saleData = {
-                id: editId || Date.now().toString(),
-                name, nick, contact, seller,
-                numbers: Array.from(selectedNumbers),
-                date: new Date().toISOString()
-            };
-
-            if (editId) {
-                const index = sales.findIndex(s => s.id === editId);
-                if (index !== -1) sales[index] = saleData;
-            } else {
-                sales.push(saleData);
-            }
-
-            localStorage.setItem('raffleSales', JSON.stringify(sales));
-            
-            // Limpiar formulario
-            document.getElementById('name').value = '';
-            document.getElementById('nick').value = '';
-            document.getElementById('contact').value = '';
-            document.getElementById('seller').value = '';
-            document.getElementById('editId').value = '';
-            document.getElementById('formTitle').textContent = '➕ Agregar nueva venta';
-            document.getElementById('cancelBtn').style.display = 'none';
-            
-            selectedNumbers.clear();
-            actualizarGrid();
-            renderSales();
-            actualizarEstadisticas();
-            actualizarTags();
-            document.getElementById('selectedCount').textContent = '0';
-            
-            alert('✅ Venta guardada');
-        }
-
-        // ============ EDITAR VENTA ============
-        function editSale(id) {
-            const sale = sales.find(s => s.id === id);
-            if (!sale) return;
-            
-            do
+    
