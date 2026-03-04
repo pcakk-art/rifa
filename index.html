@@ -3,7 +3,7 @@
 <script>
     // ============ CONFIGURACIÓN DE GOOGLE APPS SCRIPT ============
     // >>>>>> ¡¡¡ PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT !!! <<<<<<
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz6vIL5XL7z7tQsiY8HI8gKLVEKNTHKXYCn71pml7b7IAnPXIGS-lTmztRO7dWGSncTmw/exec'; // <-- CÁMBIALA
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwEP0c2enShhj1z4Cw57xm05c6vy9GFuQpmJx5KJLmAFQzT7C65HeWRso02qfpXniO_/exec'; 
     
     // ============ VARIABLES GLOBALES ============
     let sales = [];
@@ -27,95 +27,91 @@
 
     // ============ FUNCIONES PARA GOOGLE SHEETS ============
     async function cargarDatosDesdeGoogleSheets() {
-        try {
-            cargandoDatos = true;
-            console.log('📥 Cargando datos desde Google Sheets...');
+    try {
+        cargandoDatos = true;
+        console.log('📥 Intentando conectar a:', APPS_SCRIPT_URL);
+        
+        mostrarMensajeCarga(true);
+        
+        // Construir URL con el parámetro accion
+        const url = `${APPS_SCRIPT_URL}?accion=obtenerTodo`;
+        console.log('URL completa:', url);
+        
+        // Usar JSONP para evitar problemas de CORS
+        const data = await new Promise((resolve, reject) => {
+            const callbackName = 'jsonp_callback_' + Date.now();
             
-            const response = await fetch(`${APPS_SCRIPT_URL}?accion=obtenerTodo`);
-            const data = await response.json();
+            // Crear función de callback global
+            window[callbackName] = function(response) {
+                console.log('Respuesta JSONP recibida:', response);
+                delete window[callbackName];
+                document.body.removeChild(script);
+                resolve(response);
+            };
             
-            if (data.error) {
-                throw new Error(data.error);
-            }
+            // Crear script para JSONP
+            const script = document.createElement('script');
+            script.src = `${APPS_SCRIPT_URL}?accion=obtenerTodo&callback=${callbackName}`;
             
-            sales = data.ventas || [];
-            totalNumbers = data.totalNumbers || 100;
+            script.onerror = function(error) {
+                console.error('Error en JSONP:', error);
+                delete window[callbackName];
+                document.body.removeChild(script);
+                reject(new Error('Error en la conexión JSONP'));
+            };
             
-            // Actualizar localStorage como respaldo/offline (opcional)
-            localStorage.setItem('raffleSales', JSON.stringify(sales));
-            localStorage.setItem('totalNumbers', totalNumbers);
+            document.body.appendChild(script);
             
-            console.log('✅ Datos cargados:', { sales: sales.length, totalNumbers });
-            
-        } catch (error) {
-            console.error('❌ Error cargando datos:', error);
-            
-            // Fallback a localStorage si hay error de conexión
-            console.log('⚠️ Usando datos de respaldo (localStorage)');
-            sales = JSON.parse(localStorage.getItem('raffleSales')) || [];
-            totalNumbers = parseInt(localStorage.getItem('totalNumbers')) || 100;
-            
-            alert('No se pudo conectar con Google Sheets. Usando datos locales. Verifica tu URL de Apps Script.');
-        } finally {
-            cargandoDatos = false;
-        }
-    }
-
-    async function guardarTodoEnGoogleSheets() {
-        if (cargandoDatos) {
-            console.log('⏳ Espere, aún cargando datos...');
-            return false;
+            // Timeout de 10 segundos
+            setTimeout(() => {
+                if (window[callbackName]) {
+                    console.log('Timeout - eliminando callback');
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    reject(new Error('Timeout en la conexión'));
+                }
+            }, 10000);
+        });
+        
+        if (data.error) {
+            throw new Error(data.error);
         }
         
-        try {
-            console.log('☁️ Guardando datos en Google Sheets...');
-            
-            // Guardar ventas
-            const responseVentas = await fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors', // Importante para evitar problemas de CORS
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    accion: 'guardarVentas',
-                    ventas: sales
-                })
-            });
-            
-            // Guardar configuración
-            const responseConfig = await fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    accion: 'guardarConfig',
-                    totalNumbers: totalNumbers
-                })
-            });
-            
-            console.log('✅ Datos guardados en Google Sheets');
-            
-            // También guardar en localStorage como respaldo
-            localStorage.setItem('raffleSales', JSON.stringify(sales));
-            localStorage.setItem('totalNumbers', totalNumbers);
-            
-            return true;
-            
-        } catch (error) {
-            console.error('❌ Error guardando en Google Sheets:', error);
-            alert('Error al guardar en la nube. Los datos se guardaron localmente pero no se sincronizarán.');
-            
-            // Guardar al menos en localStorage
-            localStorage.setItem('raffleSales', JSON.stringify(sales));
-            localStorage.setItem('totalNumbers', totalNumbers);
-            
-            return false;
-        }
+        sales = data.ventas || [];
+        totalNumbers = data.totalNumbers || 100;
+        
+        console.log('✅ Datos cargados:', { ventas: sales.length, totalNumbers });
+        
+        // Guardar en localStorage como respaldo
+        localStorage.setItem('raffleSales', JSON.stringify(sales));
+        localStorage.setItem('totalNumbers', totalNumbers);
+        
+        mostrarMensajeCarga(false);
+        
+        // Actualizar la interfaz
+        actualizarGrid();
+        renderSales();
+        actualizarEstadisticas();
+        
+    } catch (error) {
+        console.error('❌ Error cargando datos:', error);
+        
+        mostrarErrorEnUI('Error de conexión: ' + error.message);
+        
+        // Fallback a localStorage
+        sales = JSON.parse(localStorage.getItem('raffleSales')) || [];
+        totalNumbers = parseInt(localStorage.getItem('totalNumbers')) || 100;
+        
+        alert('⚠️ Usando datos locales. Error: ' + error.message);
+        
+        mostrarMensajeCarga(false);
+        
+        // Actualizar interfaz con datos locales
+        actualizarGrid();
+        renderSales();
+        actualizarEstadisticas();
     }
-
+}
     // ============ FUNCIÓN PARA AGREGAR NÚMEROS ============
     function addNumbersFromInput() {
         console.log('🔢 Procesando números...');
@@ -559,4 +555,115 @@
             });
         }, 100);
     }
+// Funciones auxiliares para mensajes
+function mostrarMensajeCarga(mostrar) {
+    const grid = document.getElementById('numbersGrid');
+    if (mostrar) {
+        grid.innerHTML = '<div style="grid-column: span 10; text-align: center; padding: 50px; background: #f7fafc; border-radius: 10px;">🔄 Cargando datos desde Google Sheets...</div>';
+    }
+}
+
+function mostrarErrorEnUI(mensaje) {
+    const grid = document.getElementById('numbersGrid');
+    grid.innerHTML = `<div style="grid-column: span 10; text-align: center; padding: 50px; background: #fff5f5; color: #c53030; border-radius: 10px; border: 1px solid #fc8181;">
+        ❌ ${mensaje}<br>
+        <small style="color: #718096;">Usando datos locales como respaldo</small>
+    </div>`;
+}
+
+// Modificar la función saveSale para que guarde en Google Sheets
+async function saveSale() {
+    console.log('💾 Guardando venta...');
+    
+    if (cargandoDatos) {
+        alert('⏳ Espere, aún cargando datos...');
+        return;
+    }
+    
+    const name = document.getElementById('name').value.trim();
+    const nick = document.getElementById('nick').value.trim() || '-';
+    const contact = document.getElementById('contact').value.trim();
+    const seller = document.getElementById('seller').value.trim();
+    const editId = document.getElementById('editId').value;
+
+    // Validaciones
+    if (!name || !contact || !seller) {
+        alert('⚠️ Por favor complete todos los campos');
+        return;
+    }
+
+    if (selectedNumbers.size === 0) {
+        alert('⚠️ Seleccione al menos un número');
+        return;
+    }
+
+    // Verificar números no vendidos
+    for (let num of selectedNumbers) {
+        if (sales.some(s => s.numbers.includes(num) && s.id !== editId)) {
+            alert(`❌ El número ${num} ya está vendido`);
+            return;
+        }
+    }
+
+    const saleData = {
+        id: editId || Date.now().toString(),
+        name: name,
+        nick: nick,
+        numbers: Array.from(selectedNumbers),
+        contact: contact,
+        seller: seller,
+        date: new Date().toISOString()
+    };
+
+    if (editId) {
+        const index = sales.findIndex(s => s.id === editId);
+        if (index !== -1) sales[index] = saleData;
+    } else {
+        sales.push(saleData);
+    }
+
+    // Guardar en Google Sheets usando JSONP
+    try {
+        const saveUrl = `${APPS_SCRIPT_URL}?accion=guardarVentas&ventas=${encodeURIComponent(JSON.stringify(sales))}`;
+        
+        await new Promise((resolve, reject) => {
+            const callbackName = 'save_callback_' + Date.now();
+            
+            window[callbackName] = function(response) {
+                console.log('Respuesta guardado:', response);
+                delete window[callbackName];
+                document.body.removeChild(script);
+                resolve(response);
+            };
+            
+            const script = document.createElement('script');
+            script.src = `${APPS_SCRIPT_URL}?accion=guardarVentas&ventas=${encodeURIComponent(JSON.stringify(sales))}&callback=${callbackName}`;
+            
+            script.onerror = reject;
+            document.body.appendChild(script);
+            
+            setTimeout(() => reject(new Error('Timeout')), 5000);
+        });
+        
+        console.log('✅ Guardado en Google Sheets');
+        
+    } catch (error) {
+        console.error('Error guardando en Google Sheets:', error);
+        alert('⚠️ Venta guardada localmente. No se pudo sincronizar con la nube.');
+    }
+
+    // Guardar en localStorage
+    localStorage.setItem('raffleSales', JSON.stringify(sales));
+    
+    // Limpiar formulario
+    cancelEdit();
+    
+    // Actualizar interfaz
+    actualizarGrid();
+    renderSales();
+    actualizarEstadisticas();
+    
+    alert('✅ Venta guardada correctamente');
+}
 </script>
+
