@@ -645,72 +645,128 @@
         }
 
         // ============ FUNCIÓN PARA AGREGAR NÚMEROS ============
-        function addNumbersFromInput() {
-            console.log('🔢 Procesando números...');
+        // ============ FUNCIÓN MEJORADA PARA AGREGAR NÚMEROS ============
+function addNumbersFromInput() {
+    console.log('🔢 Procesando números...');
+    
+    const input = document.getElementById('numbersInput').value.trim();
+    
+    if (!input) {
+        alert('⚠️ Por favor ingrese algunos números');
+        return;
+    }
+
+    const numerosAgregados = [];
+    const numerosInvalidos = [];
+    const numerosVendidos = [];
+
+    // Normalizar el input: reemplazar múltiples espacios por un espacio
+    let inputNormalizado = input.replace(/\s+/g, ' ');
+    
+    // Dividir por comas y espacios
+    // Esto maneja: "1-3 14", "1-3, 14", "1-3,14", etc.
+    const partes = inputNormalizado.split(/[,\s]+/).filter(p => p.length > 0);
+    
+    console.log('📦 Partes detectadas:', partes);
+
+    partes.forEach(parte => {
+        // Limpiar la parte de espacios extras
+        parte = parte.trim();
+        
+        // Verificar si es un rango (ej: 1-3, 5-10)
+        if (parte.includes('-')) {
+            const rango = parte.split('-').map(n => parseInt(n.trim()));
             
-            const input = document.getElementById('numbersInput').value.trim();
-            
-            if (!input) {
-                alert('⚠️ Por favor ingrese algunos números');
-                return;
-            }
-
-            const numerosAgregados = [];
-            const numerosInvalidos = [];
-            const numerosVendidos = [];
-
-            const partes = input.split(',').map(p => p.trim()).filter(p => p.length > 0);
-
-            partes.forEach(parte => {
-                if (parte.includes('-')) {
-                    const rango = parte.split('-').map(n => parseInt(n.trim()));
-                    
-                    if (rango.length === 2 && !isNaN(rango[0]) && !isNaN(rango[1])) {
-                        const inicio = Math.min(rango[0], rango[1]);
-                        const fin = Math.max(rango[0], rango[1]);
-                        
-                        for (let i = inicio; i <= fin; i++) {
-                            if (i >= 1 && i <= totalNumbers) {
-                                numerosAgregados.push(i);
-                            } else {
-                                numerosInvalidos.push(i);
-                            }
-                        }
-                    } else {
-                        numerosInvalidos.push(parte);
+            if (rango.length === 2 && !isNaN(rango[0]) && !isNaN(rango[1])) {
+                const inicio = Math.min(rango[0], rango[1]);
+                const fin = Math.max(rango[0], rango[1]);
+                
+                // Validar que el rango sea válido
+                if (inicio >= 1 && fin <= totalNumbers && inicio <= fin) {
+                    for (let i = inicio; i <= fin; i++) {
+                        numerosAgregados.push(i);
                     }
                 } else {
-                    const num = parseInt(parte);
-                    
-                    if (!isNaN(num) && num >= 1 && num <= totalNumbers) {
-                        numerosAgregados.push(num);
-                    } else {
-                        numerosInvalidos.push(parte);
-                    }
+                    numerosInvalidos.push(parte);
                 }
-            });
-
-            numerosAgregados.forEach(num => {
-                if (sales.some(s => s.numbers.includes(num))) {
-                    numerosVendidos.push(num);
-                } else {
-                    selectedNumbers.add(num);
-                }
-            });
-
-            if (numerosInvalidos.length > 0) {
-                alert(`⚠️ Números inválidos o fuera de rango: ${numerosInvalidos.join(', ')}`);
+            } else {
+                numerosInvalidos.push(parte);
             }
-
-            if (numerosVendidos.length > 0) {
-                alert(`❌ Los siguientes números ya están vendidos: ${numerosVendidos.join(', ')}`);
+        } 
+        // Verificar si es un número individual
+        else {
+            const num = parseInt(parte);
+            
+            if (!isNaN(num) && num >= 1 && num <= totalNumbers) {
+                numerosAgregados.push(num);
+            } else if (parte.length > 0) {
+                numerosInvalidos.push(parte);
             }
-
-            actualizarGrid();
-            actualizarTags();
-            document.getElementById('selectedCount').textContent = selectedNumbers.size;
-            document.getElementById('numbersInput').value = '';
         }
+    });
+
+    // Eliminar duplicados de números agregados
+    const numerosUnicos = [...new Set(numerosAgregados)];
+    
+    // Verificar cuáles ya están vendidos
+    numerosUnicos.forEach(num => {
+        if (sales.some(s => s.numbers.includes(num))) {
+            numerosVendidos.push(num);
+        } else {
+            selectedNumbers.add(num);
+        }
+    });
+
+    // Mostrar mensajes según los resultados
+    if (numerosInvalidos.length > 0) {
+        alert(`⚠️ Los siguientes valores no son válidos o están fuera de rango: ${numerosInvalidos.join(', ')}`);
+    }
+
+    if (numerosVendidos.length > 0) {
+        alert(`❌ Los siguientes números ya están vendidos: ${numerosVendidos.sort((a, b) => a - b).join(', ')}`);
+    }
+
+    if (numerosUnicos.length > 0) {
+        const agregados = numerosUnicos.filter(n => !numerosVendidos.includes(n));
+        if (agregados.length > 0) {
+            console.log('✅ Números agregados:', agregados.sort((a, b) => a - b).join(', '));
+        }
+    }
+
+    // Actualizar UI
+    actualizarGrid();
+    actualizarTags();
+    document.getElementById('selectedCount').textContent = selectedNumbers.size;
+    document.getElementById('numbersInput').value = '';
+    
+    // Mostrar resumen de la selección actual
+    if (selectedNumbers.size > 0) {
+        const numerosOrdenados = Array.from(selectedNumbers).sort((a, b) => a - b);
+        console.log('📌 Selección actual:', numerosOrdenados.join(', '));
+    }
+}
+
+// Función adicional para probar diferentes formatos (opcional)
+function probarFormatos() {
+    const ejemplos = [
+        "1-3 14",
+        "1-3, 14", 
+        "1-3,14",
+        "1-5 10-15 20",
+        "1,2,3 4,5,6",
+        "1-3,7-9 11-13",
+        "1 2 3 4 5",
+        "1,2,3,4,5",
+        "1-5 7-10,12-15"
+    ];
+    
+    console.log("🧪 Probando diferentes formatos:");
+    ejemplos.forEach((ejemplo, index) => {
+        console.log(`\nEjemplo ${index + 1}: "${ejemplo}"`);
+        document.getElementById('numbersInput').value = ejemplo;
+        addNumbersFromInput();
+    });
+}
 
         // ============ FUNCIÓN PRINCIPAL: ACTUALIZAR GRID ============
         function actualizarGrid() {
