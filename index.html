@@ -3441,6 +3441,49 @@ function normalizeScannerError(error) {
     return `No se pudo leer la captura: ${msg}`;
 }
 
+function reconstructOcrLines(ocrData, canvasHeight = 0) {
+    if (!ocrData) return [];
+
+    if (Array.isArray(ocrData.lines) && ocrData.lines.length) {
+        return ocrData.lines
+            .map(line => (line && line.text ? String(line.text).trim() : ''))
+            .filter(Boolean);
+    }
+
+    const words = Array.isArray(ocrData.words) ? ocrData.words.filter(w => w && w.text) : [];
+    if (!words.length) {
+        const text = String(ocrData.text || '').trim();
+        return text ? text.split(/\r?\n/).map(s => s.trim()).filter(Boolean) : [];
+    }
+
+    const normalizedWords = words.map(word => {
+        const bbox = word.bbox || {};
+        const y0 = Number.isFinite(bbox.y0) ? bbox.y0 : 0;
+        const y1 = Number.isFinite(bbox.y1) ? bbox.y1 : y0 + 1;
+        const x0 = Number.isFinite(bbox.x0) ? bbox.x0 : 0;
+        return { text: String(word.text).trim(), x0, yMid: (y0 + y1) / 2 };
+    }).filter(w => w.text);
+
+    normalizedWords.sort((a, b) => a.yMid - b.yMid || a.x0 - b.x0);
+
+    const lineTolerance = Math.max(18, Math.round((canvasHeight || 240) * 0.05));
+    const lines = [];
+
+    for (const word of normalizedWords) {
+        const last = lines[lines.length - 1];
+        if (!last || Math.abs(last.yMid - word.yMid) > lineTolerance) {
+            lines.push({ yMid: word.yMid, words: [word] });
+        } else {
+            last.words.push(word);
+            last.yMid = (last.yMid * (last.words.length - 1) + word.yMid) / last.words.length;
+        }
+    }
+
+    return lines
+        .map(line => line.words.sort((a, b) => a.x0 - b.x0).map(w => w.text).join(' ').trim())
+        .filter(Boolean);
+}
+
 async function startPresenceScanner() {
     const panel = document.getElementById('scannerPanel');
     const video = document.getElementById('scannerVideo');
