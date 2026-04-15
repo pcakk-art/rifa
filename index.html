@@ -619,17 +619,236 @@
                 grid-template-columns: repeat(5, 1fr);
             }
         }
+    
+        .stats-admin-layout,
+        .public-stats-layout {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 20px;
+        }
+
+        .stats-card {
+            background: #fff;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .stats-card h3 {
+            margin-bottom: 14px;
+            color: #334155;
+        }
+
+        .stats-card textarea,
+        .stats-card input,
+        .stats-card select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 15px;
+            background: #fff;
+        }
+
+        .stats-card textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .muted-box {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            color: #475569;
+            padding: 12px 14px;
+            border-radius: 10px;
+            margin-top: 10px;
+            font-size: 0.95em;
+        }
+
+        .stats-kpis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .stats-kpi {
+            background: linear-gradient(180deg, #ffffff, #f8fafc);
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .stats-kpi .value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #4f46e5;
+            margin-top: 6px;
+        }
+
+        .records-list,
+        .reward-list,
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 420px;
+            overflow: auto;
+        }
+
+        .record-item,
+        .reward-item,
+        .history-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .record-item strong,
+        .history-item strong {
+            color: #1e293b;
+        }
+
+        .pill-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .pill.soft {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .reward-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: #fef3c7;
+            color: #92400e;
+            font-weight: 700;
+            margin: 4px 6px 4px 0;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        .section-subtitle {
+            color: #64748b;
+            margin: -8px 0 18px;
+        }
+
+        .split-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .public-header-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: #eef2ff;
+            border: 2px solid #c7d2fe;
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+
+        .public-rank {
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: #4338ca;
+        }
+
+        .mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            letter-spacing: 1px;
+        }
+
+        .small-note {
+            color: #64748b;
+            font-size: 0.92em;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 980px) {
+            .stats-admin-layout,
+            .public-stats-layout,
+            .home-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎫 Sistema de Gestión de Rifas</h1>
-        <div class="top-nav">
-            <button class="btn" onclick="showModule('salesModule')">🧾 Gestión de ventas</button>
-            <button class="btn btn-secondary" onclick="showModule('drawModule')">🎲 Sorteo de rifa</button>
+    <h1>🎫 Sistema de Gestión de Rifas</h1>
+
+    <div id="homeModule" class="module-section active">
+        <div class="landing-hero">
+            <h2 style="margin-bottom:8px;">Centro de administración</h2>
+            <p>Elige uno de los tres apartados principales. Desde aquí entras a gestión de ventas, sorteo de rifa o estadísticas de jugadores, manteniendo la portada limpia y más fácil de usar.</p>
         </div>
 
-        <div id="salesModule" class="module-section active">
+        <div class="home-grid">
+            <div class="home-card" onclick="showModule('salesModule')">
+                <div class="icon">🧾</div>
+                <h3>Gestión ventas</h3>
+                <p>Administra números, compradores, vendedores, exportaciones y visualización del estado actual de la rifa.</p>
+                <div class="mini-list">
+                    <span class="home-chip">Ventas</span>
+                    <span class="home-chip">Visualizador</span>
+                    <span class="home-chip">Exportar</span>
+                </div>
+            </div>
+
+            <div class="home-card" onclick="showModule('drawModule')">
+                <div class="icon">🎲</div>
+                <h3>Sorteo rifa</h3>
+                <p>Gestiona participantes, varios premios, exclusiones, números al agua, animación de ganador e historial exportable.</p>
+                <div class="mini-list">
+                    <span class="home-chip">Participantes</span>
+                    <span class="home-chip">Premios</span>
+                    <span class="home-chip">Ganadores</span>
+                </div>
+            </div>
+
+            <div class="home-card" onclick="showModule('statsModule')">
+                <div class="icon">🏅</div>
+                <h3>Estadísticas jugadores</h3>
+                <p>Registra asistencias por evento y entrenador, revisa históricos, ranking, top 50 y recompensas virtuales configurables.</p>
+                <div class="mini-list">
+                    <span class="home-chip">Ranking</span>
+                    <span class="home-chip">Historial</span>
+                    <span class="home-chip">Recompensas</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="salesModule" class="module-section">
+        <div class="module-toolbar">
+            <div>
+                <h2>🧾 Gestión de ventas</h2>
+            </div>
+            <button class="btn btn-ghost" onclick="showModule('homeModule')">⬅️ Volver al inicio</button>
+        </div>
         <!-- Configuración -->
         <div class="config-section">
             <div class="form-group">
@@ -785,6 +1004,10 @@
         </div>
 
         <div id="drawModule" class="module-section">
+            <div class="module-toolbar">
+                <div><h2>🎲 Sorteo de rifa</h2></div>
+                <button class="btn btn-ghost" onclick="showModule('homeModule')">⬅️ Volver al inicio</button>
+            </div>
             <div class="form-section">
                 <h2>🎲 Sorteo de rifa</h2>
                 <div class="summary-box">
@@ -910,6 +1133,247 @@ Pedro González"></textarea>
                 </div>
             </div>
         </div>
+
+        <div id="statsModule" class="module-section">
+            <div class="module-toolbar">
+                <div><h2>🏅 Estadísticas jugadores</h2></div>
+                <button class="btn btn-ghost" onclick="showModule('homeModule')">⬅️ Volver al inicio</button>
+            </div>
+            <div class="form-section">
+                <h2>🏅 Registro y estadísticas de jugadores</h2>
+                <p class="section-subtitle">Administra eventos, registra jugadores vistos presencialmente desde los datos del celular, define recompensas y revisa históricos.</p>
+
+                <div class="stats-kpis">
+                    <div class="stats-kpi">
+                        <div>Jugadores únicos</div>
+                        <div class="value" id="playersTotalKpi">0</div>
+                    </div>
+                    <div class="stats-kpi">
+                        <div>Registros totales</div>
+                        <div class="value" id="recordsTotalKpi">0</div>
+                    </div>
+                    <div class="stats-kpi">
+                        <div>Eventos creados</div>
+                        <div class="value" id="eventsTotalKpi">0</div>
+                    </div>
+                    <div class="stats-kpi">
+                        <div>Entrenadores</div>
+                        <div class="value" id="coachesTotalKpi">0</div>
+                    </div>
+                </div>
+
+                <div class="stats-admin-layout">
+                    <div>
+                        <div class="stats-card">
+                            <h3>📅 Evento actual</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="eventName">Nombre del evento</label>
+                                    <input type="text" id="eventName" placeholder="Ej: Entrenamiento jueves / torneo local">
+                                </div>
+                                <div class="form-group">
+                                    <label for="eventDate">Fecha</label>
+                                    <input type="date" id="eventDate">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="coachName">Entrenador</label>
+                                    <input type="text" id="coachName" placeholder="Ej: Coach Pablo">
+                                </div>
+                                <div class="form-group">
+                                    <label for="eventLocation">Lugar o nota</label>
+                                    <input type="text" id="eventLocation" placeholder="Ej: Muro norte / gimnasio / sede">
+                                </div>
+                            </div>
+                            <div class="split-actions">
+                                <button class="btn" onclick="saveCurrentEventTemplate()">💾 Guardar evento base</button>
+                                <button class="btn" onclick="loadLatestEventTemplate()">↩️ Recuperar último evento</button>
+                            </div>
+                            <div class="muted-box">
+                                Aquí defines el contexto antes de registrar jugadores. Cada asistencia se guarda por evento y por entrenador.
+                            </div>
+                        </div>
+
+                        <div class="stats-card">
+                            <h3>📲 Registro rápido presencial</h3>
+                            <div class="form-row">
+                                <div class="form-group" style="min-width:100%;">
+                                    <label for="captureText">Pega o escribe el texto visible en el celular</label>
+                                    <textarea id="captureText" placeholder="Ej:
+NinjaFox
+1234 5678 9012"></textarea>
+                                </div>
+                            </div>
+                            <div class="split-actions">
+                                <button class="btn" onclick="parseCaptureToForm()">🪄 Detectar nick y código</button>
+                                <button class="btn btn-success" onclick="saveSinglePlayerRecord()">✅ Registrar asistencia</button>
+                            </div>
+                            <div class="form-row" style="margin-top:16px;">
+                                <div class="form-group">
+                                    <label for="playerNick">Nick detectado / manual</label>
+                                    <input type="text" id="playerNick" placeholder="Nick del jugador">
+                                </div>
+                                <div class="form-group">
+                                    <label for="playerCode">Código de 12 dígitos</label>
+                                    <input type="text" id="playerCode" class="mono" placeholder="1234 5678 9012">
+                                </div>
+                            </div>
+                            <div class="muted-box">
+                                No se escanea QR ni imagen. Solo guarda los dos datos que ustedes ven en el celular del jugador.
+                            </div>
+                        </div>
+
+                        <div class="stats-card">
+                            <h3>📥 Registro masivo</h3>
+                            <div class="form-row">
+                                <div class="form-group" style="min-width:100%;">
+                                    <label for="batchPlayersInput">Pega varios jugadores (una línea por jugador)</label>
+                                    <textarea id="batchPlayersInput" placeholder="Formatos válidos:
+NinjaFox, 1234 5678 9012
+LunaWall | 2222-3333-4444
+AeroGrip 555566667777"></textarea>
+                                </div>
+                            </div>
+                            <div class="split-actions">
+                                <button class="btn" onclick="saveBatchPlayerRecords()">📚 Registrar lote</button>
+                                <button class="btn" onclick="clearBatchPlayerInput()">🗑️ Limpiar lote</button>
+                                <button class="btn" onclick="exportPlayerRecordsCSV()">📤 Exportar registros CSV</button>
+                            </div>
+                        </div>
+
+                        <div class="stats-card">
+                            <h3>🏆 Recompensas virtuales</h3>
+                            <input type="hidden" id="rewardEditId" value="">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="rewardName">Nombre</label>
+                                    <input type="text" id="rewardName" placeholder="Ej: Copa constancia / Medalla plata">
+                                </div>
+                                <div class="form-group">
+                                    <label for="rewardIcon">Icono</label>
+                                    <select id="rewardIcon">
+                                        <option value="🏆">🏆 Copa</option>
+                                        <option value="🥇">🥇 Oro</option>
+                                        <option value="🥈">🥈 Plata</option>
+                                        <option value="🥉">🥉 Bronce</option>
+                                        <option value="🎖️">🎖️ Medalla</option>
+                                        <option value="⭐">⭐ Estrella</option>
+                                        <option value="🔥">🔥 Racha</option>
+                                        <option value="👑">👑 Corona</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="rewardCriterion">Criterio</label>
+                                    <select id="rewardCriterion" onchange="handleRewardCriterionChange()">
+                                        <option value="attendance_total">Asistencias totales</option>
+                                        <option value="unique_events">Eventos únicos</option>
+                                        <option value="attendance_with_coach">Asistencias con entrenador</option>
+                                        <option value="distinct_coaches">Entrenadores distintos</option>
+                                        <option value="attendance_since_date">Asistencias desde fecha</option>
+                                        <option value="streak_event_days">Racha de días con evento</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="rewardThreshold">Meta / mínimo</label>
+                                    <input type="number" id="rewardThreshold" min="1" value="5">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="rewardCoachTarget">Entrenador objetivo (si aplica)</label>
+                                    <input type="text" id="rewardCoachTarget" placeholder="Ej: Coach Pablo">
+                                </div>
+                                <div class="form-group">
+                                    <label for="rewardStartDate">Desde fecha</label>
+                                    <input type="date" id="rewardStartDate">
+                                </div>
+                                <div class="form-group">
+                                    <label for="rewardEndDate">Hasta fecha</label>
+                                    <input type="date" id="rewardEndDate">
+                                </div>
+                                <div class="form-group">
+                                    <label for="rewardDescription">Descripción</label>
+                                    <input type="text" id="rewardDescription" placeholder="Texto breve visible en ranking y vista pública">
+                                </div>
+                            </div>
+                            <div class="muted-box">
+                                Puedes crear recompensas por distintos criterios. Ejemplos: 10 asistencias totales, 5 asistencias con un entrenador, 3 entrenadores distintos o racha de 4 fechas seguidas.
+                            </div>
+                            <div class="split-actions">
+                                <button class="btn" onclick="saveReward()">💾 Guardar recompensa</button>
+                                <button class="btn" onclick="clearRewardForm()">🧹 Limpiar formulario</button>
+                                <button class="btn" onclick="loadSuggestedRewards()">✨ Cargar sugeridas</button>
+                            </div>
+                            <div id="rewardList" class="reward-list" style="margin-top:16px;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="stats-card">
+                            <h3>🔎 Vista admin</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="statsCoachFilter">Filtrar por entrenador</label>
+                                    <input type="text" id="statsCoachFilter" placeholder="Ej: Coach Pablo" oninput="renderStatsModule()">
+                                </div>
+                                <div class="form-group">
+                                    <label for="statsPlayerSearch">Buscar jugador</label>
+                                    <input type="text" id="statsPlayerSearch" placeholder="Nick o código" oninput="renderStatsModule()">
+                                </div>
+                            </div>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Top</th>
+                                            <th>Jugador</th>
+                                            <th>Código</th>
+                                            <th>Asistencias</th>
+                                            <th>Entrenador</th>
+                                            <th>Recompensas</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="playersRankingTable"></tbody>
+                                </table>
+                            </div>
+                            <div class="small-note">Se muestra el top 50 del filtro actual.</div>
+                        </div>
+
+                        <div class="stats-card">
+                            <h3>🕘 Historial de registros</h3>
+                            <div id="recordsHistoryList" class="history-list"></div>
+                        </div>
+
+                        <div class="stats-card">
+                            <h3>🌐 Vista pública para jugadores</h3>
+                            <div class="public-header-box">
+                                <div>
+                                    <strong>Comparte esta página en modo solo lectura</strong><br>
+                                    <span class="small-note">Muestra top 50, búsqueda por entrenador, jugadores y registros antiguos.</span>
+                                </div>
+                                <button class="btn" onclick="openPublicStatsPage()">📖 Abrir vista pública</button>
+                            </div>
+                            <div class="muted-box">
+                                Crea un archivo adicional en GitHub Pages con el nombre <strong>estadisticas_publicas.html</strong> y el botón la abrirá automáticamente.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-card">
+                    <h3>📚 Historial de eventos</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="historyEventSearch">Buscar evento</label>
+                            <input type="text" id="historyEventSearch" placeholder="Nombre del evento o entrenador" oninput="renderEventHistory()">
+                        </div>
+                    </div>
+                    <div id="eventHistoryList" class="records-list"></div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -930,6 +1394,17 @@ Pedro González"></textarea>
             seedHistory: [],
             shufflePool: []
         };
+        let statsData = {
+            eventTemplate: {
+                name: '',
+                date: '',
+                coach: '',
+                location: ''
+            },
+            events: [],
+            records: [],
+            rewards: []
+        };
 
         // ============ INICIALIZACIÓN ============
         document.addEventListener('DOMContentLoaded', function() {
@@ -937,6 +1412,8 @@ Pedro González"></textarea>
             console.log('URL:', APPS_SCRIPT_URL);
             cargarDatosDesdeGoogleSheets();
             renderDrawModule();
+            initStatsDefaults();
+            renderStatsModule();
         });
 
         // ============ FUNCIONES DE GOOGLE SHEETS ============
@@ -967,6 +1444,8 @@ Pedro González"></textarea>
                         actualizarEstadisticas();
                         actualizarTags();
                         renderDrawModule();
+                        fillEventTemplateForm();
+                        renderStatsModule();
                     } else {
                         usarDatosLocales();
                     }
@@ -989,7 +1468,8 @@ Pedro González"></textarea>
                 const datos = {
                     ventas: sales,
                     totalNumbers: totalNumbers,
-                    drawData: drawData
+                    drawData: drawData,
+                    statsData: statsData
                 };
                 
                 fetch(APPS_SCRIPT_URL, {
@@ -1242,7 +1722,10 @@ function probarFormatos() {
         function showModule(moduleId) {
             document.querySelectorAll('.module-section').forEach(el => el.classList.remove('active'));
             const target = document.getElementById(moduleId);
-            if (target) target.classList.add('active');
+            if (target) {
+                target.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         }
 
         function parseParticipantsText(rawText) {
@@ -1531,6 +2014,648 @@ function probarFormatos() {
             txt += `Totales: ${drawData.winners.filter(w => w.resultType !== 'water').length} ganadores, ${drawData.winners.filter(w => w.resultType === 'water').length} al agua.\n`;
             descargarArchivo(txt, `resumen-ganadores-${new Date().toISOString().split('T')[0]}.txt`, 'text/plain');
         }
+
+
+        function normalizarStatsData(data) {
+            const base = {
+                eventTemplate: { name: '', date: '', coach: '', location: '' },
+                events: [],
+                records: [],
+                rewards: []
+            };
+            if (!data || typeof data !== 'object') return base;
+            base.eventTemplate = {
+                name: String(data.eventTemplate?.name || '').trim(),
+                date: String(data.eventTemplate?.date || '').trim(),
+                coach: String(data.eventTemplate?.coach || '').trim(),
+                location: String(data.eventTemplate?.location || '').trim()
+            };
+            base.events = Array.isArray(data.events) ? data.events.map((e, idx) => ({
+                id: e.id || `ev_${idx}_${Date.now()}`,
+                name: String(e.name || '').trim(),
+                date: String(e.date || '').trim(),
+                coach: String(e.coach || '').trim(),
+                location: String(e.location || '').trim(),
+                createdAt: e.createdAt || new Date().toISOString()
+            })).filter(e => e.name || e.coach || e.date) : [];
+            base.records = Array.isArray(data.records) ? data.records.map((r, idx) => ({
+                id: r.id || `rec_${idx}_${Date.now()}`,
+                eventId: r.eventId || '',
+                eventName: String(r.eventName || '').trim(),
+                eventDate: String(r.eventDate || '').trim(),
+                coach: String(r.coach || '').trim(),
+                nick: String(r.nick || '').trim(),
+                code: formatCode(r.code || ''),
+                createdAt: r.createdAt || new Date().toISOString()
+            })).filter(r => r.nick && r.code) : [];
+            base.rewards = Array.isArray(data.rewards) ? data.rewards.map((rw, idx) => ({
+                id: rw.id || `rw_${idx}_${Date.now()}`,
+                name: String(rw.name || '').trim(),
+                icon: String(rw.icon || '🏆').trim(),
+                threshold: Math.max(1, Number(rw.threshold || 1)),
+                startDate: String(rw.startDate || '').trim(),
+                active: rw.active !== false
+            })).filter(rw => rw.name) : [];
+            return base;
+        }
+
+        function persistStatsDataLocal() {
+            localStorage.setItem('raffleStatsData', JSON.stringify(statsData));
+        }
+
+        function initStatsDefaults() {
+            if (!statsData.rewards.length) {
+                statsData.rewards = [
+                    { id: `rw_${Date.now()}_1`, name: 'Medalla constancia', icon: '🎖️', threshold: 3, startDate: '', active: true },
+                    { id: `rw_${Date.now()}_2`, name: 'Copa disciplina', icon: '🏆', threshold: 5, startDate: '', active: true },
+                    { id: `rw_${Date.now()}_3`, name: 'Oro élite', icon: '🥇', threshold: 10, startDate: '', active: true }
+                ];
+                persistStatsDataLocal();
+            }
+            if (!statsData.eventTemplate.date) {
+                const today = new Date().toISOString().split('T')[0];
+                statsData.eventTemplate.date = today;
+            }
+            fillEventTemplateForm();
+        }
+
+        function fillEventTemplateForm() {
+            const tpl = statsData.eventTemplate || {};
+            const set = (id, value) => { const el = document.getElementById(id); if (el && (el.value === '' || value)) el.value = value || ''; };
+            set('eventName', tpl.name);
+            set('eventDate', tpl.date || new Date().toISOString().split('T')[0]);
+            set('coachName', tpl.coach);
+            set('eventLocation', tpl.location);
+            const rewardDate = document.getElementById('rewardStartDate');
+            if (rewardDate && !rewardDate.value) rewardDate.value = tpl.date || new Date().toISOString().split('T')[0];
+        }
+
+        function getCurrentEventPayload() {
+            const name = document.getElementById('eventName')?.value.trim() || '';
+            const date = document.getElementById('eventDate')?.value || '';
+            const coach = document.getElementById('coachName')?.value.trim() || '';
+            const location = document.getElementById('eventLocation')?.value.trim() || '';
+            if (!name || !date || !coach) {
+                alert('⚠️ Completa nombre del evento, fecha y entrenador antes de registrar.');
+                return null;
+            }
+            return { name, date, coach, location };
+        }
+
+        function saveCurrentEventTemplate() {
+            const payload = getCurrentEventPayload();
+            if (!payload) return;
+            statsData.eventTemplate = payload;
+            const exists = statsData.events.find(e => e.name === payload.name && e.date === payload.date && e.coach === payload.coach);
+            if (!exists) {
+                statsData.events.push({
+                    id: `ev_${Date.now()}`,
+                    ...payload,
+                    createdAt: new Date().toISOString()
+                });
+            }
+            persistStatsDataLocal();
+            guardarEnGoogleSheets();
+            renderStatsModule();
+            alert('✅ Evento base guardado');
+        }
+
+        function loadLatestEventTemplate() {
+            const latest = [...statsData.events].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+            if (!latest) {
+                fillEventTemplateForm();
+                return;
+            }
+            statsData.eventTemplate = {
+                name: latest.name,
+                date: latest.date,
+                coach: latest.coach,
+                location: latest.location || ''
+            };
+            fillEventTemplateForm();
+            persistStatsDataLocal();
+            renderStatsModule();
+        }
+
+        function sanitizeNick(nick) {
+            return String(nick || '').replace(/\s+/g, ' ').trim();
+        }
+
+        function formatCode(code) {
+            const digits = String(code || '').replace(/\D/g, '').slice(0, 12);
+            if (!digits) return '';
+            return digits.replace(/(\d{4})(\d{0,4})(\d{0,4})/, (_, a, b, c) => [a, b, c].filter(Boolean).join(' '));
+        }
+
+        function extractNickAndCode(raw) {
+            const text = String(raw || '').trim();
+            if (!text) return { nick: '', code: '' };
+            const codeMatch = text.match(/(\d{4})\D*(\d{4})\D*(\d{4})/);
+            const code = codeMatch ? `${codeMatch[1]} ${codeMatch[2]} ${codeMatch[3]}` : '';
+            let nick = text;
+            if (codeMatch) {
+                nick = text.replace(codeMatch[0], ' ');
+            }
+            nick = nick.replace(/c[oó]digo/ig, ' ').replace(/nick/ig, ' ').replace(/[:\-]/g, ' ');
+            nick = nick.split('\n').map(x => x.trim()).filter(Boolean)[0] || nick;
+            nick = sanitizeNick(nick);
+            return { nick, code };
+        }
+
+        function parseCaptureToForm() {
+            const raw = document.getElementById('captureText')?.value || '';
+            const parsed = extractNickAndCode(raw);
+            if (!parsed.nick && !parsed.code) {
+                alert('⚠️ No pude detectar datos. Escribe el nick y el código manualmente.');
+                return;
+            }
+            if (parsed.nick) document.getElementById('playerNick').value = parsed.nick;
+            if (parsed.code) document.getElementById('playerCode').value = parsed.code;
+        }
+
+        function ensureEventId(payload) {
+            let event = statsData.events.find(e => e.name === payload.name && e.date === payload.date && e.coach === payload.coach);
+            if (!event) {
+                event = { id: `ev_${Date.now()}`, ...payload, createdAt: new Date().toISOString() };
+                statsData.events.push(event);
+            }
+            return event.id;
+        }
+
+        function recordExists(eventId, nick, code) {
+            const nickKey = sanitizeNick(nick).toLowerCase();
+            const codeKey = formatCode(code);
+            return statsData.records.some(r => r.eventId === eventId && r.code === codeKey && sanitizeNick(r.nick).toLowerCase() === nickKey);
+        }
+
+        async function saveSinglePlayerRecord() {
+            const payload = getCurrentEventPayload();
+            if (!payload) return;
+            const nick = sanitizeNick(document.getElementById('playerNick')?.value);
+            const code = formatCode(document.getElementById('playerCode')?.value);
+            if (!nick || String(code).replace(/\D/g, '').length !== 12) {
+                alert('⚠️ Ingresa un nick y un código válido de 12 dígitos.');
+                return;
+            }
+            const eventId = ensureEventId(payload);
+            if (recordExists(eventId, nick, code)) {
+                alert('⚠️ Ese jugador ya fue registrado en este evento.');
+                return;
+            }
+            statsData.eventTemplate = payload;
+            statsData.records.push({
+                id: `rec_${Date.now()}`,
+                eventId,
+                eventName: payload.name,
+                eventDate: payload.date,
+                coach: payload.coach,
+                nick,
+                code,
+                createdAt: new Date().toISOString()
+            });
+            persistStatsDataLocal();
+            await guardarEnGoogleSheets();
+            document.getElementById('captureText').value = '';
+            document.getElementById('playerNick').value = '';
+            document.getElementById('playerCode').value = '';
+            renderStatsModule();
+            alert('✅ Asistencia registrada');
+        }
+
+        function parseBatchPlayers(raw) {
+            return String(raw || '')
+                .split(/\n+/)
+                .map(line => line.trim())
+                .filter(Boolean)
+                .map(line => extractNickAndCode(line))
+                .filter(item => item.nick && String(item.code).replace(/\D/g, '').length === 12);
+        }
+
+        async function saveBatchPlayerRecords() {
+            const payload = getCurrentEventPayload();
+            if (!payload) return;
+            const parsed = parseBatchPlayers(document.getElementById('batchPlayersInput')?.value || '');
+            if (!parsed.length) {
+                alert('⚠️ No encontré líneas válidas para registrar.');
+                return;
+            }
+            const eventId = ensureEventId(payload);
+            let added = 0;
+            parsed.forEach(item => {
+                if (!recordExists(eventId, item.nick, item.code)) {
+                    statsData.records.push({
+                        id: `rec_${Date.now()}_${Math.random().toString(16).slice(2, 8)}`,
+                        eventId,
+                        eventName: payload.name,
+                        eventDate: payload.date,
+                        coach: payload.coach,
+                        nick: item.nick,
+                        code: item.code,
+                        createdAt: new Date().toISOString()
+                    });
+                    added++;
+                }
+            });
+            statsData.eventTemplate = payload;
+            persistStatsDataLocal();
+            await guardarEnGoogleSheets();
+            renderStatsModule();
+            alert(`✅ Se registraron ${added} asistencias nuevas`);
+        }
+
+        function clearBatchPlayerInput() {
+            const el = document.getElementById('batchPlayersInput');
+            if (el) el.value = '';
+        }
+
+function normalizeReward(raw) {
+    return {
+        id: raw.id || `rw_${Date.now()}`,
+        name: raw.name || 'Recompensa',
+        icon: raw.icon || '🏆',
+        criterion: raw.criterion || 'attendance_total',
+        threshold: Math.max(1, Number(raw.threshold || 1)),
+        coachTarget: raw.coachTarget || '',
+        startDate: raw.startDate || '',
+        endDate: raw.endDate || '',
+        description: raw.description || '',
+        active: raw.active !== false
+    };
+}
+
+function handleRewardCriterionChange() {
+    const criterion = document.getElementById('rewardCriterion')?.value || 'attendance_total';
+    const coachField = document.getElementById('rewardCoachTarget');
+    const startField = document.getElementById('rewardStartDate');
+    const endField = document.getElementById('rewardEndDate');
+    if (coachField) coachField.disabled = criterion !== 'attendance_with_coach';
+    if (criterion === 'attendance_total' || criterion === 'unique_events' || criterion === 'distinct_coaches' || criterion === 'streak_event_days') {
+        if (startField && !startField.value) startField.value = '';
+        if (endField && !endField.value) endField.value = '';
+    }
+}
+
+function clearRewardForm() {
+    const ids = ['rewardEditId', 'rewardName', 'rewardCoachTarget', 'rewardStartDate', 'rewardEndDate', 'rewardDescription'];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    const icon = document.getElementById('rewardIcon');
+    const criterion = document.getElementById('rewardCriterion');
+    const threshold = document.getElementById('rewardThreshold');
+    if (icon) icon.value = '🏆';
+    if (criterion) criterion.value = 'attendance_total';
+    if (threshold) threshold.value = 5;
+    handleRewardCriterionChange();
+}
+
+function loadRewardForEdit(id) {
+    const reward = (statsData.rewards || []).find(r => r.id === id);
+    if (!reward) return;
+    document.getElementById('rewardEditId').value = reward.id;
+    document.getElementById('rewardName').value = reward.name || '';
+    document.getElementById('rewardIcon').value = reward.icon || '🏆';
+    document.getElementById('rewardCriterion').value = reward.criterion || 'attendance_total';
+    document.getElementById('rewardThreshold').value = reward.threshold || 1;
+    document.getElementById('rewardCoachTarget').value = reward.coachTarget || '';
+    document.getElementById('rewardStartDate').value = reward.startDate || '';
+    document.getElementById('rewardEndDate').value = reward.endDate || '';
+    document.getElementById('rewardDescription').value = reward.description || '';
+    handleRewardCriterionChange();
+    window.scrollTo({ top: document.getElementById('statsModule')?.offsetTop || 0, behavior: 'smooth' });
+}
+
+function getPlayerMetric(player, reward) {
+    const history = [...(player.history || [])].filter(h => {
+        const d = (h.eventDate || '').slice(0, 10);
+        if (reward.startDate && d && d < reward.startDate) return false;
+        if (reward.endDate && d && d > reward.endDate) return false;
+        return true;
+    });
+    switch (reward.criterion) {
+        case 'attendance_total':
+            return history.length;
+        case 'unique_events':
+            return new Set(history.map(h => h.eventId)).size;
+        case 'attendance_with_coach': {
+            const q = (reward.coachTarget || '').trim().toLowerCase();
+            return history.filter(h => !q || (h.coach || '').trim().toLowerCase() === q).length;
+        }
+        case 'distinct_coaches':
+            return new Set(history.map(h => (h.coach || '').trim().toLowerCase()).filter(Boolean)).size;
+        case 'attendance_since_date':
+            return history.length;
+        case 'streak_event_days': {
+            const days = [...new Set(history.map(h => (h.eventDate || '').slice(0, 10)).filter(Boolean))].sort();
+            let best = 0, current = 0, prev = null;
+            for (const day of days) {
+                if (!prev) {
+                    current = 1;
+                } else {
+                    const diff = Math.round((new Date(day) - new Date(prev)) / 86400000);
+                    current = diff === 1 ? current + 1 : 1;
+                }
+                best = Math.max(best, current);
+                prev = day;
+            }
+            return best;
+        }
+        default:
+            return history.length;
+    }
+}
+
+function getRewardCriterionLabel(reward) {
+    switch (reward.criterion) {
+        case 'attendance_total':
+            return `Asistencias totales ≥ ${reward.threshold}`;
+        case 'unique_events':
+            return `Eventos únicos ≥ ${reward.threshold}`;
+        case 'attendance_with_coach':
+            return `Asistencias con ${reward.coachTarget || 'entrenador'} ≥ ${reward.threshold}`;
+        case 'distinct_coaches':
+            return `Entrenadores distintos ≥ ${reward.threshold}`;
+        case 'attendance_since_date':
+            return `Asistencias desde ${reward.startDate || 'fecha'} ≥ ${reward.threshold}`;
+        case 'streak_event_days':
+            return `Racha de días con evento ≥ ${reward.threshold}`;
+        default:
+            return `Meta ≥ ${reward.threshold}`;
+    }
+}
+
+function saveReward() {
+    const editId = document.getElementById('rewardEditId')?.value || '';
+    const name = document.getElementById('rewardName')?.value.trim() || '';
+    const icon = document.getElementById('rewardIcon')?.value || '🏆';
+    const criterion = document.getElementById('rewardCriterion')?.value || 'attendance_total';
+    const threshold = Math.max(1, Number(document.getElementById('rewardThreshold')?.value || 1));
+    const coachTarget = document.getElementById('rewardCoachTarget')?.value.trim() || '';
+    const startDate = document.getElementById('rewardStartDate')?.value || '';
+    const endDate = document.getElementById('rewardEndDate')?.value || '';
+    const description = document.getElementById('rewardDescription')?.value.trim() || '';
+
+    if (!name) {
+        alert('⚠️ Escribe un nombre para la recompensa.');
+        return;
+    }
+    if (criterion === 'attendance_with_coach' && !coachTarget) {
+        alert('⚠️ Para este criterio debes indicar un entrenador objetivo.');
+        return;
+    }
+
+    const payload = normalizeReward({
+        id: editId || `rw_${Date.now()}`,
+        name,
+        icon,
+        criterion,
+        threshold,
+        coachTarget,
+        startDate,
+        endDate,
+        description,
+        active: true
+    });
+
+    const idx = (statsData.rewards || []).findIndex(r => r.id === payload.id);
+    if (idx >= 0) {
+        statsData.rewards[idx] = payload;
+    } else {
+        statsData.rewards.push(payload);
+    }
+
+    persistStatsDataLocal();
+    guardarEnGoogleSheets();
+    clearRewardForm();
+    renderStatsModule();
+}
+
+function loadSuggestedRewards() {
+            const suggested = [
+                { name: 'Medalla de inicio', icon: '🎖️', threshold: 1 },
+                { name: 'Copa constancia', icon: '🏆', threshold: 5 },
+                { name: 'Plata de progreso', icon: '🥈', threshold: 8 },
+                { name: 'Oro competitivo', icon: '🥇', threshold: 12 }
+            ];
+            suggested.forEach(item => {
+                if (!statsData.rewards.some(r => r.name === item.name && Number(r.threshold) === Number(item.threshold))) {
+                    statsData.rewards.push({
+                        id: `rw_${Date.now()}_${item.threshold}`,
+                        name: item.name,
+                        icon: item.icon,
+                        threshold: item.threshold,
+                        startDate: '',
+                        active: true
+                    });
+                }
+            });
+            persistStatsDataLocal();
+            guardarEnGoogleSheets();
+            renderStatsModule();
+        }
+
+        function toggleReward(id) {
+            const reward = statsData.rewards.find(r => r.id === id);
+            if (!reward) return;
+            reward.active = !reward.active;
+            persistStatsDataLocal();
+            guardarEnGoogleSheets();
+            renderStatsModule();
+        }
+
+        function deleteReward(id) {
+            if (!confirm('¿Eliminar esta recompensa?')) return;
+            statsData.rewards = statsData.rewards.filter(r => r.id !== id);
+            persistStatsDataLocal();
+            guardarEnGoogleSheets();
+            renderStatsModule();
+        }
+
+function getPlayerSummaries() {
+    const byCode = new Map();
+    statsData.records.forEach(record => {
+        const key = record.code;
+        if (!byCode.has(key)) {
+            byCode.set(key, {
+                nick: record.nick,
+                code: record.code,
+                totalAttendances: 0,
+                coaches: new Set(),
+                events: [],
+                history: []
+            });
+        }
+        const entry = byCode.get(key);
+        entry.nick = entry.nick || record.nick;
+        entry.totalAttendances += 1;
+        if (record.coach) entry.coaches.add(record.coach);
+        entry.events.push(record.eventId);
+        entry.history.push(record);
+    });
+    const rewardDefs = (statsData.rewards || []).map(normalizeReward);
+    const players = [...byCode.values()].map(entry => {
+        const normalizedHistory = entry.history.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        const player = {
+            nick: entry.nick,
+            code: entry.code,
+            totalAttendances: entry.totalAttendances,
+            uniqueEvents: new Set(entry.events).size,
+            coaches: [...entry.coaches],
+            history: normalizedHistory,
+            rewards: []
+        };
+        player.rewards = rewardDefs
+            .filter(r => r.active)
+            .map(r => ({ ...r, metricValue: getPlayerMetric(player, r) }))
+            .filter(r => r.metricValue >= Number(r.threshold));
+        return player;
+    });
+    return players.sort((a, b) => b.totalAttendances - a.totalAttendances || a.nick.localeCompare(b.nick, 'es'));
+}
+
+function getFilteredPlayerSummaries() {
+            const coachQ = (document.getElementById('statsCoachFilter')?.value || '').trim().toLowerCase();
+            const playerQ = (document.getElementById('statsPlayerSearch')?.value || '').trim().toLowerCase();
+            return getPlayerSummaries().filter(player => {
+                const coachOk = !coachQ || player.coaches.some(c => c.toLowerCase().includes(coachQ));
+                const playerOk = !playerQ || player.nick.toLowerCase().includes(playerQ) || player.code.replace(/\s/g, '').includes(playerQ.replace(/\s/g, ''));
+                return coachOk && playerOk;
+            });
+        }
+
+        function renderPlayersRanking() {
+            const tbody = document.getElementById('playersRankingTable');
+            if (!tbody) return;
+            const players = getFilteredPlayerSummaries().slice(0, 50);
+            if (!players.length) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#64748b;">Sin resultados para este filtro</td></tr>';
+                return;
+            }
+            tbody.innerHTML = players.map((player, idx) => `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td><strong>${escapeHtml(player.nick)}</strong></td>
+                    <td class="mono">${escapeHtml(player.code)}</td>
+                    <td>${player.totalAttendances}</td>
+                    <td>${escapeHtml(player.coaches.join(', '))}</td>
+                    <td>${player.rewards.map(r => `${escapeHtml(r.icon)} ${escapeHtml(r.name)}<br><span class="small-note">${escapeHtml(getRewardCriterionLabel(r))}</span>`).join('<br>') || '-'}</td>
+                </tr>
+            `).join('');
+        }
+
+function renderRewardsList() {
+    const wrap = document.getElementById('rewardList');
+    if (!wrap) return;
+    const rewards = (statsData.rewards || []).map(normalizeReward).sort((a, b) => Number(a.threshold) - Number(b.threshold));
+    if (!rewards.length) {
+        wrap.innerHTML = '<div class="muted-box">Aún no hay recompensas creadas.</div>';
+        return;
+    }
+    wrap.innerHTML = rewards.map(r => `
+        <div class="reward-item">
+            <strong>${escapeHtml(r.icon)} ${escapeHtml(r.name)}</strong><br>
+            <span class="small-note">${escapeHtml(getRewardCriterionLabel(r))}${r.description ? ` · ${escapeHtml(r.description)}` : ''}</span>
+            <div class="small-note">${r.startDate ? `Desde ${escapeHtml(r.startDate)}` : 'Sin inicio fijo'}${r.endDate ? ` · Hasta ${escapeHtml(r.endDate)}` : ''}</div>
+            <div class="split-actions" style="margin-top:10px;">
+                <button class="small-btn restore" onclick="loadRewardForEdit('${r.id}')">Editar</button>
+                <button class="small-btn restore" onclick="toggleReward('${r.id}')">${r.active ? 'Desactivar' : 'Activar'}</button>
+                <button class="small-btn exclude" onclick="deleteReward('${r.id}')">Eliminar</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderRecordsHistory() {
+            const wrap = document.getElementById('recordsHistoryList');
+            if (!wrap) return;
+            const coachQ = (document.getElementById('statsCoachFilter')?.value || '').trim().toLowerCase();
+            const playerQ = (document.getElementById('statsPlayerSearch')?.value || '').trim().toLowerCase();
+            const filtered = [...statsData.records]
+                .filter(r => !coachQ || (r.coach || '').toLowerCase().includes(coachQ))
+                .filter(r => !playerQ || r.nick.toLowerCase().includes(playerQ) || r.code.replace(/\s/g, '').includes(playerQ.replace(/\s/g, '')))
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .slice(0, 120);
+            if (!filtered.length) {
+                wrap.innerHTML = '<div class="muted-box">No hay registros para mostrar.</div>';
+                return;
+            }
+            wrap.innerHTML = filtered.map(r => `
+                <div class="history-item">
+                    <strong>${escapeHtml(r.nick)}</strong> · <span class="mono">${escapeHtml(r.code)}</span>
+                    <div class="pill-row">
+                        <span class="pill soft">Evento: ${escapeHtml(r.eventName)}</span>
+                        <span class="pill soft">Entrenador: ${escapeHtml(r.coach)}</span>
+                        <span class="pill soft">Fecha evento: ${escapeHtml(r.eventDate)}</span>
+                    </div>
+                    <div class="small-note">Registrado: ${new Date(r.createdAt).toLocaleString()}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderEventHistory() {
+            const wrap = document.getElementById('eventHistoryList');
+            if (!wrap) return;
+            const q = (document.getElementById('historyEventSearch')?.value || '').trim().toLowerCase();
+            const items = [...statsData.events]
+                .filter(ev => !q || ev.name.toLowerCase().includes(q) || ev.coach.toLowerCase().includes(q))
+                .sort((a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt));
+            if (!items.length) {
+                wrap.innerHTML = '<div class="muted-box">No hay eventos guardados aún.</div>';
+                return;
+            }
+            wrap.innerHTML = items.map(ev => {
+                const count = statsData.records.filter(r => r.eventId === ev.id).length;
+                return `
+                    <div class="record-item">
+                        <strong>${escapeHtml(ev.name)}</strong>
+                        <div class="pill-row">
+                            <span class="pill soft">Fecha: ${escapeHtml(ev.date || '-')}</span>
+                            <span class="pill soft">Entrenador: ${escapeHtml(ev.coach || '-')}</span>
+                            <span class="pill soft">Registros: ${count}</span>
+                            ${ev.location ? `<span class="pill soft">Lugar: ${escapeHtml(ev.location)}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateStatsKpis() {
+            const players = getPlayerSummaries();
+            document.getElementById('playersTotalKpi').textContent = players.length;
+            document.getElementById('recordsTotalKpi').textContent = statsData.records.length;
+            document.getElementById('eventsTotalKpi').textContent = statsData.events.length;
+            document.getElementById('coachesTotalKpi').textContent = new Set(statsData.records.map(r => r.coach).filter(Boolean)).size;
+        }
+
+        function renderStatsModule() {
+            updateStatsKpis();
+            fillEventTemplateForm();
+            handleRewardCriterionChange();
+            renderPlayersRanking();
+            renderRewardsList();
+            renderRecordsHistory();
+            renderEventHistory();
+        }
+
+        function exportPlayerRecordsCSV() {
+            if (!statsData.records.length) {
+                alert('⚠️ No hay registros para exportar.');
+                return;
+            }
+            let csv = 'Evento,Fecha evento,Entrenador,Nick,Codigo,Fecha registro\n';
+            [...statsData.records].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).forEach(r => {
+                csv += `"${(r.eventName || '').replace(/"/g, '""')}","${r.eventDate || ''}","${(r.coach || '').replace(/"/g, '""')}","${(r.nick || '').replace(/"/g, '""')}","${r.code}","${new Date(r.createdAt).toLocaleString()}"\n`;
+            });
+            descargarArchivo(csv, `registros-jugadores-${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
+        }
+
+        function openPublicStatsPage() {
+            const current = window.location.href;
+            const publicUrl = current.replace(/[^/]+$/, 'estadisticas_publicas.html');
+            window.open(publicUrl, '_blank');
+        }
+
 
         function escapeHtml(text) {
             return String(text)
@@ -1876,7 +3001,182 @@ function probarFormatos() {
                     tr:hover { background: #f5f5f5; }
                     .resumen { background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; }
                     .numero { font-weight: bold; color: #667eea; }
-                </style>
+                
+        .stats-admin-layout,
+        .public-stats-layout {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 20px;
+        }
+
+        .stats-card {
+            background: #fff;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .stats-card h3 {
+            margin-bottom: 14px;
+            color: #334155;
+        }
+
+        .stats-card textarea,
+        .stats-card input,
+        .stats-card select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 15px;
+            background: #fff;
+        }
+
+        .stats-card textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .muted-box {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            color: #475569;
+            padding: 12px 14px;
+            border-radius: 10px;
+            margin-top: 10px;
+            font-size: 0.95em;
+        }
+
+        .stats-kpis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .stats-kpi {
+            background: linear-gradient(180deg, #ffffff, #f8fafc);
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .stats-kpi .value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #4f46e5;
+            margin-top: 6px;
+        }
+
+        .records-list,
+        .reward-list,
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 420px;
+            overflow: auto;
+        }
+
+        .record-item,
+        .reward-item,
+        .history-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .record-item strong,
+        .history-item strong {
+            color: #1e293b;
+        }
+
+        .pill-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .pill.soft {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .reward-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: #fef3c7;
+            color: #92400e;
+            font-weight: 700;
+            margin: 4px 6px 4px 0;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        .section-subtitle {
+            color: #64748b;
+            margin: -8px 0 18px;
+        }
+
+        .split-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .public-header-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: #eef2ff;
+            border: 2px solid #c7d2fe;
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+
+        .public-rank {
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: #4338ca;
+        }
+
+        .mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            letter-spacing: 1px;
+        }
+
+        .small-note {
+            color: #64748b;
+            font-size: 0.92em;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 980px) {
+            .stats-admin-layout,
+            .public-stats-layout,
+            .home-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
             </head>
             <body>
                 <h1>🎫 Reporte de Ventas por Número</h1>
