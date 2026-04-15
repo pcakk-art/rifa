@@ -3392,9 +3392,13 @@ async function capturePresenceFrame() {
         canvas.height = video.videoHeight;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const { data: { text } } = await Tesseract.recognize(canvas, 'eng', { logger: () => {} });
-        document.getElementById('captureText').value = text || '';
-        parseCaptureToForm();
+        const result = await Tesseract.recognize(canvas, 'eng', { logger: () => {} });
+        const rawText = result?.data?.text || '';
+        const ocrLines = reconstructOcrLines(result?.data, canvas.height);
+        document.getElementById('captureText').value = ocrLines.length ? ocrLines.join('\n') : rawText;
+        const parsed = extractNickAndCode(rawText, ocrLines);
+        if (parsed.nick) document.getElementById('playerNick').value = parsed.nick;
+        if (parsed.code) document.getElementById('playerCode').value = parsed.code;
         const nick = document.getElementById('playerNick').value.trim();
         const code = document.getElementById('playerCode').value.trim();
         status.textContent = nick && code
