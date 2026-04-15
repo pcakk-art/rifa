@@ -19,7 +19,7 @@
         }
 
         .container {
-            max-width: 1400px;
+            width: min(1400px, 100%);
             margin: 0 auto;
             background: white;
             border-radius: 15px;
@@ -56,6 +56,19 @@
             flex-direction: column;
             min-width: 200px;
             flex: 1;
+        }
+
+        .form-group > input,
+        .form-group > select,
+        .form-group > textarea,
+        .form-group > label,
+        .form-group > button {
+            width: 100%;
+        }
+
+        .module-section,
+        .module-section > * {
+            width: 100%;
         }
 
         .form-group label {
@@ -105,6 +118,8 @@
             padding: 25px;
             border-radius: 10px;
             margin-bottom: 30px;
+            width: 100%;
+            border: 2px solid #e2e8f0;
         }
 
         .form-row {
@@ -200,6 +215,7 @@
             padding: 25px;
             margin: 30px 0;
             border: 2px solid #e2e8f0;
+            width: 100%;
         }
 
         .visualization-header {
@@ -395,15 +411,25 @@
         }
         .draw-layout {
             display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
             gap: 20px;
             margin-top: 20px;
+            align-items: start;
+        }
+        .draw-layout > div {
+            min-width: 0;
+            display: grid;
+            gap: 20px;
+            align-content: start;
         }
         .draw-card {
-            background: #f8f9fa;
+            background: #fff;
             border-radius: 12px;
             padding: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 0;
+            border: 2px solid #e2e8f0;
+            min-width: 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.06);
         }
         .draw-card h3 {
             color: #4a5568;
@@ -418,8 +444,10 @@
             font-size: 15px;
             resize: vertical;
             font-family: inherit;
+            display: block;
         }
         select {
+            width: 100%;
             padding: 10px;
             border: 2px solid #ddd;
             border-radius: 8px;
@@ -538,9 +566,55 @@
             font-size:.9em;
         }
 
-        @media (max-width: 768px) {
-            .draw-layout { grid-template-columns: 1fr; }
+        .inline-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: stretch;
+        }
+        .inline-actions .btn,
+        .inline-actions label.btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 46px;
+        }
+        .winner-table-wrap table {
+            margin-top: 0;
+        }
+        .participant-item > div:first-child {
+            min-width: 0;
+            word-break: break-word;
+        }
 
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+            .container {
+                padding: 18px;
+                border-radius: 12px;
+            }
+            .draw-layout,
+            .form-row,
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+            .config-section,
+            .stats-summary,
+            .legend,
+            .inline-actions {
+                flex-direction: column;
+            }
+            .participant-item {
+                grid-template-columns: 1fr;
+                justify-items: stretch;
+            }
+            .participant-status,
+            .small-btn {
+                width: 100%;
+                text-align: center;
+            }
             .numbers-grid {
                 grid-template-columns: repeat(5, 1fr);
             }
@@ -730,9 +804,9 @@ María Soto
 Pedro González"></textarea>
                                 </div>
                             </div>
-                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <div class="inline-actions">
                                 <button class="btn" onclick="loadParticipantsFromText()">📋 Cargar lista pegada</button>
-                                <label class="btn" style="display:inline-flex; align-items:center; gap:8px;">
+                                <label class="btn" style="gap:8px;">
                                     📂 Subir TXT/CSV
                                     <input type="file" id="participantsFile" accept=".txt,.csv" onchange="loadParticipantsFromFile(event)" style="display:none;">
                                 </label>
@@ -772,7 +846,7 @@ Pedro González"></textarea>
                                     <input type="text" id="seedInput" placeholder="Ej: final2026-premio1">
                                 </div>
                             </div>
-                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <div class="inline-actions">
                                 <button class="btn btn-success" onclick="runDraw(false)">🏆 Sortear ganador</button>
                                 <button class="btn" style="background:#e53e3e;" onclick="runDraw(true)">🌊 Tirar número al agua</button>
                                 <button class="btn" onclick="resetDrawStatuses()">🔄 Reactivar todos</button>
@@ -843,7 +917,7 @@ Pedro González"></textarea>
     <script>
         // ============ CONFIGURACIÓN ============
         // >>>>>> ¡¡¡ CAMBIA ESTA URL POR LA TUYA !!! <<<<<<
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKEBnEx-DveXGiwyIsKMZtcDX-V5MZ22JSbt8XswkvjvaGb4pDbiam32KwYIHmUvAIVQ/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxod31sMOu8JD0KdAyQhFUVlyc2CD14dFYmIjSa1PUhV6Ks1K5zcSNWI9WgWG2U7rg_xQ/exec';
         
         // ============ VARIABLES GLOBALES ============
         let sales = [];
