@@ -855,7 +855,46 @@
             }
         }
 
-    </style>
+    
+/* --- Ajustes visuales uniformes --- */
+.container, .main-container, .page-container {
+  max-width: 1200px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+.section-card, .module-card, .form-section, .stats-panel, .panel, .card, .feature-card {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  border-radius: 16px !important;
+}
+.form-row, .grid-2, .grid-3, .portal-grid, .stats-grid {
+  align-items: stretch !important;
+}
+.form-group input, .form-group select, .form-group textarea,
+input[type="text"], input[type="number"], input[type="search"], select, textarea {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+.action-row, .button-row, .controls-row {
+  display: flex !important;
+  gap: 12px !important;
+  flex-wrap: wrap !important;
+}
+.action-row .btn, .button-row .btn, .controls-row .btn, .btn {
+  min-height: 48px !important;
+}
+table {
+  width: 100% !important;
+}
+.scan-panel, .camera-card, .ocr-card {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+@media (max-width: 768px) {
+  .container, .main-container, .page-container { padding-left: 14px !important; padding-right: 14px !important; }
+}
+
+</style>
 </head>
 <body>
     <div class="container">
@@ -1459,7 +1498,111 @@ AeroGrip 555566667777"></textarea>
 
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+function parseNickAndCode(text) {
+    const clean = String(text || '')
+        .replace(/[|]/g, ' ')
+        .replace(/\n/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    console.log('OCR limpio:', clean);
+
+    const codeMatch = clean.match(/(\d{4})\s*(\d{4})\s*(\d{4})/);
+    if (!codeMatch) {
+        return { nick: '', code: '', confidence: 'low' };
+    }
+
+    const code = `${codeMatch[1]} ${codeMatch[2]} ${codeMatch[3]}`;
+
+    let nickRaw = clean.replace(codeMatch[0], '').trim();
+
+    nickRaw = nickRaw
+        .replace(/\b(codigo|compartir|entrenador|copiar|qr|codigoentrenador)\b/ig, ' ')
+        .replace(/[^a-zA-Z0-9]/g, '')
+        .trim();
+
+    nickRaw = nickRaw.replace(/(\d{4}|\d{8}|\d{12})$/, '').trim();
+
+    return {
+        nick: nickRaw,
+        code: code,
+        confidence: (nickRaw && code) ? 'high' : 'medium'
+    };
+}
+
+
+async function captureAndReadImage() {
+    try {
+        const video = document.getElementById('scanVideo') || document.querySelector('video');
+        const statusEl = document.getElementById('scanDetectedText') || document.getElementById('scanStatus') || document.getElementById('ocrResult');
+
+        if (!video || !video.videoWidth || !video.videoHeight) {
+            throw new Error('La cámara aún no está lista');
+        }
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+        const vw = video.videoWidth;
+        const vh = video.videoHeight;
+
+        const cropX = Math.floor(vw * 0.22);
+        const cropY = Math.floor(vh * 0.10);
+        const cropW = Math.floor(vw * 0.56);
+        const cropH = Math.floor(vh * 0.28);
+
+        canvas.width = cropW;
+        canvas.height = cropH;
+
+        ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+
+        const img = ctx.getImageData(0, 0, cropW, cropH);
+        const data = img.data;
+        for (let i = 0; i < data.length; i += 4) {
+            const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+            const boosted = gray > 170 ? 255 : gray < 110 ? 0 : Math.min(255, Math.max(0, (gray - 110) * 4));
+            data[i] = boosted;
+            data[i + 1] = boosted;
+            data[i + 2] = boosted;
+        }
+        ctx.putImageData(img, 0, 0);
+
+        let ocrText = '';
+        if (window.Tesseract && window.Tesseract.recognize) {
+            const result = await window.Tesseract.recognize(canvas, 'eng', {
+                tessedit_pageseg_mode: 6,
+                preserve_interword_spaces: '1'
+            });
+            ocrText = (result && result.data && result.data.text) ? result.data.text : '';
+        } else {
+            throw new Error('No se encontró el motor OCR');
+        }
+
+        const parsed = parseNickAndCode(ocrText);
+
+        const nickInput = document.getElementById('playerNick') || document.getElementById('nickDetectado') || document.querySelector('input[name="nick"]');
+        const codeInput = document.getElementById('playerCode') || document.getElementById('codigoEntrenador') || document.querySelector('input[name="code"]');
+
+        if (nickInput) nickInput.value = parsed.nick || '';
+        if (codeInput) codeInput.value = parsed.code || '';
+
+        if (statusEl) {
+            statusEl.textContent = parsed.nick && parsed.code
+                ? `Detectado: ${parsed.nick} / ${parsed.code}`
+                : `No se pudo detectar con confianza. OCR: ${ocrText.replace(/\s+/g, ' ').trim()}`;
+        }
+
+        if (!parsed.code) {
+            alert('No se detectó correctamente el código. Intenta acercar más la cámara y encuadrar solo nick + código.');
+        }
+    } catch (err) {
+        console.error(err);
+        alert(`No se pudo leer la captura: ${err.message || err}`);
+    }
+}
+
+</script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     
     <script>
@@ -3441,48 +3584,25 @@ function normalizeScannerError(error) {
     return `No se pudo leer la captura: ${msg}`;
 }
 
-function reconstructOcrLines(ocrData, canvasHeight = 0) {
-    if (!ocrData) return [];
 
-    if (Array.isArray(ocrData.lines) && ocrData.lines.length) {
-        return ocrData.lines
-            .map(line => (line && line.text ? String(line.text).trim() : ''))
-            .filter(Boolean);
-    }
-
-    const words = Array.isArray(ocrData.words) ? ocrData.words.filter(w => w && w.text) : [];
-    if (!words.length) {
-        const text = String(ocrData.text || '').trim();
-        return text ? text.split(/\r?\n/).map(s => s.trim()).filter(Boolean) : [];
-    }
-
-    const normalizedWords = words.map(word => {
-        const bbox = word.bbox || {};
-        const y0 = Number.isFinite(bbox.y0) ? bbox.y0 : 0;
-        const y1 = Number.isFinite(bbox.y1) ? bbox.y1 : y0 + 1;
-        const x0 = Number.isFinite(bbox.x0) ? bbox.x0 : 0;
-        return { text: String(word.text).trim(), x0, yMid: (y0 + y1) / 2 };
-    }).filter(w => w.text);
-
-    normalizedWords.sort((a, b) => a.yMid - b.yMid || a.x0 - b.x0);
-
-    const lineTolerance = Math.max(18, Math.round((canvasHeight || 240) * 0.05));
-    const lines = [];
-
-    for (const word of normalizedWords) {
-        const last = lines[lines.length - 1];
-        if (!last || Math.abs(last.yMid - word.yMid) > lineTolerance) {
-            lines.push({ yMid: word.yMid, words: [word] });
-        } else {
-            last.words.push(word);
-            last.yMid = (last.yMid * (last.words.length - 1) + word.yMid) / last.words.length;
-        }
-    }
-
-    return lines
-        .map(line => line.words.sort((a, b) => a.x0 - b.x0).map(w => w.text).join(' ').trim())
+function reconstructOcrLines(text) {
+    const raw = String(text || '').replace(/\r/g, '\n');
+    const lines = raw
+        .split('\n')
+        .map(s => s.trim())
         .filter(Boolean);
+
+    const useful = lines.filter(line => /[A-Za-z0-9]/.test(line));
+    if (useful.length >= 2) return useful;
+
+    const clean = raw.replace(/\s+/g, ' ').trim();
+    const match = clean.match(/(.*?)(\d{4}\s*\d{4}\s*\d{4})/);
+    if (match) {
+        return [match[1].trim(), match[2].trim()];
+    }
+    return useful;
 }
+
 
 async function startPresenceScanner() {
     const panel = document.getElementById('scannerPanel');
