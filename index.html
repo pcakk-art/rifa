@@ -1501,33 +1501,35 @@ AeroGrip 555566667777"></textarea>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
 function parseNickAndCode(text) {
     const clean = String(text || '')
-        .replace(/[|]/g, ' ')
         .replace(/\n/g, ' ')
         .replace(/\s+/g, ' ')
         .trim();
 
-    console.log('OCR limpio:', clean);
+    console.log("OCR limpio:", clean);
 
+    // 1. Detectar código (12 dígitos)
     const codeMatch = clean.match(/(\d{4})\s*(\d{4})\s*(\d{4})/);
-    if (!codeMatch) {
-        return { nick: '', code: '', confidence: 'low' };
+
+    let code = '';
+    if (codeMatch) {
+        code = `${codeMatch[1]} ${codeMatch[2]} ${codeMatch[3]}`;
     }
 
-    const code = `${codeMatch[1]} ${codeMatch[2]} ${codeMatch[3]}`;
+    // 2. Quitar el código del texto
+    let remaining = clean.replace(codeMatch ? codeMatch[0] : '', ' ');
 
-    let nickRaw = clean.replace(codeMatch[0], '').trim();
+    // 3. Buscar posibles nicks (strings alfanuméricos largos)
+    const candidates = remaining.match(/[a-zA-Z0-9]{5,}/g) || [];
 
-    nickRaw = nickRaw
-        .replace(/\b(codigo|compartir|entrenador|copiar|qr|codigoentrenador)\b/ig, ' ')
-        .replace(/[^a-zA-Z0-9]/g, '')
-        .trim();
-
-    nickRaw = nickRaw.replace(/(\d{4}|\d{8}|\d{12})$/, '').trim();
+    // 4. Elegir el mejor candidato (más largo)
+    let nick = '';
+    if (candidates.length > 0) {
+        nick = candidates.sort((a, b) => b.length - a.length)[0];
+    }
 
     return {
-        nick: nickRaw,
-        code: code,
-        confidence: (nickRaw && code) ? 'high' : 'medium'
+        nick: nick,
+        code: code
     };
 }
 
