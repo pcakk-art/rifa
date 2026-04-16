@@ -900,6 +900,15 @@ table {
   max-height: 180px !important;
 }
 
+
+.scan-guide, .camera-guide, .ocr-guide {
+  height: 145px !important;
+  max-height: 145px !important;
+  width: 78% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
 </style>
 </head>
 <body>
@@ -1322,7 +1331,7 @@ NinjaFox
                                         <div class="scanner-frame">
                                             <video id="scannerVideo" autoplay playsinline muted style="width:100%; display:block; background:#111;"></video>
                                             <div class="scanner-guide"></div>
-                                            <div class="scanner-guide-label">Alinea solo nick + código</div>
+                                            <div class="scanner-guide-label">Alinea el texto dentro del marco</div>
                                         </div>
                                         <canvas id="scannerCanvas" style="display:none;"></canvas>
                                     </div>
@@ -1555,18 +1564,18 @@ async function captureAndReadImage() {
 
         // Área guía donde normalmente están ambas líneas.
         const base = {
-            x: Math.floor(vw * 0.24),
-            y: Math.floor(vh * 0.12),
-            w: Math.floor(vw * 0.52),
-            h: Math.floor(vh * 0.14)
+            x: Math.floor(vw * 0.28),
+            y: Math.floor(vh * 0.11),
+            w: Math.floor(vw * 0.44),
+            h: Math.floor(vh * 0.11)
         };
 
         // Variaciones pequeñas para tolerar ángulo y encuadre.
         const offsets = [
             {dx: 0, dy: 0, dw: 0, dh: 0},
-            {dx: -8, dy: -4, dw: 12, dh: 6},
-            {dx: 8, dy: -4, dw: -8, dh: 6},
-            {dx: 0, dy: 4, dw: 0, dh: -4}
+            {dx: -4, dy: -2, dw: 8, dh: 4},
+            {dx: 4, dy: -2, dw: -6, dh: 4},
+            {dx: 0, dy: 2, dw: 0, dh: -2}
         ];
 
         let best = {nick: '', code: '', score: -1, rawNick: '', rawCode: ''};
@@ -1582,16 +1591,16 @@ async function captureAndReadImage() {
             // Separar en 2 líneas: arriba nick, abajo código.
             const nickCrop = {
                 x: area.x,
-                y: area.y + Math.floor(area.h * 0.08),
+                y: area.y + Math.floor(area.h * 0.02),
                 w: area.w,
-                h: Math.floor(area.h * 0.28)
+                h: Math.floor(area.h * 0.22)
             };
 
             const codeCrop = {
                 x: area.x,
-                y: area.y + Math.floor(area.h * 0.48),
+                y: area.y + Math.floor(area.h * 0.42),
                 w: area.w,
-                h: Math.floor(area.h * 0.24)
+                h: Math.floor(area.h * 0.20)
             };
 
             const nickCanvas = createProcessedCanvasFromVideo(video, nickCrop);
@@ -1647,13 +1656,14 @@ function sanitizeNickText(text) {
 function sanitizeCodeText(text) {
     const digits = String(text || '').replace(/\D/g, '');
     if (digits.length < 12) return '';
-    const code12 = digits.slice(0, 12);
+    const code12 = digits.length >= 12 ? digits.slice(-12) : '';
     return `${code12.slice(0,4)} ${code12.slice(4,8)} ${code12.slice(8,12)}`;
 }
 
 function scoreNick(nick) {
     if (!nick) return 0;
     let s = 0;
+    if (nick.length > 12) s += 2;
     if (/^[a-zA-Z0-9]+$/.test(nick)) s += 2;
     if (/[a-zA-Z]/.test(nick)) s += 2;
     if (/\d/.test(nick)) s += 1;
