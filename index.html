@@ -1331,13 +1331,13 @@ NinjaFox
                                         <div class="scanner-frame">
                                             <video id="scannerVideo" autoplay playsinline muted style="width:100%; display:block; background:#111;"></video>
                                             <div class="scanner-guide"></div>
-                                            <div class="scanner-guide-label">Alinea el texto dentro del marco</div>
+                                            <div class="scanner-guide-label">Centra el QR y la zona del nick</div>
                                         </div>
                                         <canvas id="scannerCanvas" style="display:none;"></canvas>
                                     </div>
                                     <div style="flex:1; min-width:260px;">
                                         <div style="font-weight:600; margin-bottom:8px;">Escaneo asistido</div>
-                                        <div class="helper-text">Apunta la cámara al celular del jugador. Luego pulsa capturar y el sistema intentará reconocer nick y código automáticamente.</div>
+                                        <div class="helper-text">Apunta la cámara al celular del jugador. Luego pulsa capturar y el sistema leerá el QR para obtener el código y luego buscará el nick sobre ese bloque.</div>
                                         <div class="split-actions" style="margin-top:12px;">
                                             <button class="btn" onclick="capturePresenceFrame()">📸 Capturar</button>
                                             <button class="btn" onclick="stopPresenceScanner()">✖️ Cerrar cámara</button>
@@ -1548,6 +1548,7 @@ function parseNickAndCode(text) {
 
 
 
+
 async function captureAndReadImage() {
     try {
         const video = document.getElementById('scanVideo') || document.querySelector('video');
@@ -1558,90 +1559,73 @@ async function captureAndReadImage() {
         if (!video || !video.videoWidth || !video.videoHeight) {
             throw new Error('La cámara aún no está lista');
         }
-
-        const vw = video.videoWidth;
-        const vh = video.videoHeight;
-
-        // Área guía donde normalmente están ambas líneas.
-        const base = {
-            x: Math.floor(vw * 0.28),
-            y: Math.floor(vh * 0.11),
-            w: Math.floor(vw * 0.44),
-            h: Math.floor(vh * 0.11)
-        };
-
-        // Variaciones pequeñas para tolerar ángulo y encuadre.
-        const offsets = [
-            {dx: 0, dy: 0, dw: 0, dh: 0},
-            {dx: -4, dy: -2, dw: 8, dh: 4},
-            {dx: 4, dy: -2, dw: -6, dh: 4},
-            {dx: 0, dy: 2, dw: 0, dh: -2}
-        ];
-
-        let best = {nick: '', code: '', score: -1, rawNick: '', rawCode: ''};
-
-        for (const off of offsets) {
-            const area = {
-                x: Math.max(0, base.x + off.dx),
-                y: Math.max(0, base.y + off.dy),
-                w: Math.min(vw, base.w + off.dw),
-                h: Math.min(vh, base.h + off.dh)
-            };
-
-            // Separar en 2 líneas: arriba nick, abajo código.
-            const nickCrop = {
-                x: area.x,
-                y: area.y + Math.floor(area.h * 0.02),
-                w: area.w,
-                h: Math.floor(area.h * 0.22)
-            };
-
-            const codeCrop = {
-                x: area.x,
-                y: area.y + Math.floor(area.h * 0.42),
-                w: area.w,
-                h: Math.floor(area.h * 0.20)
-            };
-
-            const nickCanvas = createProcessedCanvasFromVideo(video, nickCrop);
-            const codeCanvas = createProcessedCanvasFromVideo(video, codeCrop);
-
-            const rawNick = await recognizeCanvas(nickCanvas, 'nick');
-            const rawCode = await recognizeCanvas(codeCanvas, 'code');
-
-            const nick = sanitizeNickText(rawNick);
-            const code = sanitizeCodeText(rawCode);
-
-            const totalScore = scoreNick(nick) + scoreCode(code);
-
-            if (totalScore > best.score) {
-                best = {nick, code, score: totalScore, rawNick, rawCode};
-            }
-
-            if (scoreCode(code) >= 10 && scoreNick(nick) >= 4) {
-                break;
-            }
+        if (!(window.jsQR)) {
+            throw new Error('No se encontró la librería para leer QR');
         }
 
-        if (nickInput) nickInput.value = best.nick || '';
-        if (codeInput) codeInput.value = best.code || '';
+        const frame = document.createElement('canvas');
+        frame.width = video.videoWidth;
+        frame.height = video.videoHeight;
+        const fctx = frame.getContext('2d', { willReadFrequently: true });
+        fctx.drawImage(video, 0, 0, frame.width, frame.height);
+
+        const imageData = fctx.getImageData(0, 0, frame.width, frame.height);
+        const qr = jsQR(imageData.data, imageData.width, imageData.height, {
+            inversionAttempts: 'attemptBoth'
+        });
+
+        if (!qr || !qr.data) {
+            throw new Error('No se pudo leer el QR. Acerca la cámara y centra el código.');
+        }
+
+        const trainerCode = extractTrainerCodeFromQrPayload(qr.data);
+        if (!trainerCode) {
+            throw new Error('Se leyó el QR, pero no se encontró el código de entrenador de 12 dígitos.');
+        }
+
+        const pts = [
+            qr.location.topLeftCorner,
+            qr.location.topRightCorner,
+            qr.location.bottomLeftCorner,
+            qr.location.bottomRightCorner
+        ];
+        const xs = pts.map(p => p.x);
+        const ys = pts.map(p => p.y);
+        const minX = Math.max(0, Math.min(...xs));
+        const maxX = Math.min(frame.width, Math.max(...xs));
+        const minY = Math.max(0, Math.min(...ys));
+        const maxY = Math.min(frame.height, Math.max(...ys));
+        const qrW = Math.max(1, maxX - minX);
+        const qrH = Math.max(1, maxY - minY);
+
+        // Buscar nick y texto visible en una franja sobre el QR.
+        const textX = Math.max(0, minX - qrW * 0.40);
+        const textW = Math.min(frame.width - textX, qrW * 1.80);
+        const textY = Math.max(0, minY - qrH * 0.95);
+        const textH = Math.max(30, qrH * 0.55);
+
+        const nickCanvas = cropCanvas(frame, textX, textY, textW, textH);
+        const rawNickText = await ocrNickFromCanvas(nickCanvas);
+        const trainerNick = sanitizeNickCandidate(rawNickText, trainerCode);
+
+        if (codeInput) codeInput.value = trainerCode || '';
+        if (nickInput) nickInput.value = trainerNick || '';
 
         if (statusEl) {
-            if (best.nick && best.code) {
-                statusEl.textContent = `Detectado: ${best.nick} / ${best.code}`;
-            } else {
-                statusEl.textContent = `Lectura incompleta. Nick OCR: ${sanitizeNickText(best.rawNick)} | Código OCR: ${sanitizeCodeText(best.rawCode) || best.rawCode}`;
-            }
+            statusEl.textContent = trainerNick
+                ? `Detectado: ${trainerNick} / ${trainerCode}`
+                : `QR leído. Código detectado: ${trainerCode}. Revisa o escribe el nick manualmente si hace falta.`;
         }
 
-        if (!best.nick || !best.code) {
-            alert('La lectura salió incompleta. Mantén el celular recto, acerca más la cámara y alinea las dos líneas dentro del marco.');
+        if (!trainerNick) {
+            alert('Se pudo leer el QR y el código del entrenador. El nick no salió claro; revísalo manualmente antes de guardar.');
         }
     } catch (err) {
         console.error(err);
         alert(`No se pudo leer la captura: ${err.message || err}`);
     }
 }
+
 
 
 
@@ -1713,6 +1697,88 @@ async function recognizeCanvas(canvas, mode) {
     }
 
     const result = await window.Tesseract.recognize(canvas, 'eng', baseConfig);
+    return (result && result.data && result.data.text) ? result.data.text : '';
+}
+
+
+function formatTrainerCodeFromDigits(digits) {
+    const clean = String(digits || '').replace(/\D/g, '');
+    if (clean.length < 12) return '';
+    const last12 = clean.slice(-12);
+    return `${last12.slice(0,4)} ${last12.slice(4,8)} ${last12.slice(8,12)}`;
+}
+
+function extractTrainerCodeFromQrPayload(payload) {
+    const text = String(payload || '').trim();
+    const matches = text.match(/\d{12,}/g) || [];
+    if (matches.length > 0) {
+        return formatTrainerCodeFromDigits(matches[matches.length - 1]);
+    }
+    const compact = text.replace(/\D/g, '');
+    return formatTrainerCodeFromDigits(compact);
+}
+
+function sanitizeNickCandidate(text, codeFormatted) {
+    let clean = String(text || '')
+        .replace(/\r/g, '\n')
+        .replace(/[|]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    if (codeFormatted) {
+        const codeDigits = codeFormatted.replace(/\D/g, '');
+        clean = clean.replace(new RegExp(codeFormatted.replace(/\s+/g, '\\s*'), 'ig'), ' ');
+        clean = clean.replace(new RegExp(codeDigits, 'ig'), ' ');
+        clean = clean.replace(new RegExp(codeDigits.slice(0,4), 'ig'), ' ');
+        clean = clean.replace(new RegExp(codeDigits.slice(4,8), 'ig'), ' ');
+        clean = clean.replace(new RegExp(codeDigits.slice(8,12), 'ig'), ' ');
+    }
+
+    clean = clean
+        .replace(/\b(entrenador|codigo|compartir|copiar|qr)\b/ig, ' ')
+        .replace(/[^a-zA-Z0-9 ]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    const tokens = clean.match(/[A-Za-z0-9]{4,}/g) || [];
+    if (!tokens.length) return '';
+
+    tokens.sort((a, b) => {
+        const score = s => (/[A-Za-z]/.test(s) ? 3 : 0) + (/\d/.test(s) ? 1 : 0) + Math.min(s.length, 16);
+        return score(b) - score(a);
+    });
+    return tokens[0];
+}
+
+function cropCanvas(sourceCanvas, x, y, w, h) {
+    const out = document.createElement('canvas');
+    out.width = Math.max(1, Math.floor(w));
+    out.height = Math.max(1, Math.floor(h));
+    const ctx = out.getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(sourceCanvas, Math.floor(x), Math.floor(y), Math.floor(w), Math.floor(h), 0, 0, out.width, out.height);
+
+    const img = ctx.getImageData(0, 0, out.width, out.height);
+    const d = img.data;
+    for (let i = 0; i < d.length; i += 4) {
+        const gray = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+        const boosted = gray > 180 ? 255 : gray < 125 ? 0 : Math.min(255, Math.max(0, (gray - 125) * 4));
+        d[i] = boosted;
+        d[i + 1] = boosted;
+        d[i + 2] = boosted;
+    }
+    ctx.putImageData(img, 0, 0);
+    return out;
+}
+
+async function ocrNickFromCanvas(canvas) {
+    if (!(window.Tesseract && window.Tesseract.recognize)) {
+        throw new Error('No se encontró el motor OCR');
+    }
+    const result = await window.Tesseract.recognize(canvas, 'eng', {
+        tessedit_pageseg_mode: 6,
+        tessedit_char_whitelist: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ',
+        preserve_interword_spaces: '1'
+    });
     return (result && result.data && result.data.text) ? result.data.text : '';
 }
 
@@ -3561,7 +3627,9 @@ function renderRecordsHistory() {
                     </tbody>
                 </table>
                 <p style="margin-top: 30px; color: #718096; text-align: center;">Reporte generado automáticamente</p>
-            </body>
+            
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+</body>
             </html>
             `;
             
@@ -3806,5 +3874,7 @@ async function capturePresenceFrame() {
 }
 
     </script>
+
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 </body>
 </html>
