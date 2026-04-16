@@ -1513,8 +1513,8 @@ AeroGrip 555566667777"></textarea>
 
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
-function parseNickAndCode(text) {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    function parseNickAndCode(text) {
     const clean = String(text || '')
         .replace(/[|]/g, ' ')
         .replace(/\n/g, ' ')
@@ -1545,9 +1545,6 @@ function parseNickAndCode(text) {
         confidence: (nickRaw && code) ? 'high' : 'medium'
     };
 }
-
-
-
 
 async function captureAndReadImage() {
     try {
@@ -1625,9 +1622,6 @@ async function captureAndReadImage() {
         alert(`No se pudo leer la captura: ${err.message || err}`);
     }
 }
-
-
-
 
 function sanitizeNickText(text) {
     return String(text || '')
@@ -1785,6 +1779,7 @@ async function ocrNickFromCanvas(canvas) {
 </script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
     <script>
         // ============ CONFIGURACIÓN ============
         // >>>>>> ¡¡¡ CAMBIA ESTA URL POR LA TUYA !!! <<<<<<
@@ -3073,8 +3068,6 @@ function renderRecordsHistory() {
                 .replace(/'/g, '&#039;');
         }
 
-
-
         // ============ GUARDAR VENTA ============
         async function saveSale() {
             if (cargandoDatos) {
@@ -3628,7 +3621,7 @@ function renderRecordsHistory() {
                 </table>
                 <p style="margin-top: 30px; color: #718096; text-align: center;">Reporte generado automáticamente</p>
             
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+
 </body>
             </html>
             `;
@@ -3875,6 +3868,6 @@ async function capturePresenceFrame() {
 
     </script>
 
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+
 </body>
 </html>
