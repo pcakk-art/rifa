@@ -912,9 +912,9 @@ table {
 
 /* --- QR scanner visual --- */
 .scan-guide, .camera-guide, .ocr-guide, .qr-guide {
-  height: 320px !important;
-  max-height: 320px !important;
-  width: 90% !important;
+  height: 420px !important;
+  max-height: 420px !important;
+  width: 96% !important;
   margin: 20px auto !important;
   border: 3px dashed #00c2ff !important;
   border-radius: 18px !important;
@@ -925,7 +925,7 @@ table {
   background: rgba(255,255,255,0.04) !important;
 }
 .scan-guide::after, .camera-guide::after, .ocr-guide::after, .qr-guide::after {
-  content: 'Centra el QR dentro del marco';
+  content: 'Muestra el QR completo dentro del marco';
   position: absolute;
   bottom: 10px;
   left: 50%;
@@ -943,7 +943,7 @@ table {
 }
 .scan-video-wrap video, .camera-wrap video, #scanVideo {
   width: 100% !important;
-  min-height: 320px !important;
+  min-height: 420px !important;
   object-fit: cover !important;
   border-radius: 16px !important;
   background: #111 !important;
@@ -3936,7 +3936,7 @@ async function capturePresenceFrame() {
 
         function resetQrScannerLock() {
             qrScanLocked = false;
-            updateScannerStatus('Escáner activo. Centra el QR dentro del marco.');
+            updateScannerStatus('Escáner activo. Muestra el QR completo dentro del marco.');
             startAutoQrScanner();
         }
 
@@ -3954,16 +3954,23 @@ async function capturePresenceFrame() {
             fctx.drawImage(video, 0, 0, frame.width, frame.height);
 
             const base = {
-                x: Math.floor(frame.width * 0.10),
-                y: Math.floor(frame.height * 0.15),
-                w: Math.floor(frame.width * 0.80),
-                h: Math.floor(frame.height * 0.60)
+                x: Math.floor(frame.width * 0.03),
+                y: Math.floor(frame.height * 0.05),
+                w: Math.floor(frame.width * 0.94),
+                h: Math.floor(frame.height * 0.88)
             };
 
             const areaData = fctx.getImageData(base.x, base.y, base.w, base.h);
-            const qr = jsQR(areaData.data, areaData.width, areaData.height, {
+            let qr = jsQR(areaData.data, areaData.width, areaData.height, {
                 inversionAttempts: 'attemptBoth'
             });
+
+            if (!qr || !qr.data) {
+                const fullData = fctx.getImageData(0, 0, frame.width, frame.height);
+                qr = jsQR(fullData.data, fullData.width, fullData.height, {
+                    inversionAttempts: 'attemptBoth'
+                });
+            }
 
             if (!qr || !qr.data) return false;
 
@@ -3979,17 +3986,22 @@ async function capturePresenceFrame() {
             ];
             const xs = pts.map(p => p.x);
             const ys = pts.map(p => p.y);
-            const minX = base.x + Math.max(0, Math.min(...xs));
-            const maxX = base.x + Math.min(base.w, Math.max(...xs));
-            const minY = base.y + Math.max(0, Math.min(...ys));
-            const maxY = base.y + Math.min(base.h, Math.max(...ys));
+
+            const qrDetectedInCrop =
+                Math.min(...xs) >= 0 && Math.max(...xs) <= base.w &&
+                Math.min(...ys) >= 0 && Math.max(...ys) <= base.h;
+
+            const minX = qrDetectedInCrop ? (base.x + Math.max(0, Math.min(...xs))) : Math.max(0, Math.min(...xs));
+            const maxX = qrDetectedInCrop ? (base.x + Math.min(base.w, Math.max(...xs))) : Math.min(frame.width, Math.max(...xs));
+            const minY = qrDetectedInCrop ? (base.y + Math.max(0, Math.min(...ys))) : Math.max(0, Math.min(...ys));
+            const maxY = qrDetectedInCrop ? (base.y + Math.min(base.h, Math.max(...ys))) : Math.min(frame.height, Math.max(...ys));
             const qrW = Math.max(1, maxX - minX);
             const qrH = Math.max(1, maxY - minY);
 
-            const textX = Math.max(0, minX - qrW * 0.45);
-            const textW = Math.min(frame.width - textX, qrW * 1.9);
-            const textY = Math.max(0, minY - qrH * 0.95);
-            const textH = Math.max(36, qrH * 0.55);
+            const textX = Math.max(0, minX - qrW * 0.60);
+            const textW = Math.min(frame.width - textX, qrW * 2.20);
+            const textY = Math.max(0, minY - qrH * 1.15);
+            const textH = Math.max(50, qrH * 0.75);
 
             let trainerNick = '';
             try {
@@ -4019,7 +4031,7 @@ async function capturePresenceFrame() {
         function startAutoQrScanner() {
             if (qrScanRunning || qrScanLocked) return;
             qrScanRunning = true;
-            updateScannerStatus('Escáner activo. Centra el QR dentro del marco.');
+            updateScannerStatus('Escáner activo. Muestra el QR completo dentro del marco.');
 
             let lastAttempt = 0;
             const loop = async (ts) => {
