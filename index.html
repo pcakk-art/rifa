@@ -894,6 +894,12 @@ table {
   .container, .main-container, .page-container { padding-left: 14px !important; padding-right: 14px !important; }
 }
 
+
+.scan-guide, .camera-guide, .ocr-guide {
+  height: 180px !important;
+  max-height: 180px !important;
+}
+
 </style>
 </head>
 <body>
@@ -1316,7 +1322,7 @@ NinjaFox
                                         <div class="scanner-frame">
                                             <video id="scannerVideo" autoplay playsinline muted style="width:100%; display:block; background:#111;"></video>
                                             <div class="scanner-guide"></div>
-                                            <div class="scanner-guide-label">Alinea las 2 líneas aquí</div>
+                                            <div class="scanner-guide-label">Alinea solo nick + código</div>
                                         </div>
                                         <canvas id="scannerCanvas" style="display:none;"></canvas>
                                     </div>
@@ -1501,35 +1507,33 @@ AeroGrip 555566667777"></textarea>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
 function parseNickAndCode(text) {
     const clean = String(text || '')
+        .replace(/[|]/g, ' ')
         .replace(/\n/g, ' ')
         .replace(/\s+/g, ' ')
         .trim();
 
-    console.log("OCR limpio:", clean);
+    console.log('OCR limpio:', clean);
 
-    // 1. Detectar código (12 dígitos)
     const codeMatch = clean.match(/(\d{4})\s*(\d{4})\s*(\d{4})/);
-
-    let code = '';
-    if (codeMatch) {
-        code = `${codeMatch[1]} ${codeMatch[2]} ${codeMatch[3]}`;
+    if (!codeMatch) {
+        return { nick: '', code: '', confidence: 'low' };
     }
 
-    // 2. Quitar el código del texto
-    let remaining = clean.replace(codeMatch ? codeMatch[0] : '', ' ');
+    const code = `${codeMatch[1]} ${codeMatch[2]} ${codeMatch[3]}`;
 
-    // 3. Buscar posibles nicks (strings alfanuméricos largos)
-    const candidates = remaining.match(/[a-zA-Z0-9]{5,}/g) || [];
+    let nickRaw = clean.replace(codeMatch[0], '').trim();
 
-    // 4. Elegir el mejor candidato (más largo)
-    let nick = '';
-    if (candidates.length > 0) {
-        nick = candidates.sort((a, b) => b.length - a.length)[0];
-    }
+    nickRaw = nickRaw
+        .replace(/\b(codigo|compartir|entrenador|copiar|qr|codigoentrenador)\b/ig, ' ')
+        .replace(/[^a-zA-Z0-9]/g, '')
+        .trim();
+
+    nickRaw = nickRaw.replace(/(\d{4}|\d{8}|\d{12})$/, '').trim();
 
     return {
-        nick: nick,
-        code: code
+        nick: nickRaw,
+        code: code,
+        confidence: (nickRaw && code) ? 'high' : 'medium'
     };
 }
 
@@ -1551,18 +1555,18 @@ async function captureAndReadImage() {
 
         // Área guía donde normalmente están ambas líneas.
         const base = {
-            x: Math.floor(vw * 0.22),
-            y: Math.floor(vh * 0.10),
-            w: Math.floor(vw * 0.56),
-            h: Math.floor(vh * 0.28)
+            x: Math.floor(vw * 0.24),
+            y: Math.floor(vh * 0.12),
+            w: Math.floor(vw * 0.52),
+            h: Math.floor(vh * 0.14)
         };
 
         // Variaciones pequeñas para tolerar ángulo y encuadre.
         const offsets = [
             {dx: 0, dy: 0, dw: 0, dh: 0},
-            {dx: -10, dy: -6, dw: 20, dh: 12},
-            {dx: 10, dy: -6, dw: -10, dh: 10},
-            {dx: 0, dy: 8, dw: 0, dh: -10}
+            {dx: -8, dy: -4, dw: 12, dh: 6},
+            {dx: 8, dy: -4, dw: -8, dh: 6},
+            {dx: 0, dy: 4, dw: 0, dh: -4}
         ];
 
         let best = {nick: '', code: '', score: -1, rawNick: '', rawCode: ''};
@@ -1578,16 +1582,16 @@ async function captureAndReadImage() {
             // Separar en 2 líneas: arriba nick, abajo código.
             const nickCrop = {
                 x: area.x,
-                y: area.y + Math.floor(area.h * 0.40),
+                y: area.y + Math.floor(area.h * 0.08),
                 w: area.w,
-                h: Math.floor(area.h * 0.18)
+                h: Math.floor(area.h * 0.28)
             };
 
             const codeCrop = {
                 x: area.x,
-                y: area.y + Math.floor(area.h * 0.58),
+                y: area.y + Math.floor(area.h * 0.48),
                 w: area.w,
-                h: Math.floor(area.h * 0.16)
+                h: Math.floor(area.h * 0.24)
             };
 
             const nickCanvas = createProcessedCanvasFromVideo(video, nickCrop);
