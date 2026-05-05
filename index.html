@@ -1280,6 +1280,13 @@ table {
   font-weight:900;
 }
 
+
+/* --- Fix login admin --- */
+.admin-hidden,
+.admin-login-overlay.admin-hidden {
+  display: none !important;
+}
+
 </style>
 </head>
 <body>
@@ -1287,19 +1294,30 @@ table {
 <!-- Login simple de administrador.
      Cambia ADMIN_PASSWORD dentro del script si quieres otra clave.
      Esto oculta la interfaz para usuarios casuales; la seguridad real sigue estando en no publicar la URL de edición. -->
+
+<!-- Login simple de administrador:
+     Se muestra al entrar a la página admin. Al ingresar la clave correcta,
+     se oculta la pantalla de acceso y queda disponible el portal. -->
 <div class="admin-login-overlay" id="adminLoginOverlay">
   <div class="admin-login-card">
     <h2>🔐 Acceso administrador</h2>
     <p>Ingresa la clave para usar gestión de ventas, sorteo y estadísticas.</p>
-    <input type="password" id="adminPasswordInput" placeholder="Clave de administrador">
-    <button class="btn btn-success" type="button" onclick="adminLogin()">Entrar</button>
-    <div id="adminLoginError" style="color:#dc2626; margin-top:10px; display:none;">Clave incorrecta.</div>
+
+    <input type="password" id="adminPasswordInput" placeholder="Clave de administrador" autocomplete="current-password">
+
+    <button class="btn btn-success" type="button" id="adminLoginButton">Entrar</button>
+
+    <div id="adminLoginError" style="color:#dc2626; margin-top:10px; display:none;">
+      Clave incorrecta.
+    </div>
+
+    <div style="margin-top:12px; color:#64748b; font-size:14px;">
+      Clave inicial: <strong>admin123</strong>. Cámbiala en el código antes de publicar.
+    </div>
   </div>
 </div>
 
-    <!-- Página principal del sistema: portal, ventas, sorteo y estadísticas. -->
-    <!-- Página principal del sistema: portal, ventas, sorteo y estadísticas. -->
-    <div class="container">
+<div class="container">
     
 
     <div id="homeModule" class="module-section active">
@@ -2097,9 +2115,10 @@ async function recognizeCanvas(canvas, mode) {
 
 
 
+
 // ============ CONFIGURACIÓN ============
         // >>>>>> ¡¡¡ CAMBIA ESTA URL POR LA TUYA !!! <<<<<<
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxod31sMOu8JD0KdAyQhFUVlyc2CD14dFYmIjSa1PUhV6Ks1K5zcSNWI9WgWG2U7rg_xQ/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyrPuCEEuzRon82pC8Zzc13bGojpDucXTFWMcdv0RM5ghwah3aeKndqJYkRBzI7A2Cd3Q/exec';
         
         // ============ VARIABLES GLOBALES ============
         let sales = [];
@@ -5079,33 +5098,14 @@ document.addEventListener('DOMContentLoaded', function() {
 // ============================================================
 // Cambia esta clave por una propia antes de publicar.
 // Nota: al estar en frontend no es seguridad bancaria; sirve para separar vista pública/admin.
-const ADMIN_PASSWORD = 'admin123';
 
-function adminLogin() {
-    const input = document.getElementById('adminPasswordInput');
-    const error = document.getElementById('adminLoginError');
-    const value = (input?.value || '').trim();
 
-    if (value === ADMIN_PASSWORD) {
-        sessionStorage.setItem('rifaAdminLogged', '1');
-        document.getElementById('adminLoginOverlay')?.classList.add('admin-hidden');
-        renderAdminStatsDashboard();
-    } else if (error) {
-        error.style.display = 'block';
-    }
-}
 
-function adminLogout() {
-    sessionStorage.removeItem('rifaAdminLogged');
-    document.getElementById('adminLoginOverlay')?.classList.remove('admin-hidden');
-}
+
+
 
 // Si ya inició sesión en esta pestaña, no vuelve a pedir clave.
-document.addEventListener('DOMContentLoaded', function() {
-    if (sessionStorage.getItem('rifaAdminLogged') === '1') {
-        document.getElementById('adminLoginOverlay')?.classList.add('admin-hidden');
-    }
-});
+
 
 // ============================================================
 // PANEL ADMIN: EVENTOS, PENDIENTES Y TOP
@@ -5800,6 +5800,91 @@ function selectScanEvent(eventId) {
     setEventStatus(`Evento activo para escaneo: ${event.name} · ${timeRange} · ${event.date}`);
     renderEventParticipantsTable();
 }
+
+
+
+// ============================================================
+// LOGIN ADMIN ROBUSTO
+// ============================================================
+// Esta versión no depende de onclick en el HTML.
+// El botón y la tecla Enter se conectan al cargar la página.
+
+const ADMIN_PASSWORD = 'admin123';
+
+function adminLogin() {
+    const input = document.getElementById('adminPasswordInput');
+    const error = document.getElementById('adminLoginError');
+    const overlay = document.getElementById('adminLoginOverlay');
+    const value = (input && input.value ? input.value : '').trim();
+
+    if (value === ADMIN_PASSWORD) {
+        sessionStorage.setItem('rifaAdminLogged', '1');
+
+        if (overlay) {
+            overlay.classList.add('admin-hidden');
+            overlay.style.display = 'none';
+        }
+
+        if (error) error.style.display = 'none';
+
+        try { renderEventsTable(); } catch (e) {}
+        try { renderFinishedEventsTable(); } catch (e) {}
+        try { renderTodayEventSelector(); } catch (e) {}
+        try { renderAdminStatsDashboard(); } catch (e) {}
+
+        return true;
+    }
+
+    if (error) error.style.display = 'block';
+    return false;
+}
+
+function adminLogout() {
+    sessionStorage.removeItem('rifaAdminLogged');
+
+    const overlay = document.getElementById('adminLoginOverlay');
+    if (overlay) {
+        overlay.classList.remove('admin-hidden');
+        overlay.style.display = 'flex';
+    }
+}
+
+function initAdminLogin() {
+    const overlay = document.getElementById('adminLoginOverlay');
+    const input = document.getElementById('adminPasswordInput');
+    const button = document.getElementById('adminLoginButton');
+
+    if (sessionStorage.getItem('rifaAdminLogged') === '1') {
+        if (overlay) {
+            overlay.classList.add('admin-hidden');
+            overlay.style.display = 'none';
+        }
+    } else {
+        if (overlay) {
+            overlay.classList.remove('admin-hidden');
+            overlay.style.display = 'flex';
+        }
+
+        setTimeout(() => {
+            if (input) input.focus();
+        }, 200);
+    }
+
+    if (button) {
+        button.addEventListener('click', adminLogin);
+    }
+
+    if (input) {
+        input.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                adminLogin();
+            }
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', initAdminLogin);
 
 </script>;
             const maxX = qrDetectedInCrop ? (base.x + Math.min(base.w, Math.max(...xs))) : Math.min(frame.width, Math.max(...xs));
