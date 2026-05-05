@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de gestión</title>
     <style>
+        /* Estilos generales del portal y de los módulos internos. */
+        /* Estilos generales del portal y de los módulos internos. */
         * {
             margin: 0;
             padding: 0;
@@ -958,9 +960,345 @@ table {
   margin-top: 10px;
 }
 
+
+/* --- Registro de entrenadores --- */
+.trainer-registry-card {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 16px;
+  background: #f8f9fa;
+  padding: 22px;
+  margin: 20px 0;
+  border: 2px solid #e2e8f0;
+}
+.trainer-registry-card h3 { margin-bottom: 14px; color: #4a5568; }
+.trainer-registry-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  align-items: end;
+}
+.trainer-table-wrap { overflow-x: auto; margin-top: 14px; }
+.trainer-match-box {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #edf2f7;
+  color: #2d3748;
+}
+
+
+/* --- Flujo profesional QR + participantes pendientes --- */
+.pro-panel {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 22px;
+  margin: 20px 0;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+.pro-panel.soft {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+.pro-panel h3 {
+  color: #2d3748;
+  margin-bottom: 8px;
+}
+.pro-subtitle {
+  color: #718096;
+  margin-bottom: 16px;
+  line-height: 1.45;
+}
+.pro-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  align-items: end;
+}
+.pro-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+.pro-status {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #edf2f7;
+  color: #2d3748;
+  border: 1px solid #e2e8f0;
+}
+.pro-table-wrap {
+  overflow-x: auto;
+  margin-top: 14px;
+}
+.pending-pill, .registered-pill {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.pending-pill {
+  background: #fff7ed;
+  color: #9a3412;
+  border: 1px solid #fed7aa;
+}
+.registered-pill {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+.qr-read-card {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e3a8a;
+}
+.scan-guide, .camera-guide, .ocr-guide, .qr-guide {
+  height: 420px !important;
+  max-height: 420px !important;
+  width: 96% !important;
+  margin: 20px auto !important;
+  border: 3px dashed #2563eb !important;
+  border-radius: 22px !important;
+}
+.scan-guide::after, .camera-guide::after, .ocr-guide::after, .qr-guide::after {
+  content: 'Muestra el QR completo dentro del marco';
+}
+#scanVideo, .scan-video-wrap video, .camera-wrap video {
+  min-height: 420px !important;
+  object-fit: cover !important;
+  border-radius: 18px !important;
+  background: #111 !important;
+}
+.scanner-status-pill {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+
+/* --- Seguridad visual admin + panel pro de estadísticas --- */
+.admin-login-overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(15,23,42,.96), rgba(30,41,59,.94));
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.admin-login-card {
+  width: 100%;
+  max-width: 440px;
+  background: #fff;
+  border-radius: 22px;
+  padding: 28px;
+  box-shadow: 0 24px 80px rgba(0,0,0,.35);
+}
+.admin-login-card h2 {
+  margin-bottom: 8px;
+  color: #1f2937;
+}
+.admin-login-card p {
+  color: #64748b;
+  margin-bottom: 18px;
+}
+.admin-login-card input {
+  width: 100%;
+  padding: 14px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+.admin-hidden {
+  display: none !important;
+}
+.admin-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 18px 0;
+}
+.admin-metric-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 8px 24px rgba(15,23,42,.06);
+}
+.admin-metric-card .metric-value {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #2563eb;
+  margin-top: 8px;
+}
+.admin-table-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 14px 0;
+  align-items: end;
+}
+.admin-table-tools .form-group {
+  min-width: 220px;
+}
+
+
+/* --- Panel admin para tema público --- */
+.public-theme-panel {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 22px;
+  margin: 20px 0;
+  box-shadow: 0 10px 30px rgba(15,23,42,.08);
+}
+.theme-preview-box {
+  min-height: 150px;
+  border-radius: 18px;
+  padding: 20px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  color: #fff;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  border: 1px solid rgba(0,0,0,.08);
+}
+.theme-preview-box strong {
+  display: block;
+  font-size: 1.5rem;
+  margin-bottom: 6px;
+}
+.theme-option-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.theme-chip {
+  border: 2px solid #e2e8f0;
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px;
+  cursor: pointer;
+  font-weight: 800;
+}
+.theme-chip.active {
+  border-color: #2563eb;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+
+/* --- Gestión profesional de eventos con fecha --- */
+.event-manager-panel {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 22px;
+  margin: 20px 0;
+  box-shadow: 0 10px 30px rgba(15,23,42,.08);
+}
+.event-today-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  font-size: 12px;
+  font-weight: 900;
+}
+.event-other-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+
+/* --- Eventos: activos/futuros y búsqueda histórica --- */
+.event-history-tools {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: end;
+  margin: 16px 0;
+}
+.event-history-tools .form-group {
+  min-width: 230px;
+}
+.event-section-title {
+  margin-top: 22px;
+  color: #334155;
+}
+.event-live-badge {
+  display:inline-block;
+  padding:5px 10px;
+  border-radius:999px;
+  background:#dbeafe;
+  color:#1d4ed8;
+  border:1px solid #93c5fd;
+  font-size:12px;
+  font-weight:900;
+}
+.event-future-badge {
+  display:inline-block;
+  padding:5px 10px;
+  border-radius:999px;
+  background:#ecfdf5;
+  color:#065f46;
+  border:1px solid #a7f3d0;
+  font-size:12px;
+  font-weight:900;
+}
+.event-finished-badge {
+  display:inline-block;
+  padding:5px 10px;
+  border-radius:999px;
+  background:#f1f5f9;
+  color:#475569;
+  border:1px solid #cbd5e1;
+  font-size:12px;
+  font-weight:900;
+}
+
 </style>
 </head>
 <body>
+
+<!-- Login simple de administrador.
+     Cambia ADMIN_PASSWORD dentro del script si quieres otra clave.
+     Esto oculta la interfaz para usuarios casuales; la seguridad real sigue estando en no publicar la URL de edición. -->
+<div class="admin-login-overlay" id="adminLoginOverlay">
+  <div class="admin-login-card">
+    <h2>🔐 Acceso administrador</h2>
+    <p>Ingresa la clave para usar gestión de ventas, sorteo y estadísticas.</p>
+    <input type="password" id="adminPasswordInput" placeholder="Clave de administrador">
+    <button class="btn btn-success" type="button" onclick="adminLogin()">Entrar</button>
+    <div id="adminLoginError" style="color:#dc2626; margin-top:10px; display:none;">Clave incorrecta.</div>
+  </div>
+</div>
+
+    <!-- Página principal del sistema: portal, ventas, sorteo y estadísticas. -->
+    <!-- Página principal del sistema: portal, ventas, sorteo y estadísticas. -->
     <div class="container">
     
 
@@ -1570,7 +1908,7 @@ function parseNickAndCode(text) {
         .replace(/\s+/g, ' ')
         .trim();
 
-    console.log('OCR limpio:', clean);
+    console.log('QR limpio:', clean);
 
     const codeMatch = clean.match(/(\d{4})\s*(\d{4})\s*(\d{4})/);
     if (!codeMatch) {
@@ -1679,7 +2017,7 @@ async function captureAndReadImage() {
             if (best.nick && best.code) {
                 statusEl.textContent = `Detectado: ${best.nick} / ${best.code}`;
             } else {
-                statusEl.textContent = `Lectura incompleta. Nick OCR: ${sanitizeNickText(best.rawNick)} | Código OCR: ${sanitizeCodeText(best.rawCode) || best.rawCode}`;
+                statusEl.textContent = `Lectura incompleta. Nick QR: ${sanitizeNickText(best.rawNick)} | Código QR: ${sanitizeCodeText(best.rawCode) || best.rawCode}`;
             }
         }
 
@@ -1746,32 +2084,19 @@ function createProcessedCanvasFromVideo(video, crop) {
 }
 
 async function recognizeCanvas(canvas, mode) {
-    if (!(window.Tesseract && window.Tesseract.recognize)) {
-        throw new Error('No se encontró el motor OCR');
+        throw new Error('No se encontró el motor QR');
     }
 
     const baseConfig = {
         tessedit_pageseg_mode: 7,
-        preserve_interword_spaces: '1'
-    };
+        preserve_interword_spaces: '<script>
 
-    if (mode === 'nick') {
-        baseConfig.tessedit_char_whitelist = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    } else if (mode === 'code') {
-        baseConfig.tessedit_char_whitelist = '0123456789 ';
-    }
 
-    const result = await window.Tesseract.recognize(canvas, 'eng', baseConfig);
-    return (result && result.data && result.data.text) ? result.data.text : '';
-}
 
-</script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 
-    <script>
+
+
 // ============ CONFIGURACIÓN ============
         // >>>>>> ¡¡¡ CAMBIA ESTA URL POR LA TUYA !!! <<<<<<
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxod31sMOu8JD0KdAyQhFUVlyc2CD14dFYmIjSa1PUhV6Ks1K5zcSNWI9WgWG2U7rg_xQ/exec';
@@ -3613,7 +3938,354 @@ function renderRecordsHistory() {
                     </tbody>
                 </table>
                 <p style="margin-top: 30px; color: #718096; text-align: center;">Reporte generado automáticamente</p>
-            </body>
+            
+<!-- ============================================================
+     REGISTRO MAESTRO DE ENTRENADORES
+     ------------------------------------------------------------
+     Este bloque administra los datos personales del entrenador.
+     El QR solo entrega el código; nick, nombre y contacto se pueden
+     completar después si durante el evento se necesita avanzar rápido.
+============================================================ -->
+<div class="pro-panel soft" id="trainerRegistryCard">
+    <h3>👤 Registro maestro de entrenadores</h3>
+    <p class="pro-subtitle">
+        Si el QR pertenece a alguien no registrado, igual quedará inscrito en el evento como
+        <strong>pendiente</strong>. Después esa persona puede completar nick, nombre y contacto.
+    </p>
+
+    <input type="hidden" id="trainerEditCode" value="">
+
+    <div class="pro-grid">
+        <div class="form-group">
+            <label for="trainerNick">Nick entrenador</label>
+            <input type="text" id="trainerNick" placeholder="Ej: pabloca3050">
+        </div>
+        <div class="form-group">
+            <label for="trainerCode">Código entrenador</label>
+            <input type="text" id="trainerCode" placeholder="Ej: 6011 3024 6134">
+        </div>
+        <div class="form-group">
+            <label for="trainerName">Nombre real</label>
+            <input type="text" id="trainerName" placeholder="Nombre y apellido">
+        </div>
+        <div class="form-group">
+            <label for="trainerContact">Contacto obligatorio</label>
+            <input type="text" id="trainerContact" placeholder="Teléfono, WhatsApp o correo">
+        </div>
+    </div>
+
+    <div class="pro-actions">
+        <button class="btn btn-success" type="button" onclick="saveTrainerProfile()">💾 Guardar / completar datos</button>
+        <button class="btn" type="button" onclick="clearTrainerForm()">🧹 Limpiar formulario</button>
+    </div>
+
+    <div class="pro-status qr-read-card" id="trainerMatchBox">
+        Último QR leído: sin datos todavía.
+    </div>
+
+    <div class="pro-table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nick</th>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Contacto</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="trainersTable"></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ============================================================
+     PARTICIPANTES DEL EVENTO ACTUAL
+     ------------------------------------------------------------
+     Este bloque es para el trabajo rápido en terreno:
+     al escanear un QR, el código se registra automáticamente.
+     Si no existen datos personales, queda como pendiente.
+============================================================ -->
+
+<!-- ============================================================
+     ADMIN: CREACIÓN Y SELECCIÓN DE EVENTOS
+     ------------------------------------------------------------
+     Un evento puede crearse el mismo día o días antes.
+     El día del evento, el admin solo puede registrar participantes
+     en eventos cuya fecha sea igual a la fecha actual.
+     Esto permite que varios admin registren en paralelo sin mezclar
+     eventos de otros días.
+============================================================ -->
+<div class="event-manager-panel" id="eventManagerPanel">
+    <h3>📅 Gestión de eventos</h3>
+    <p class="pro-subtitle">
+        Crea eventos con fecha. El día del evento, el escáner solo permitirá registrar en eventos creados
+        para esa misma fecha. Si hay más de un evento el mismo día, selecciona cuál corresponde.
+    </p>
+
+    <div class="pro-grid">
+        <div class="form-group">
+            <label for="adminEventName">Nombre del evento</label>
+            <input type="text" id="adminEventName" placeholder="Ej: Liga sábado tarde">
+        </div>
+        <div class="form-group">
+            <label for="adminEventDate">Fecha del evento</label>
+            <input type="date" id="adminEventDate">
+        </div>
+        <div class="form-group">
+            <label for="adminEventStartTime">Hora inicio</label>
+            <input type="time" id="adminEventStartTime">
+        </div>
+        <div class="form-group">
+            <label for="adminEventEndTime">Hora término</label>
+            <input type="time" id="adminEventEndTime">
+        </div>
+        <div class="form-group">
+            <label for="adminEventLocation">Lugar / referencia</label>
+            <input type="text" id="adminEventLocation" placeholder="Ej: Plaza, tienda, gimnasio">
+        </div>
+        <div class="form-group">
+            <label for="adminEventCreator">Creador del evento (solo admin)</label>
+            <input type="text" id="adminEventCreator" placeholder="Nombre del admin responsable">
+        </div>
+    </div>
+
+    <div class="pro-actions">
+        <button class="btn btn-success" type="button" onclick="createAdminEvent()">➕ Crear evento</button>
+        <button class="btn" type="button" onclick="syncEventsFromSheets()">🔄 Cargar eventos</button>
+    </div>
+
+    <div class="pro-status" id="eventManagerStatus">
+        Eventos: esperando carga desde Sheets...
+    </div>
+
+    <div class="pro-grid" style="margin-top:16px;">
+        <div class="form-group">
+            <label for="currentEventSelector">Evento activo para escaneo de hoy</label>
+            <select id="currentEventSelector" onchange="setCurrentScanEventFromSelector()">
+                <option value="">Cargando eventos de hoy...</option>
+            </select>
+        </div>
+    </div>
+
+    <h3 class="event-section-title">✅ Eventos de hoy y futuros</h3>
+    <div class="pro-table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Evento</th>
+                    <th>Lugar</th>
+                    <th>Creador</th>
+                    <th>Estado</th>
+                    <th>Usar</th>
+                </tr>
+            </thead>
+            <tbody id="eventsTable"></tbody>
+        </table>
+    </div>
+
+    <h3 class="event-section-title">🗂️ Eventos finalizados</h3>
+    <p class="pro-subtitle">
+        Busca eventos antiguos por nombre, fecha, lugar, creador, hora o cualquier texto asociado.
+    </p>
+
+    <div class="event-history-tools">
+        <div class="form-group">
+            <label for="finishedEventSearch">Buscar evento finalizado</label>
+            <input type="search" id="finishedEventSearch" placeholder="Buscar por cualquier dato..." oninput="renderFinishedEventsTable()">
+        </div>
+        <button class="btn" type="button" onclick="renderFinishedEventsTable()">🔎 Buscar</button>
+    </div>
+
+    <div class="pro-table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Evento</th>
+                    <th>Lugar</th>
+                    <th>Creador</th>
+                    <th>Registros</th>
+                </tr>
+            </thead>
+            <tbody id="finishedEventsTable"></tbody>
+        </table>
+    </div>
+</div>
+
+<div class="pro-panel" id="eventParticipantsCard">
+    <h3>📌 Participantes del evento actual</h3>
+    <p class="pro-subtitle">
+        El escaneo del QR inscribe al participante inmediatamente. Los datos personales se pueden completar después,
+        sin frenar la fila presencial.
+    </p>
+
+    <div class="pro-actions">
+        <button class="btn" type="button" onclick="exportEventParticipants()">📤 Exportar participantes</button>
+        <button class="btn" type="button" onclick="clearCurrentEventParticipants()">🧹 Limpiar evento actual</button>
+    
+<!-- ============================================================
+     PANEL ADMIN DE ESTADÍSTICAS
+     ------------------------------------------------------------
+     Permite ver todos los eventos, registros pendientes/completos,
+     entrenadores y ranking general. Solo aparece en página admin.
+============================================================ -->
+
+<!-- ============================================================
+     PANEL ADMIN: TEMA DE LA PÁGINA PÚBLICA
+     ------------------------------------------------------------
+     Desde aquí se cambia el estilo visual que verán los jugadores.
+     La configuración se guarda en Google Sheets mediante Apps Script.
+     La imagen se guarda como DataURL en la hoja de configuración:
+     sirve para banners livianos; para imágenes muy pesadas conviene usar
+     URL externa o comprimir antes.
+============================================================ -->
+<div class="public-theme-panel" id="publicThemePanel">
+    <h3>🎨 Tema de página pública</h3>
+    <p class="pro-subtitle">
+        Cambia el estilo de la página pública de estadísticas. Puedes elegir un tema Pokémon
+        y opcionalmente subir una imagen de cabecera.
+    </p>
+
+    <div class="theme-option-grid">
+        <button class="theme-chip active" type="button" data-theme="pikachu" onclick="selectPublicTheme('pikachu')">⚡ Pikachu eléctrico</button>
+        <button class="theme-chip" type="button" data-theme="pokeball" onclick="selectPublicTheme('pokeball')">🔴 Poké Ball clásico</button>
+        <button class="theme-chip" type="button" data-theme="bulbasaur" onclick="selectPublicTheme('bulbasaur')">🌿 Bulbasaur bosque</button>
+        <button class="theme-chip" type="button" data-theme="gengar" onclick="selectPublicTheme('gengar')">👻 Gengar nocturno</button>
+    </div>
+
+    <div class="pro-grid" style="margin-top:16px;">
+        <div class="form-group">
+            <label for="publicThemeTitle">Título público</label>
+            <input type="text" id="publicThemeTitle" placeholder="Ej: Liga de Entrenadores Conce">
+        </div>
+        <div class="form-group">
+            <label for="publicThemeSubtitle">Subtítulo público</label>
+            <input type="text" id="publicThemeSubtitle" placeholder="Ej: Revisa tus asistencias y ranking">
+        </div>
+        <div class="form-group">
+            <label for="publicThemeImage">Imagen/banner público</label>
+            <input type="file" id="publicThemeImage" accept="image/*" onchange="loadPublicThemeImage(event)">
+        </div>
+    </div>
+
+    <div class="theme-preview-box" id="publicThemePreview">
+        <div>
+            <strong id="publicThemePreviewTitle">Liga de Entrenadores</strong>
+            <span id="publicThemePreviewSubtitle">Estadísticas, asistencia y ranking</span>
+        </div>
+    </div>
+
+    <div class="pro-actions">
+        <button class="btn btn-success" type="button" onclick="savePublicThemeConfig()">💾 Guardar tema público</button>
+        <button class="btn" type="button" onclick="clearPublicThemeImage()">🖼️ Quitar imagen</button>
+        <button class="btn" type="button" onclick="loadPublicThemeConfig()">🔄 Cargar tema actual</button>
+    </div>
+
+    <div class="pro-status" id="publicThemeStatus">
+        Tema público: listo para configurar.
+    </div>
+</div>
+
+<div class="pro-panel" id="adminStatsDashboard">
+    <h3>📊 Panel admin de estadísticas</h3>
+    <p class="pro-subtitle">
+        Vista completa para administración: eventos registrados, top de entrenadores, pendientes y registros por evento.
+    </p>
+
+    <div class="admin-dashboard-grid">
+        <div class="admin-metric-card">
+            <div>Eventos registrados</div>
+            <div class="metric-value" id="metricEvents">0</div>
+        </div>
+        <div class="admin-metric-card">
+            <div>Participaciones totales</div>
+            <div class="metric-value" id="metricParticipations">0</div>
+        </div>
+        <div class="admin-metric-card">
+            <div>Entrenadores únicos</div>
+            <div class="metric-value" id="metricUniqueTrainers">0</div>
+        </div>
+        <div class="admin-metric-card">
+            <div>Datos pendientes</div>
+            <div class="metric-value" id="metricPending">0</div>
+        </div>
+    </div>
+
+    <div class="admin-table-tools">
+        <div class="form-group">
+            <label for="adminEventFilter">Filtrar por evento</label>
+            <select id="adminEventFilter" onchange="renderAdminStatsDashboard()">
+                <option value="">Todos los eventos</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="adminSearchTrainer">Buscar entrenador/código</label>
+            <input type="search" id="adminSearchTrainer" placeholder="Nick, nombre o código" oninput="renderAdminStatsDashboard()">
+        </div>
+        <button class="btn" type="button" onclick="exportAdminStatsCSV()">📤 Exportar vista</button>
+        <button class="btn" type="button" onclick="syncStatsFromSheets()">🔄 Sincronizar Sheets</button>
+    </div>
+
+    <div class="pro-table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Evento</th>
+                    <th>Código</th>
+                    <th>Nick</th>
+                    <th>Nombre</th>
+                    <th>Contacto</th>
+                    <th>Estado</th>
+                    <th>Registro</th>
+                </tr>
+            </thead>
+            <tbody id="adminStatsTable"></tbody>
+        </table>
+    </div>
+
+    <h3 style="margin-top:22px;">🏆 Top entrenadores</h3>
+    <div class="pro-table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Posición</th>
+                    <th>Código</th>
+                    <th>Nick</th>
+                    <th>Nombre</th>
+                    <th>Participaciones</th>
+                    <th>Eventos únicos</th>
+                    <th>Estado datos</th>
+                </tr>
+            </thead>
+            <tbody id="adminTopTable"></tbody>
+        </table>
+    </div>
+</div>
+
+</div>
+
+    <div class="pro-table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nick</th>
+                    <th>Nombre</th>
+                    <th>Contacto</th>
+                    <th>Estado</th>
+                    <th>Hora</th>
+                </tr>
+            </thead>
+            <tbody id="eventParticipantsTable"></tbody>
+        </table>
+    </div>
+</div>
+
+</body>
             </html>
             `;
             
@@ -3745,7 +4417,6 @@ function preprocessScannerImage(sourceCanvas, sourceCtx, crop) {
 
 function normalizeScannerError(error) {
     const msg = String(error && error.message ? error.message : error || 'error desconocido');
-    if (msg.toLowerCase().includes('tesseract')) return 'No se pudo iniciar el lector OCR en este navegador.';
     if (msg.toLowerCase().includes('network')) return 'No se pudo descargar el motor de lectura. Revisa tu conexión.';
     return `No se pudo leer la captura: ${msg}`;
 }
@@ -3797,8 +4468,7 @@ async function capturePresenceFrame() {
         alert('La cámara aún no está lista.');
         return;
     }
-    if (!window.Tesseract) {
-        alert('El lector OCR no cargó en esta página. Recarga e intenta otra vez.');
+        alert('El lector QR no cargó en esta página. Recarga e intenta otra vez.');
         return;
     }
     presenceScannerBusy = true;
@@ -3813,7 +4483,6 @@ async function capturePresenceFrame() {
         const processedCanvas = preprocessScannerImage(canvas, ctx, crop);
         const imageDataUrl = processedCanvas.toDataURL('image/png');
 
-        const result = await Tesseract.recognize(imageDataUrl, 'eng', {
             logger: () => {},
             tessedit_pageseg_mode: 6
         });
@@ -3841,9 +4510,9 @@ async function capturePresenceFrame() {
     }
 }
 
-        let qrScanLocked = false;
-        let qrScanRunning = false;
-        let qrScanAnimationId = null;
+        
+        
+        
 
         function formatTrainerCodeFromDigits(digits) {
             const clean = String(digits || '').replace(/\D/g, '');
@@ -3852,146 +4521,1287 @@ async function capturePresenceFrame() {
             return `${last12.slice(0,4)} ${last12.slice(4,8)} ${last12.slice(8,12)}`;
         }
 
-        function extractTrainerCodeFromQrPayload(payload) {
-            const text = String(payload || '').trim();
-            const matches = text.match(/\d{12,}/g) || [];
-            if (matches.length > 0) return formatTrainerCodeFromDigits(matches[matches.length - 1]);
-            return formatTrainerCodeFromDigits(text.replace(/\D/g, ''));
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    renderTrainersTable();
+
+    setTimeout(() => {
+        try { startAutoQrScanner(); } catch (error) { console.warn('No se pudo iniciar escáner QR:', error); }
+    }, 1500);
+});
+
+
+
+// ============================================================
+// MÓDULO PROFESIONAL QR + REGISTRO DE PARTICIPANTES
+// ============================================================
+// Objetivo del flujo:
+// 1) Escanear el QR rápido en terreno.
+// 2) Extraer solo el código de entrenador.
+// 3) Inscribir inmediatamente ese código en el evento actual.
+// 4) Si faltan datos personales, marcarlo como "pendiente".
+// 5) Permitir completar nick, nombre y contacto después.
+
+let qrScanLocked = false;
+let qrScanRunning = false;
+let qrScanAnimationId = null;
+
+let trainers = JSON.parse(localStorage.getItem('trainerProfiles') || '[]');
+let eventParticipants = JSON.parse(localStorage.getItem('eventParticipants') || '[]');
+
+// Normaliza un código a formato #### #### ####.
+function normalizeTrainerCode(value) {
+    const digits = String(value || '').replace(/\D/g, '');
+    if (digits.length < 12) return '';
+    const last12 = digits.slice(-12);
+    return `${last12.slice(0,4)} ${last12.slice(4,8)} ${last12.slice(8,12)}`;
+}
+
+// Extrae desde el QR el último dato de 12 dígitos.
+function extractTrainerCodeFromQrPayload(payload) {
+    const text = String(payload || '').trim();
+    const matches = text.match(/\d{12,}/g) || [];
+    if (matches.length > 0) return normalizeTrainerCode(matches[matches.length - 1]);
+    return normalizeTrainerCode(text);
+}
+
+// Usa el nombre de evento configurado si existe; si no, usa la fecha actual.
+
+
+// Busca entrenador en el registro maestro.
+function findTrainerByCode(code) {
+    const normalized = normalizeTrainerCode(code);
+    return trainers.find(t => normalizeTrainerCode(t.code) === normalized) || null;
+}
+
+// Mensaje del escáner.
+function updateScannerStatus(msg) {
+    const statusEl = document.getElementById('scanDetectedText') || document.getElementById('scanStatus') || document.getElementById('ocrResult');
+    if (statusEl) statusEl.textContent = msg;
+}
+
+// Tabla de registro maestro.
+function renderTrainersTable() {
+    const tbody = document.getElementById('trainersTable');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+
+    if (!trainers.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#718096;">Aún no hay entrenadores registrados</td></tr>';
+        return;
+    }
+
+    trainers.slice().sort((a, b) => a.nick.localeCompare(b.nick)).forEach(t => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td>${t.nick}</td>
+            <td>${t.code}</td>
+            <td>${t.name}</td>
+            <td>${t.contact}</td>
+            <td class="action-buttons">
+                <button class="edit-btn" onclick="editTrainerProfile('${t.code}')">Editar</button>
+                <button class="delete-btn" onclick="deleteTrainerProfile('${t.code}')">Eliminar</button>
+            </td>
+        `;
+    });
+}
+
+// Limpia formulario maestro.
+function clearTrainerForm() {
+    ['trainerEditCode', 'trainerNick', 'trainerCode', 'trainerName', 'trainerContact'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+}
+
+// Guarda o completa datos del entrenador.
+// Si el código ya fue inscrito como pendiente, actualiza sus registros.
+function saveTrainerProfile() {
+    const nick = (document.getElementById('trainerNick')?.value || '').trim();
+    const code = normalizeTrainerCode(document.getElementById('trainerCode')?.value || '');
+    const name = (document.getElementById('trainerName')?.value || '').trim();
+    const contact = (document.getElementById('trainerContact')?.value || '').trim();
+    const editCode = normalizeTrainerCode(document.getElementById('trainerEditCode')?.value || '');
+
+    if (!nick || !code || !name || !contact) {
+        alert('Complete nick, código, nombre y contacto del entrenador.');
+        return;
+    }
+
+    const duplicate = trainers.find(t => normalizeTrainerCode(t.code) === code && normalizeTrainerCode(t.code) !== editCode);
+    if (duplicate) {
+        alert('Ya existe un entrenador registrado con ese código.');
+        return;
+    }
+
+    const profile = { nick, code, name, contact, updatedAt: new Date().toISOString() };
+
+    if (editCode) {
+        const idx = trainers.findIndex(t => normalizeTrainerCode(t.code) === editCode);
+        if (idx !== -1) trainers[idx] = profile;
+    } else {
+        trainers.push(profile);
+    }
+
+    localStorage.setItem('trainerProfiles', JSON.stringify(trainers));
+
+    eventParticipants = eventParticipants.map(p => {
+        if (normalizeTrainerCode(p.code) === code) {
+            return { ...p, nick, name, contact, status: 'completo' };
+        }
+        return p;
+    });
+
+    localStorage.setItem('eventParticipants', JSON.stringify(eventParticipants));
+
+    renderTrainersTable();
+    renderEventParticipantsTable();
+    clearTrainerForm();
+
+    alert('Datos del entrenador guardados correctamente.');
+}
+
+// Editar registro maestro.
+function editTrainerProfile(code) {
+    const trainer = findTrainerByCode(code);
+    if (!trainer) return;
+
+    document.getElementById('trainerEditCode').value = trainer.code;
+    document.getElementById('trainerNick').value = trainer.nick;
+    document.getElementById('trainerCode').value = trainer.code;
+    document.getElementById('trainerName').value = trainer.name;
+    document.getElementById('trainerContact').value = trainer.contact;
+}
+
+// Eliminar registro maestro, sin borrar participaciones históricas.
+function deleteTrainerProfile(code) {
+    const trainer = findTrainerByCode(code);
+    if (!trainer) return;
+
+    if (!confirm(`¿Eliminar a ${trainer.nick} del registro maestro? Las participaciones históricas no se borran.`)) return;
+
+    trainers = trainers.filter(t => normalizeTrainerCode(t.code) !== normalizeTrainerCode(code));
+    localStorage.setItem('trainerProfiles', JSON.stringify(trainers));
+
+    renderTrainersTable();
+    renderEventParticipantsTable();
+}
+
+// Inscribe automáticamente el código en el evento actual.
+function registerParticipantInCurrentEvent(code) {
+    const normalized = normalizeTrainerCode(code);
+    if (!normalized) return;
+
+    const eventObj = ensureTodayEventSelected();
+    if (!eventObj) return;
+    const eventId = eventObj.eventId;
+    const eventDate = eventObj.date;
+    const trainer = findTrainerByCode(normalized);
+
+    const alreadyExists = eventParticipants.some(p => p.eventId === eventId && normalizeTrainerCode(p.code) === normalized);
+
+    if (alreadyExists) {
+        renderEventParticipantsTable();
+        return;
+    }
+
+    const participantRecord = {
+        eventId,
+        eventDate,
+        eventName: eventObj.name,
+        eventStartTime: eventObj.startTime || '',
+        eventEndTime: eventObj.endTime || '',
+        eventCreator: eventObj.creator || '',
+        code: normalized,
+        nick: trainer ? trainer.nick : '',
+        name: trainer ? trainer.name : '',
+        contact: trainer ? trainer.contact : '',
+        status: trainer ? 'completo' : 'pendiente',
+        registeredAt: new Date().toISOString()
+    };
+
+    eventParticipants.push(participantRecord);
+
+    localStorage.setItem('eventParticipants', JSON.stringify(eventParticipants));
+    guardarParticipanteEnSheets(participantRecord);
+    renderEventParticipantsTable();
+}
+
+// Aplica el QR leído: carga datos si existen y registra participación.
+function applyTrainerFromQr(code) {
+    const normalized = normalizeTrainerCode(code);
+    const trainer = findTrainerByCode(normalized);
+    const matchBox = document.getElementById('trainerMatchBox');
+    const codeInput = document.getElementById('trainerCode');
+
+    if (codeInput) codeInput.value = normalized;
+
+    registerParticipantInCurrentEvent(normalized);
+
+    if (trainer) {
+        document.getElementById('trainerEditCode').value = trainer.code;
+        document.getElementById('trainerNick').value = trainer.nick;
+        document.getElementById('trainerName').value = trainer.name;
+        document.getElementById('trainerContact').value = trainer.contact;
+
+        if (matchBox) {
+            matchBox.innerHTML = `✅ QR inscrito en el evento. Entrenador: <strong>${trainer.nick}</strong> — ${trainer.name} — ${trainer.contact}`;
+        }
+    } else if (matchBox) {
+        matchBox.innerHTML = `⚠️ QR inscrito en el evento como <strong>pendiente</strong>: ${normalized}. Los datos pueden completarse después.`;
+    }
+}
+
+// Tabla del evento actual.
+function renderEventParticipantsTable() {
+    const tbody = document.getElementById('eventParticipantsTable');
+    if (!tbody) return;
+
+    const eventId = getCurrentEventIdForParticipants();
+    const rows = eventParticipants.filter(p => p.eventId === eventId);
+
+    tbody.innerHTML = '';
+
+    if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#718096;">Aún no hay participantes escaneados para este evento</td></tr>';
+        return;
+    }
+
+    rows.slice().sort((a, b) => new Date(b.registeredAt) - new Date(a.registeredAt)).forEach(p => {
+        const trainer = findTrainerByCode(p.code);
+        const nick = trainer ? trainer.nick : (p.nick || '-');
+        const name = trainer ? trainer.name : (p.name || '-');
+        const contact = trainer ? trainer.contact : (p.contact || '-');
+        const status = trainer ? 'completo' : (p.status || 'pendiente');
+        const badge = status === 'completo'
+            ? '<span class="registered-pill">Completo</span>'
+            : '<span class="pending-pill">Pendiente</span>';
+
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td>${p.code}</td>
+            <td>${nick}</td>
+            <td>${name}</td>
+            <td>${contact}</td>
+            <td>${badge}</td>
+            <td>${new Date(p.registeredAt).toLocaleTimeString()}</td>
+        `;
+    });
+}
+
+// Exportación CSV del evento actual.
+function exportEventParticipants() {
+    const eventId = getCurrentEventIdForParticipants();
+    const rows = eventParticipants.filter(p => p.eventId === eventId);
+
+    if (!rows.length) {
+        alert('No hay participantes para exportar en este evento.');
+        return;
+    }
+
+    let csv = 'Evento,Codigo,Nick,Nombre,Contacto,Estado,FechaRegistro\n';
+
+    rows.forEach(p => {
+        const trainer = findTrainerByCode(p.code);
+        const nick = trainer ? trainer.nick : (p.nick || '');
+        const name = trainer ? trainer.name : (p.name || '');
+        const contact = trainer ? trainer.contact : (p.contact || '');
+        const status = trainer ? 'completo' : (p.status || 'pendiente');
+
+        csv += `"${eventId}","${p.code}","${nick}","${name}","${contact}","${status}","${p.registeredAt}"\n`;
+    });
+
+    descargarArchivo(csv, `participantes-${eventId}.csv`, 'text/csv');
+}
+
+// Limpia participantes del evento actual, no borra entrenadores.
+function clearCurrentEventParticipants() {
+    const eventId = getCurrentEventIdForParticipants();
+
+    if (!confirm(`¿Limpiar participantes escaneados del evento "${eventId}"?`)) return;
+
+    eventParticipants = eventParticipants.filter(p => p.eventId !== eventId);
+    localStorage.setItem('eventParticipants', JSON.stringify(eventParticipants));
+    renderEventParticipantsTable();
+}
+
+// Función pensada para vista pública futura: completar datos pendientes.
+function completePendingProfileFromPublicForm(code, nick, name, contact) {
+    const normalized = normalizeTrainerCode(code);
+
+    if (!normalized || !nick || !name || !contact) {
+        return { success: false, message: 'Faltan datos obligatorios.' };
+    }
+
+    const profile = {
+        nick: String(nick).trim(),
+        code: normalized,
+        name: String(name).trim(),
+        contact: String(contact).trim(),
+        updatedAt: new Date().toISOString()
+    };
+
+    const existing = findTrainerByCode(normalized);
+
+    if (existing) {
+        const idx = trainers.findIndex(t => normalizeTrainerCode(t.code) === normalized);
+        if (idx !== -1) trainers[idx] = profile;
+    } else {
+        trainers.push(profile);
+    }
+
+    localStorage.setItem('trainerProfiles', JSON.stringify(trainers));
+
+    eventParticipants = eventParticipants.map(p => {
+        if (normalizeTrainerCode(p.code) === normalized) {
+            return { ...p, nick: profile.nick, name: profile.name, contact: profile.contact, status: 'completo' };
+        }
+        return p;
+    });
+
+    localStorage.setItem('eventParticipants', JSON.stringify(eventParticipants));
+
+    renderTrainersTable();
+    renderEventParticipantsTable();
+
+    return { success: true, message: 'Datos completados correctamente.' };
+}
+
+// Detiene escaneo automático.
+function stopAutoQrScanner() {
+    qrScanRunning = false;
+    if (qrScanAnimationId) {
+        cancelAnimationFrame(qrScanAnimationId);
+        qrScanAnimationId = null;
+    }
+}
+
+// Reactiva escáner tras una lectura.
+function resetQrScannerLock() {
+    qrScanLocked = false;
+    updateScannerStatus('Escáner activo. Muestra el QR completo dentro del marco.');
+    startAutoQrScanner();
+}
+
+// Lee un frame de cámara y busca QR.
+async function processQrFrameOnce() {
+    const video = document.getElementById('scanVideo') || document.querySelector('video');
+
+    if (!video || !video.videoWidth || !video.videoHeight || !window.jsQR || qrScanLocked) return false;
+
+    const frame = document.createElement('canvas');
+    frame.width = video.videoWidth;
+    frame.height = video.videoHeight;
+
+    const ctx = frame.getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(video, 0, 0, frame.width, frame.height);
+
+    const base = {
+        x: Math.floor(frame.width * 0.03),
+        y: Math.floor(frame.height * 0.05),
+        w: Math.floor(frame.width * 0.94),
+        h: Math.floor(frame.height * 0.88)
+    };
+
+    const areaData = ctx.getImageData(base.x, base.y, base.w, base.h);
+    let qr = jsQR(areaData.data, areaData.width, areaData.height, { inversionAttempts: 'attemptBoth' });
+
+    if (!qr || !qr.data) {
+        const fullData = ctx.getImageData(0, 0, frame.width, frame.height);
+        qr = jsQR(fullData.data, fullData.width, fullData.height, { inversionAttempts: 'attemptBoth' });
+    }
+
+    if (!qr || !qr.data) return false;
+
+    const trainerCode = extractTrainerCodeFromQrPayload(qr.data);
+
+    if (!trainerCode) {
+        updateScannerStatus('QR leído, pero no contiene un código de entrenador válido.');
+        return false;
+    }
+
+    qrScanLocked = true;
+    stopAutoQrScanner();
+
+    applyTrainerFromQr(trainerCode);
+    updateScannerStatus(`QR detectado, inscrito y bloqueado: ${trainerCode}`);
+
+    try { if (navigator.vibrate) navigator.vibrate(120); } catch (e) {}
+
+    return true;
+}
+
+// Escaneo automático sin botón de captura.
+function startAutoQrScanner() {
+    if (qrScanRunning || qrScanLocked) return;
+
+    qrScanRunning = true;
+    updateScannerStatus('Escáner activo. Muestra el QR completo dentro del marco.');
+
+    let lastAttempt = 0;
+
+    const loop = async (timestamp) => {
+        if (!qrScanRunning || qrScanLocked) return;
+
+        if (!lastAttempt || timestamp - lastAttempt > 650) {
+            lastAttempt = timestamp;
+            try { await processQrFrameOnce(); } catch (error) { console.warn('Error leyendo QR:', error); }
         }
 
-        function sanitizeNickCandidate(text, codeFormatted) {
-            let clean = String(text || '')
-                .replace(/\r/g, '\n')
-                .replace(/[|]/g, ' ')
-                .replace(/\s+/g, ' ')
-                .trim();
+        if (!qrScanLocked) qrScanAnimationId = requestAnimationFrame(loop);
+    };
 
-            if (codeFormatted) {
-                const codeDigits = codeFormatted.replace(/\D/g, '');
-                clean = clean.replace(new RegExp(codeFormatted.replace(/\s+/g, '\\s*'), 'ig'), ' ');
-                clean = clean.replace(new RegExp(codeDigits, 'ig'), ' ');
-                clean = clean.replace(new RegExp(codeDigits.slice(0,4), 'ig'), ' ');
-                clean = clean.replace(new RegExp(codeDigits.slice(4,8), 'ig'), ' ');
-                clean = clean.replace(new RegExp(codeDigits.slice(8,12), 'ig'), ' ');
-            }
+    qrScanAnimationId = requestAnimationFrame(loop);
+}
 
-            clean = clean
-                .replace(/\b(entrenador|codigo|compartir|copiar|qr)\b/ig, ' ')
-                .replace(/[^a-zA-Z0-9 ]/g, ' ')
-                .replace(/\s+/g, ' ')
-                .trim();
+// Inicialización del módulo.
+document.addEventListener('DOMContentLoaded', function() {
+    renderTrainersTable();
+    renderEventParticipantsTable();
 
-            const tokens = clean.match(/[A-Za-z0-9]{4,}/g) || [];
-            if (!tokens.length) return '';
+    setTimeout(() => {
+        try { startAutoQrScanner(); } catch (error) { console.warn('No se pudo iniciar escáner QR:', error); }
+    }, 1500);
+});
 
-            tokens.sort((a, b) => {
-                const score = s => (/[A-Za-z]/.test(s) ? 3 : 0) + (/\d/.test(s) ? 1 : 0) + Math.min(s.length, 16);
-                return score(b) - score(a);
-            });
-            return tokens[0];
+
+
+// ============================================================
+// CONEXIÓN GOOGLE SHEETS PARA ENTRENADORES Y PARTICIPANTES
+// ============================================================
+// Usa el mismo APPS_SCRIPT_URL del sistema principal.
+// El Apps Script debe incluir las acciones nuevas:
+// - obtenerEstadisticasJugadores
+// - guardarEntrenador
+// - registrarParticipanteEvento
+
+function mostrarEstadoSyncStats(mensaje, esError = false) {
+    const el = document.getElementById('statsSyncStatus');
+    if (!el) return;
+    el.textContent = mensaje;
+    el.style.background = esError ? '#fee2e2' : '#ecfdf5';
+    el.style.color = esError ? '#991b1b' : '#065f46';
+    el.style.borderColor = esError ? '#fecaca' : '#a7f3d0';
+}
+
+async function apiGetAllStatsData() {
+    const response = await fetch(`${APPS_SCRIPT_URL}?accion=obtenerEstadisticasJugadores&t=${Date.now()}`);
+    const data = await response.json();
+    if (!data.success) throw new Error(data.error || 'No se pudieron cargar estadísticas');
+    return data;
+}
+
+async function guardarEntrenadorEnSheets(profile) {
+    try {
+        mostrarEstadoSyncStats('Estado Sheets: guardando entrenador...');
+        await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                accion: 'guardarEntrenador',
+                datos: JSON.stringify(profile)
+            })
+        });
+        mostrarEstadoSyncStats('Estado Sheets: entrenador enviado correctamente.');
+    } catch (error) {
+        console.error('Error guardando entrenador en Sheets:', error);
+        mostrarEstadoSyncStats('Estado Sheets: error al guardar entrenador. Quedó respaldo local.', true);
+    }
+}
+
+
+
+async function syncStatsFromSheets() {
+    try {
+        mostrarEstadoSyncStats('Estado Sheets: cargando datos...');
+        const data = await apiGetAllStatsData();
+
+        trainers = data.entrenadores || [];
+        eventParticipants = data.participantesEvento || [];
+
+        localStorage.setItem('trainerProfiles', JSON.stringify(trainers));
+        localStorage.setItem('eventParticipants', JSON.stringify(eventParticipants));
+
+        renderTrainersTable();
+        renderEventParticipantsTable();
+        renderAdminStatsDashboard();
+
+        mostrarEstadoSyncStats('Estado Sheets: sincronizado correctamente.');
+    } catch (error) {
+        console.error('Error sincronizando desde Sheets:', error);
+        mostrarEstadoSyncStats('Estado Sheets: usando respaldo local.', true);
+        renderTrainersTable();
+        renderEventParticipantsTable();
+        renderAdminStatsDashboard();
+    }
+}
+
+// Al cargar la página, intenta traer los datos reales desde Sheets.
+// Si falla, la web sigue funcionando con respaldo local.
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        syncStatsFromSheets();
+        syncEventsFromSheets();
+    }, 900);
+});
+
+
+
+// ============================================================
+// LOGIN SIMPLE ADMIN
+// ============================================================
+// Cambia esta clave por una propia antes de publicar.
+// Nota: al estar en frontend no es seguridad bancaria; sirve para separar vista pública/admin.
+const ADMIN_PASSWORD = 'admin123';
+
+function adminLogin() {
+    const input = document.getElementById('adminPasswordInput');
+    const error = document.getElementById('adminLoginError');
+    const value = (input?.value || '').trim();
+
+    if (value === ADMIN_PASSWORD) {
+        sessionStorage.setItem('rifaAdminLogged', '1');
+        document.getElementById('adminLoginOverlay')?.classList.add('admin-hidden');
+        renderAdminStatsDashboard();
+    } else if (error) {
+        error.style.display = 'block';
+    }
+}
+
+function adminLogout() {
+    sessionStorage.removeItem('rifaAdminLogged');
+    document.getElementById('adminLoginOverlay')?.classList.remove('admin-hidden');
+}
+
+// Si ya inició sesión en esta pestaña, no vuelve a pedir clave.
+document.addEventListener('DOMContentLoaded', function() {
+    if (sessionStorage.getItem('rifaAdminLogged') === '1') {
+        document.getElementById('adminLoginOverlay')?.classList.add('admin-hidden');
+    }
+});
+
+// ============================================================
+// PANEL ADMIN: EVENTOS, PENDIENTES Y TOP
+// ============================================================
+
+function getTrainerDisplayForAdmin(code) {
+    const normalized = normalizeTrainerCode(code);
+    const trainer = findTrainerByCode(normalized);
+    return {
+        code: normalized,
+        nick: trainer ? trainer.nick : '',
+        name: trainer ? trainer.name : '',
+        contact: trainer ? trainer.contact : '',
+        complete: !!trainer
+    };
+}
+
+function updateAdminEventFilter() {
+    const select = document.getElementById('adminEventFilter');
+    if (!select) return;
+
+    const current = select.value;
+    const events = [...new Set(eventParticipants.map(p => p.eventId).filter(Boolean))]
+        .sort((a, b) => String(b).localeCompare(String(a)));
+
+    select.innerHTML = '<option value="">Todos los eventos</option>' +
+        events.map(e => `<option value="${e}">${e}</option>`).join('');
+
+    if (events.includes(current)) select.value = current;
+}
+
+function renderAdminStatsDashboard() {
+    updateAdminEventFilter();
+
+    const eventFilter = document.getElementById('adminEventFilter')?.value || '';
+    const search = (document.getElementById('adminSearchTrainer')?.value || '').toLowerCase().trim();
+
+    const uniqueEvents = new Set(eventParticipants.map(p => p.eventId).filter(Boolean));
+    const uniqueCodes = new Set(eventParticipants.map(p => normalizeTrainerCode(p.code)).filter(Boolean));
+    const pending = eventParticipants.filter(p => !findTrainerByCode(p.code)).length;
+
+    const mEvents = document.getElementById('metricEvents');
+    const mParts = document.getElementById('metricParticipations');
+    const mUnique = document.getElementById('metricUniqueTrainers');
+    const mPending = document.getElementById('metricPending');
+
+    if (mEvents) mEvents.textContent = uniqueEvents.size;
+    if (mParts) mParts.textContent = eventParticipants.length;
+    if (mUnique) mUnique.textContent = uniqueCodes.size;
+    if (mPending) mPending.textContent = pending;
+
+    const tbody = document.getElementById('adminStatsTable');
+    if (tbody) {
+        let rows = eventParticipants.slice();
+
+        if (eventFilter) rows = rows.filter(p => p.eventId === eventFilter);
+
+        rows = rows.filter(p => {
+            const d = getTrainerDisplayForAdmin(p.code);
+            const haystack = `${p.eventId} ${d.code} ${d.nick} ${d.name} ${d.contact}`.toLowerCase();
+            return !search || haystack.includes(search);
+        });
+
+        rows.sort((a, b) => new Date(b.registeredAt) - new Date(a.registeredAt));
+
+        tbody.innerHTML = rows.length ? '' : '<tr><td colspan="7" style="text-align:center; color:#718096;">Sin registros para esta vista</td></tr>';
+
+        rows.forEach(p => {
+            const d = getTrainerDisplayForAdmin(p.code);
+            const badge = d.complete
+                ? '<span class="registered-pill">Completo</span>'
+                : '<span class="pending-pill">Pendiente</span>';
+
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td>${p.eventId || '-'}</td>
+                <td>${d.code}</td>
+                <td>${d.nick || p.nick || '-'}</td>
+                <td>${d.name || p.name || '-'}</td>
+                <td>${d.contact || p.contact || '-'}</td>
+                <td>${badge}</td>
+                <td>${p.registeredAt ? new Date(p.registeredAt).toLocaleString() : '-'}</td>
+            `;
+        });
+    }
+
+    const topBody = document.getElementById('adminTopTable');
+    if (topBody) {
+        const map = new Map();
+
+        eventParticipants.forEach(p => {
+            const code = normalizeTrainerCode(p.code);
+            if (!code) return;
+            if (!map.has(code)) map.set(code, { code, total: 0, events: new Set() });
+            const item = map.get(code);
+            item.total += 1;
+            if (p.eventId) item.events.add(p.eventId);
+        });
+
+        const top = [...map.values()].sort((a, b) => b.total - a.total || b.events.size - a.events.size);
+
+        topBody.innerHTML = top.length ? '' : '<tr><td colspan="7" style="text-align:center; color:#718096;">Sin datos todavía</td></tr>';
+
+        top.forEach((item, index) => {
+            const d = getTrainerDisplayForAdmin(item.code);
+            const badge = d.complete
+                ? '<span class="registered-pill">Completo</span>'
+                : '<span class="pending-pill">Pendiente</span>';
+
+            const row = topBody.insertRow();
+            row.innerHTML = `
+                <td>#${index + 1}</td>
+                <td>${item.code}</td>
+                <td>${d.nick || '-'}</td>
+                <td>${d.name || '-'}</td>
+                <td>${item.total}</td>
+                <td>${item.events.size}</td>
+                <td>${badge}</td>
+            `;
+        });
+    }
+}
+
+function exportAdminStatsCSV() {
+    const eventFilter = document.getElementById('adminEventFilter')?.value || '';
+    let rows = eventParticipants.slice();
+    if (eventFilter) rows = rows.filter(p => p.eventId === eventFilter);
+
+    if (!rows.length) {
+        alert('No hay datos para exportar.');
+        return;
+    }
+
+    let csv = 'Evento,Codigo,Nick,Nombre,Contacto,Estado,FechaRegistro\n';
+
+    rows.forEach(p => {
+        const d = getTrainerDisplayForAdmin(p.code);
+        csv += `"${p.eventId || ''}","${d.code}","${d.nick || p.nick || ''}","${d.name || p.name || ''}","${d.contact || p.contact || ''}","${d.complete ? 'completo' : 'pendiente'}","${p.registeredAt || ''}"\n`;
+    });
+
+    descargarArchivo(csv, `admin-estadisticas-${eventFilter || 'todos'}.csv`, 'text/csv');
+}
+
+// Refrescar panel cuando se sincroniza desde Sheets.
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(renderAdminStatsDashboard, 1800);
+});
+
+
+
+// ============================================================
+// ADMIN: CONFIGURACIÓN DEL TEMA PÚBLICO
+// ============================================================
+// Este bloque permite cambiar el aspecto de la página pública.
+// Se guarda en Google Sheets usando la acción guardarTemaPublico.
+// La página pública lo lee con obtenerTemaPublico.
+
+let publicThemeConfig = {
+    theme: 'pikachu',
+    title: 'Liga de Entrenadores',
+    subtitle: 'Estadísticas, asistencia y ranking',
+    imageDataUrl: ''
+};
+
+// Cambia el tema elegido en el panel admin y actualiza la vista previa.
+function selectPublicTheme(themeName) {
+    publicThemeConfig.theme = themeName;
+
+    document.querySelectorAll('.theme-chip').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.theme === themeName);
+    });
+
+    previewPublicTheme();
+}
+
+// Lee una imagen subida por el admin y la guarda temporalmente como DataURL.
+// Nota: sirve para imágenes livianas; si pesa mucho, puede superar límites de Apps Script.
+function loadPublicThemeImage(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    if (file.size > 900000) {
+        alert('La imagen es muy pesada. Usa una imagen menor a 900 KB para que Google Sheets la guarde bien.');
+        event.target.value = '';
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+        publicThemeConfig.imageDataUrl = reader.result;
+        previewPublicTheme();
+    };
+
+    reader.readAsDataURL(file);
+}
+
+// Quita la imagen personalizada y deja solo el tema de color.
+function clearPublicThemeImage() {
+    publicThemeConfig.imageDataUrl = '';
+    const input = document.getElementById('publicThemeImage');
+    if (input) input.value = '';
+    previewPublicTheme();
+}
+
+// Muestra una previsualización rápida dentro del admin.
+function previewPublicTheme() {
+    const titleInput = document.getElementById('publicThemeTitle');
+    const subtitleInput = document.getElementById('publicThemeSubtitle');
+    const titlePreview = document.getElementById('publicThemePreviewTitle');
+    const subtitlePreview = document.getElementById('publicThemePreviewSubtitle');
+    const box = document.getElementById('publicThemePreview');
+
+    publicThemeConfig.title = titleInput?.value || publicThemeConfig.title || 'Liga de Entrenadores';
+    publicThemeConfig.subtitle = subtitleInput?.value || publicThemeConfig.subtitle || 'Estadísticas, asistencia y ranking';
+
+    if (titlePreview) titlePreview.textContent = publicThemeConfig.title;
+    if (subtitlePreview) subtitlePreview.textContent = publicThemeConfig.subtitle;
+
+    const gradients = {
+        pikachu: 'linear-gradient(135deg, #facc15, #f97316)',
+        pokeball: 'linear-gradient(135deg, #ef4444 0%, #ef4444 45%, #111827 46%, #111827 54%, #ffffff 55%, #e5e7eb 100%)',
+        bulbasaur: 'linear-gradient(135deg, #22c55e, #14b8a6)',
+        gengar: 'linear-gradient(135deg, #312e81, #9333ea)'
+    };
+
+    if (box) {
+        box.style.background = publicThemeConfig.imageDataUrl
+            ? `${gradients[publicThemeConfig.theme] || gradients.pikachu}`
+            : `${gradients[publicThemeConfig.theme] || gradients.pikachu}`;
+
+        box.style.backgroundImage = publicThemeConfig.imageDataUrl
+            ? `linear-gradient(rgba(0,0,0,.38), rgba(0,0,0,.38)), url('${publicThemeConfig.imageDataUrl}')`
+            : '';
+
+        box.style.backgroundSize = 'cover';
+        box.style.backgroundPosition = 'center';
+    }
+}
+
+// Muestra estado de guardado/carga.
+function setThemeStatus(message, error = false) {
+    const el = document.getElementById('publicThemeStatus');
+    if (!el) return;
+    el.textContent = message;
+    el.style.background = error ? '#fee2e2' : '#ecfdf5';
+    el.style.color = error ? '#991b1b' : '#065f46';
+    el.style.borderColor = error ? '#fecaca' : '#a7f3d0';
+}
+
+// Guarda la configuración del tema en Sheets.
+async function savePublicThemeConfig() {
+    try {
+        previewPublicTheme();
+        setThemeStatus('Guardando tema público...');
+
+        await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                accion: 'guardarTemaPublico',
+                datos: JSON.stringify(publicThemeConfig)
+            })
+        });
+
+        setThemeStatus('Tema público enviado correctamente.');
+    } catch (error) {
+        console.error(error);
+        setThemeStatus('No se pudo guardar el tema público.', true);
+    }
+}
+
+// Carga desde Sheets la configuración visual actual.
+async function loadPublicThemeConfig() {
+    try {
+        setThemeStatus('Cargando tema público...');
+
+        const response = await fetch(`${APPS_SCRIPT_URL}?accion=obtenerTemaPublico&t=${Date.now()}`);
+        const data = await response.json();
+
+        if (!data.success) throw new Error(data.error || 'No se pudo cargar tema');
+
+        publicThemeConfig = data.theme || publicThemeConfig;
+
+        const titleInput = document.getElementById('publicThemeTitle');
+        const subtitleInput = document.getElementById('publicThemeSubtitle');
+
+        if (titleInput) titleInput.value = publicThemeConfig.title || '';
+        if (subtitleInput) subtitleInput.value = publicThemeConfig.subtitle || '';
+
+        selectPublicTheme(publicThemeConfig.theme || 'pikachu');
+        previewPublicTheme();
+
+        setThemeStatus('Tema público cargado correctamente.');
+    } catch (error) {
+        console.error(error);
+        setThemeStatus('No se pudo cargar el tema; usando valores locales.', true);
+        previewPublicTheme();
+    }
+}
+
+// Inicializa la vista previa cuando carga el admin.
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        const titleInput = document.getElementById('publicThemeTitle');
+        const subtitleInput = document.getElementById('publicThemeSubtitle');
+
+        if (titleInput) titleInput.addEventListener('input', previewPublicTheme);
+        if (subtitleInput) subtitleInput.addEventListener('input', previewPublicTheme);
+
+        loadPublicThemeConfig();
+    }, 1200);
+});
+
+
+
+// ============================================================
+// ADMIN: EVENTOS CON FECHA Y REGISTRO SOLO DEL DÍA
+// ============================================================
+// Regla operativa:
+// - Los eventos se crean antes o durante el día.
+// - Para escanear, el admin debe elegir un evento cuya fecha sea hoy.
+// - Si dos admin escanean el mismo QR para el mismo evento/fecha,
+//   Apps Script responde "alreadyExists" y la web avisa.
+
+let adminEvents = JSON.parse(localStorage.getItem('adminEvents') || '[]');
+let currentScanEventId = localStorage.getItem('currentScanEventId') || '';
+
+function todayLocalISO() {
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+}
+
+
+
+function setEventStatus(message, error = false) {
+    const el = document.getElementById('eventManagerStatus');
+    if (!el) return;
+    el.textContent = message;
+    el.style.background = error ? '#fee2e2' : '#ecfdf5';
+    el.style.color = error ? '#991b1b' : '#065f46';
+    el.style.borderColor = error ? '#fecaca' : '#a7f3d0';
+}
+
+
+
+async function guardarEventoEnSheets(event) {
+    try {
+        await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                accion: 'guardarEvento',
+                datos: JSON.stringify(event)
+            })
+        });
+    } catch (error) {
+        console.error('Error guardando evento en Sheets:', error);
+        setEventStatus('Evento guardado localmente, pero no se pudo enviar a Sheets.', true);
+    }
+}
+
+async function syncEventsFromSheets() {
+    try {
+        setEventStatus('Cargando eventos desde Sheets...');
+        const response = await fetch(`${APPS_SCRIPT_URL}?accion=obtenerEventos&t=${Date.now()}`);
+        const data = await response.json();
+
+        if (!data.success) throw new Error(data.error || 'No se pudieron cargar eventos');
+
+        adminEvents = data.eventos || [];
+        localStorage.setItem('adminEvents', JSON.stringify(adminEvents));
+
+        renderEventsTable();
+        renderFinishedEventsTable();
+        renderTodayEventSelector();
+
+        setEventStatus('Eventos sincronizados correctamente.');
+    } catch (error) {
+        console.error(error);
+        setEventStatus('No se pudieron cargar eventos desde Sheets. Usando respaldo local.', true);
+        renderEventsTable();
+        renderFinishedEventsTable();
+        renderTodayEventSelector();
+    }
+}
+
+
+
+
+
+
+
+
+
+function ensureTodayEventSelected() {
+    const event = adminEvents.find(e => e.eventId === currentScanEventId);
+    if (!event || event.date !== todayLocalISO()) {
+        alert('Selecciona primero un evento creado para hoy.');
+        return null;
+    }
+    return event;
+}
+
+function getCurrentEventIdForParticipants() {
+    const event = ensureTodayEventSelected();
+    return event ? event.eventId : '';
+}
+
+function getCurrentEventDateForParticipants() {
+    const event = adminEvents.find(e => e.eventId === currentScanEventId);
+    return event ? event.date : todayLocalISO();
+}
+
+
+// Guarda participante en Sheets y avisa si ya estaba registrado.
+// Importante: en Apps Script se evita duplicado por evento + fecha + código.
+async function guardarParticipanteEnSheets(participantRecord) {
+    try {
+        mostrarEstadoSyncStats('Estado Sheets: guardando participante...');
+
+        const response = await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                accion: 'registrarParticipanteEvento',
+                datos: JSON.stringify(participantRecord)
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.alreadyExists) {
+            mostrarEstadoSyncStats('Estado Sheets: esta persona ya estaba registrada en este evento.', true);
+            alert('Esta persona ya está registrada en este evento de hoy.');
+            return { alreadyExists: true };
         }
 
-        function cropCanvas(sourceCanvas, x, y, w, h) {
-            const out = document.createElement('canvas');
-            out.width = Math.max(1, Math.floor(w));
-            out.height = Math.max(1, Math.floor(h));
-            const ctx = out.getContext('2d', { willReadFrequently: true });
-            ctx.drawImage(sourceCanvas, Math.floor(x), Math.floor(y), Math.floor(w), Math.floor(h), 0, 0, out.width, out.height);
+        if (!data.success) throw new Error(data.error || 'No se pudo registrar participante');
 
-            const img = ctx.getImageData(0, 0, out.width, out.height);
-            const d = img.data;
-            for (let i = 0; i < d.length; i += 4) {
-                const gray = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
-                const boosted = gray > 180 ? 255 : gray < 125 ? 0 : Math.min(255, Math.max(0, (gray - 125) * 4));
-                d[i] = boosted; d[i + 1] = boosted; d[i + 2] = boosted;
-            }
-            ctx.putImageData(img, 0, 0);
-            return out;
-        }
+        mostrarEstadoSyncStats('Estado Sheets: participante guardado correctamente.');
+        return { success: true };
 
-        async function ocrNickFromCanvas(canvas) {
-            if (!(window.Tesseract && window.Tesseract.recognize)) {
-                throw new Error('No se encontró el motor OCR');
-            }
-            const result = await window.Tesseract.recognize(canvas, 'eng', {
-                tessedit_pageseg_mode: 6,
-                tessedit_char_whitelist: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ',
-                preserve_interword_spaces: '1'
-            });
-            return (result && result.data && result.data.text) ? result.data.text : '';
-        }
+    } catch (error) {
+        console.error('Error guardando participante en Sheets:', error);
+        mostrarEstadoSyncStats('Estado Sheets: error al guardar participante. Quedó respaldo local.', true);
+        return { error: true };
+    }
+}
 
-        function updateScannerStatus(msg) {
-            const statusEl = document.getElementById('scanDetectedText') || document.getElementById('scanStatus') || document.getElementById('ocrResult');
-            if (statusEl) statusEl.textContent = msg;
-        }
 
-        function stopAutoQrScanner() {
-            qrScanRunning = false;
-            if (qrScanAnimationId) {
-                cancelAnimationFrame(qrScanAnimationId);
-                qrScanAnimationId = null;
-            }
-        }
+document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.getElementById('adminEventDate');
+    if (dateInput && !dateInput.value) dateInput.value = todayLocalISO();
+    const creatorInput = document.getElementById('adminEventCreator');
+    if (creatorInput && !creatorInput.value) creatorInput.value = localStorage.getItem('lastEventCreator') || '';
 
-        function resetQrScannerLock() {
-            qrScanLocked = false;
-            updateScannerStatus('Escáner activo. Muestra el QR completo dentro del marco.');
-            startAutoQrScanner();
-        }
+    setTimeout(() => {
+        renderEventsTable();
+        renderFinishedEventsTable();
+        renderTodayEventSelector();
+    }, 1300);
+});
 
-        async function processQrFrameOnce() {
-            const video = document.getElementById('scanVideo') || document.querySelector('video');
-            const nickInput = document.getElementById('playerNick') || document.getElementById('nickDetectado') || document.querySelector('input[name="nick"]');
-            const codeInput = document.getElementById('playerCode') || document.getElementById('codigoEntrenador') || document.querySelector('input[name="code"]');
 
-            if (!video || !video.videoWidth || !video.videoHeight || !window.jsQR || qrScanLocked) return false;
 
-            const frame = document.createElement('canvas');
-            frame.width = video.videoWidth;
-            frame.height = video.videoHeight;
-            const fctx = frame.getContext('2d', { willReadFrequently: true });
-            fctx.drawImage(video, 0, 0, frame.width, frame.height);
+// Crea un ID estable del evento considerando fecha, nombre y hora de inicio.
+function createEventId(date, name, startTime = '') {
+    const cleanName = String(name || '')
+        .toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 40);
 
-            const base = {
-                x: Math.floor(frame.width * 0.03),
-                y: Math.floor(frame.height * 0.05),
-                w: Math.floor(frame.width * 0.94),
-                h: Math.floor(frame.height * 0.88)
-            };
+    const cleanHour = String(startTime || '').replace(/[^0-9]/g, '') || 'sinhorario';
+    return `${date}__${cleanHour}__${cleanName || Date.now()}`;
+}
 
-            const areaData = fctx.getImageData(base.x, base.y, base.w, base.h);
-            let qr = jsQR(areaData.data, areaData.width, areaData.height, {
-                inversionAttempts: 'attemptBoth'
-            });
+// Determina si un evento está en vivo, futuro o finalizado.
+function getEventStatusInfo(event) {
+    const today = todayLocalISO();
 
-            if (!qr || !qr.data) {
-                const fullData = fctx.getImageData(0, 0, frame.width, frame.height);
-                qr = jsQR(fullData.data, fullData.width, fullData.height, {
-                    inversionAttempts: 'attemptBoth'
-                });
-            }
+    if (event.date > today) {
+        return { key: 'future', label: '<span class="event-future-badge">Futuro</span>' };
+    }
 
-            if (!qr || !qr.data) return false;
+    if (event.date < today) {
+        return { key: 'finished', label: '<span class="event-finished-badge">Finalizado</span>' };
+    }
 
-            const payload = String(qr.data || '');
-            const trainerCode = extractTrainerCodeFromQrPayload(payload);
-            if (!trainerCode) return false;
+    return { key: 'today', label: '<span class="event-live-badge">Disponible hoy</span>' };
+}
 
-            const pts = [
-                qr.location.topLeftCorner,
-                qr.location.topRightCorner,
-                qr.location.bottomLeftCorner,
-                qr.location.bottomRightCorner
-            ];
-            const xs = pts.map(p => p.x);
-            const ys = pts.map(p => p.y);
+// Crea un evento con nombre, fecha, rango horario, lugar y creador interno.
+async function createAdminEvent() {
+    const name = (document.getElementById('adminEventName')?.value || '').trim();
+    const date = document.getElementById('adminEventDate')?.value || todayLocalISO();
+    const startTime = document.getElementById('adminEventStartTime')?.value || '';
+    const endTime = document.getElementById('adminEventEndTime')?.value || '';
+    const location = (document.getElementById('adminEventLocation')?.value || '').trim();
+    const creator = (document.getElementById('adminEventCreator')?.value || '').trim();
+    if (creator) localStorage.setItem('lastEventCreator', creator);
 
-            const qrDetectedInCrop =
-                Math.min(...xs) >= 0 && Math.max(...xs) <= base.w &&
-                Math.min(...ys) >= 0 && Math.max(...ys) <= base.h;
+    if (!name || !date) {
+        alert('Ingresa nombre y fecha del evento.');
+        return;
+    }
 
-            const minX = qrDetectedInCrop ? (base.x + Math.max(0, Math.min(...xs))) : Math.max(0, Math.min(...xs));
+    if (startTime && endTime && startTime >= endTime) {
+        alert('La hora de término debe ser posterior a la hora de inicio.');
+        return;
+    }
+
+    const event = {
+        eventId: createEventId(date, name, startTime),
+        name,
+        date,
+        startTime,
+        endTime,
+        location,
+        creator,
+        createdAt: new Date().toISOString()
+    };
+
+    const exists = adminEvents.some(e => e.eventId === event.eventId);
+
+    if (!exists) {
+        adminEvents.push(event);
+        localStorage.setItem('adminEvents', JSON.stringify(adminEvents));
+    }
+
+    await guardarEventoEnSheets(event);
+
+    document.getElementById('adminEventName').value = '';
+    document.getElementById('adminEventLocation').value = '';
+
+    renderEventsTable();
+    renderFinishedEventsTable();
+    renderTodayEventSelector();
+
+    setEventStatus(`Evento guardado: ${name} (${date})`);
+}
+
+// Tabla principal: solo muestra eventos de hoy y futuros como primeras opciones.
+function renderEventsTable() {
+    const tbody = document.getElementById('eventsTable');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+
+    const today = todayLocalISO();
+    const activeEvents = adminEvents
+        .filter(e => e.date >= today)
+        .sort((a, b) => String(a.date + ' ' + (a.startTime || '')).localeCompare(String(b.date + ' ' + (b.startTime || ''))));
+
+    if (!activeEvents.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#718096;">No hay eventos de hoy ni futuros</td></tr>';
+        return;
+    }
+
+    activeEvents.forEach(e => {
+        const status = getEventStatusInfo(e);
+        const timeRange = `${e.startTime || '--:--'} - ${e.endTime || '--:--'}`;
+
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td>${e.date}</td>
+            <td>${timeRange}</td>
+            <td>${e.name}</td>
+            <td>${e.location || '-'}</td>
+            <td>${e.creator || '-'}</td>
+            <td>${status.label}</td>
+            <td>
+                ${status.key === 'today' ? `<button class="edit-btn" onclick="selectScanEvent('${e.eventId}')">Usar hoy</button>` : '-'}
+            </td>
+        `;
+    });
+}
+
+// Busca en eventos finalizados por cualquier campo útil.
+function eventMatchesSearch(event, search) {
+    if (!search) return true;
+
+    const text = [
+        event.eventId,
+        event.name,
+        event.date,
+        event.startTime,
+        event.endTime,
+        event.location,
+        event.creator,
+        event.createdAt
+    ].join(' ').toLowerCase();
+
+    return text.includes(search.toLowerCase());
+}
+
+// Tabla de eventos finalizados con buscador.
+function renderFinishedEventsTable() {
+    const tbody = document.getElementById('finishedEventsTable');
+    if (!tbody) return;
+
+    const search = document.getElementById('finishedEventSearch')?.value || '';
+    const today = todayLocalISO();
+
+    const finished = adminEvents
+        .filter(e => e.date < today)
+        .filter(e => eventMatchesSearch(e, search))
+        .sort((a, b) => String(b.date + ' ' + (b.startTime || '')).localeCompare(String(a.date + ' ' + (a.startTime || ''))));
+
+    tbody.innerHTML = '';
+
+    if (!finished.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#718096;">No hay eventos finalizados para esta búsqueda</td></tr>';
+        return;
+    }
+
+    finished.forEach(e => {
+        const count = eventParticipants.filter(p => p.eventId === e.eventId).length;
+        const timeRange = `${e.startTime || '--:--'} - ${e.endTime || '--:--'}`;
+
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td>${e.date}</td>
+            <td>${timeRange}</td>
+            <td>${e.name}</td>
+            <td>${e.location || '-'}</td>
+            <td>${e.creator || '-'}</td>
+            <td>${count}</td>
+        `;
+    });
+}
+
+// Selector usado por el escáner: solo eventos del día actual.
+function renderTodayEventSelector() {
+    const select = document.getElementById('currentEventSelector');
+    if (!select) return;
+
+    const today = todayLocalISO();
+    const todaysEvents = adminEvents
+        .filter(e => e.date === today)
+        .sort((a, b) => String(a.startTime || '').localeCompare(String(b.startTime || '')));
+
+    if (!todaysEvents.length) {
+        select.innerHTML = '<option value="">No hay eventos creados para hoy</option>';
+        currentScanEventId = '';
+        localStorage.removeItem('currentScanEventId');
+        return;
+    }
+
+    select.innerHTML = '<option value="">Selecciona evento de hoy</option>' +
+        todaysEvents.map(e => {
+            const timeRange = `${e.startTime || '--:--'}-${e.endTime || '--:--'}`;
+            return `<option value="${e.eventId}">${timeRange} · ${e.name} — ${e.location || 'Sin lugar'}</option>`;
+        }).join('');
+
+    if (todaysEvents.some(e => e.eventId === currentScanEventId)) {
+        select.value = currentScanEventId;
+    } else if (todaysEvents.length === 1) {
+        select.value = todaysEvents[0].eventId;
+        selectScanEvent(todaysEvents[0].eventId);
+    }
+}
+
+function setCurrentScanEventFromSelector() {
+    const id = document.getElementById('currentEventSelector')?.value || '';
+    if (id) selectScanEvent(id);
+}
+
+function selectScanEvent(eventId) {
+    const event = adminEvents.find(e => e.eventId === eventId);
+    if (!event) return;
+
+    if (event.date !== todayLocalISO()) {
+        alert('Solo puedes registrar participantes en eventos con fecha de hoy.');
+        return;
+    }
+
+    currentScanEventId = event.eventId;
+    localStorage.setItem('currentScanEventId', currentScanEventId);
+
+    const select = document.getElementById('currentEventSelector');
+    if (select) select.value = event.eventId;
+
+    const timeRange = `${event.startTime || '--:--'} - ${event.endTime || '--:--'}`;
+    setEventStatus(`Evento activo para escaneo: ${event.name} · ${timeRange} · ${event.date}`);
+    renderEventParticipantsTable();
+}
+
+</script>;
             const maxX = qrDetectedInCrop ? (base.x + Math.min(base.w, Math.max(...xs))) : Math.min(frame.width, Math.max(...xs));
             const minY = qrDetectedInCrop ? (base.y + Math.max(0, Math.min(...ys))) : Math.max(0, Math.min(...ys));
             const maxY = qrDetectedInCrop ? (base.y + Math.min(base.h, Math.max(...ys))) : Math.min(frame.height, Math.max(...ys));
@@ -4009,7 +5819,7 @@ async function capturePresenceFrame() {
                 const rawNickText = await ocrNickFromCanvas(nickCanvas);
                 trainerNick = sanitizeNickCandidate(rawNickText, trainerCode);
             } catch (e) {
-                console.warn('OCR nick falló:', e);
+                console.warn('QR nick falló:', e);
             }
 
             if (codeInput) codeInput.value = trainerCode || '';
@@ -4021,7 +5831,7 @@ async function capturePresenceFrame() {
             updateScannerStatus(
                 trainerNick
                     ? `QR detectado y bloqueado: ${trainerNick} / ${trainerCode}`
-                    : `QR detectado y bloqueado: ${trainerCode}. Revisa el nick manualmente.`
+                    : `QR detectado y bloqueado: ${trainerCode}. Completa o revisa los datos del entrenador manualmente.`
             );
 
             try { if (navigator.vibrate) navigator.vibrate(120); } catch (e) {}
@@ -4054,5 +5864,162 @@ async function capturePresenceFrame() {
         });
 
     </script>
+
+<!-- Registro maestro de entrenadores:
+     El QR solo entrega el código. El nick, nombre y contacto se guardan aquí. -->
+<div class="trainer-registry-card" id="trainerRegistryCard">
+    <h3>👤 Registro de entrenadores</h3>
+    <p class="helper-text">
+        Escanea el QR para obtener el código. Luego registra o edita el entrenador con nick, nombre y contacto obligatorio.
+    </p>
+
+    <input type="hidden" id="trainerEditCode" value="">
+
+    <div class="trainer-registry-grid">
+        <div class="form-group">
+            <label for="trainerNick">Nick entrenador</label>
+            <input type="text" id="trainerNick" placeholder="Ej: pabloca3050">
+        </div>
+        <div class="form-group">
+            <label for="trainerCode">Código entrenador</label>
+            <input type="text" id="trainerCode" placeholder="Ej: 6011 3024 6134">
+        </div>
+        <div class="form-group">
+            <label for="trainerName">Nombre real</label>
+            <input type="text" id="trainerName" placeholder="Nombre y apellido">
+        </div>
+        <div class="form-group">
+            <label for="trainerContact">Contacto obligatorio</label>
+            <input type="text" id="trainerContact" placeholder="Teléfono, WhatsApp o correo">
+        </div>
+    </div>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
+        <button class="btn btn-success" type="button" onclick="saveTrainerProfile()">💾 Guardar entrenador</button>
+        <button class="btn" type="button" onclick="clearTrainerForm()">🧹 Limpiar</button>
+    </div>
+
+    
+<div class="pro-status" id="statsSyncStatus">
+    Estado Sheets: esperando sincronización...
+</div>
+
+    <div class="trainer-match-box" id="trainerMatchBox">
+        Último QR leído: sin datos todavía.
+    </div>
+
+    <div class="trainer-table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nick</th>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Contacto</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="trainersTable"></tbody>
+        </table>
+    </div>
+</div>
+
+
+<!-- ============================================================
+     REGISTRO MAESTRO DE ENTRENADORES
+     ------------------------------------------------------------
+     Este bloque administra los datos personales del entrenador.
+     El QR solo entrega el código; nick, nombre y contacto se pueden
+     completar después si durante el evento se necesita avanzar rápido.
+============================================================ -->
+<div class="pro-panel soft" id="trainerRegistryCard">
+    <h3>👤 Registro maestro de entrenadores</h3>
+    <p class="pro-subtitle">
+        Si el QR pertenece a alguien no registrado, igual quedará inscrito en el evento como
+        <strong>pendiente</strong>. Después esa persona puede completar nick, nombre y contacto.
+    </p>
+
+    <input type="hidden" id="trainerEditCode" value="">
+
+    <div class="pro-grid">
+        <div class="form-group">
+            <label for="trainerNick">Nick entrenador</label>
+            <input type="text" id="trainerNick" placeholder="Ej: pabloca3050">
+        </div>
+        <div class="form-group">
+            <label for="trainerCode">Código entrenador</label>
+            <input type="text" id="trainerCode" placeholder="Ej: 6011 3024 6134">
+        </div>
+        <div class="form-group">
+            <label for="trainerName">Nombre real</label>
+            <input type="text" id="trainerName" placeholder="Nombre y apellido">
+        </div>
+        <div class="form-group">
+            <label for="trainerContact">Contacto obligatorio</label>
+            <input type="text" id="trainerContact" placeholder="Teléfono, WhatsApp o correo">
+        </div>
+    </div>
+
+    <div class="pro-actions">
+        <button class="btn btn-success" type="button" onclick="saveTrainerProfile()">💾 Guardar / completar datos</button>
+        <button class="btn" type="button" onclick="clearTrainerForm()">🧹 Limpiar formulario</button>
+    </div>
+
+    <div class="pro-status qr-read-card" id="trainerMatchBox">
+        Último QR leído: sin datos todavía.
+    </div>
+
+    <div class="pro-table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nick</th>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Contacto</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="trainersTable"></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ============================================================
+     PARTICIPANTES DEL EVENTO ACTUAL
+     ------------------------------------------------------------
+     Este bloque es para el trabajo rápido en terreno:
+     al escanear un QR, el código se registra automáticamente.
+     Si no existen datos personales, queda como pendiente.
+============================================================ -->
+<div class="pro-panel" id="eventParticipantsCard">
+    <h3>📌 Participantes del evento actual</h3>
+    <p class="pro-subtitle">
+        El escaneo del QR inscribe al participante inmediatamente. Los datos personales se pueden completar después,
+        sin frenar la fila presencial.
+    </p>
+
+    <div class="pro-actions">
+        <button class="btn" type="button" onclick="exportEventParticipants()">📤 Exportar participantes</button>
+        <button class="btn" type="button" onclick="clearCurrentEventParticipants()">🧹 Limpiar evento actual</button>
+    </div>
+
+    <div class="pro-table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nick</th>
+                    <th>Nombre</th>
+                    <th>Contacto</th>
+                    <th>Estado</th>
+                    <th>Hora</th>
+                </tr>
+            </thead>
+            <tbody id="eventParticipantsTable"></tbody>
+        </table>
+    </div>
+</div>
+
 </body>
 </html>
