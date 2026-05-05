@@ -1287,6 +1287,14 @@ table {
   display: none !important;
 }
 
+
+/* Login hard-hide fallback */
+#adminLoginOverlay.admin-hidden {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 </style>
 </head>
 <body>
@@ -1305,7 +1313,7 @@ table {
 
     <input type="password" id="adminPasswordInput" placeholder="Clave de administrador" autocomplete="current-password">
 
-    <button class="btn btn-success" type="button" id="adminLoginButton">Entrar</button>
+    <button class="btn btn-success" type="button" id="adminLoginButton" onclick="__simpleAdminUnlock()">Entrar</button>
 
     <div id="adminLoginError" style="color:#dc2626; margin-top:10px; display:none;">
       Clave incorrecta.
@@ -1316,6 +1324,59 @@ table {
     </div>
   </div>
 </div>
+
+
+<script>
+/* Login mínimo independiente.
+   Este bloque se ejecuta antes que el resto del sistema, para que el acceso
+   no dependa de que otros scripts grandes carguen sin errores. */
+window.__simpleAdminUnlock = function () {
+  var input = document.getElementById('adminPasswordInput');
+  var error = document.getElementById('adminLoginError');
+  var overlay = document.getElementById('adminLoginOverlay');
+  var value = input && input.value ? input.value.trim() : '';
+
+  if (value === 'admin123') {
+    try { sessionStorage.setItem('rifaAdminLogged', '1'); } catch (e) {}
+    if (overlay) {
+      overlay.classList.add('admin-hidden');
+      overlay.style.display = 'none';
+      overlay.style.visibility = 'hidden';
+      overlay.style.pointerEvents = 'none';
+    }
+    if (error) error.style.display = 'none';
+    return true;
+  }
+
+  if (error) error.style.display = 'block';
+  return false;
+};
+
+window.__simpleAdminInit = function () {
+  var input = document.getElementById('adminPasswordInput');
+  var overlay = document.getElementById('adminLoginOverlay');
+
+  try {
+    if (sessionStorage.getItem('rifaAdminLogged') === '1' && overlay) {
+      overlay.classList.add('admin-hidden');
+      overlay.style.display = 'none';
+      overlay.style.visibility = 'hidden';
+      overlay.style.pointerEvents = 'none';
+    }
+  } catch (e) {}
+
+  if (input) {
+    input.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        window.__simpleAdminUnlock();
+      }
+    });
+  }
+};
+
+document.addEventListener('DOMContentLoaded', window.__simpleAdminInit);
+</script>
 
 <div class="container">
     
@@ -5809,7 +5870,7 @@ function selectScanEvent(eventId) {
 // Esta versión no depende de onclick en el HTML.
 // El botón y la tecla Enter se conectan al cargar la página.
 
-const ADMIN_PASSWORD = 'admin123';
+var ADMIN_PASSWORD = 'admin123';
 
 function adminLogin() {
     const input = document.getElementById('adminPasswordInput');
