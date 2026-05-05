@@ -266,7 +266,7 @@
     // ============================================================
 
     // Misma URL del Apps Script usado por la página admin.
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxod31sMOu8JD0KdAyQhFUVlyc2CD14dFYmIjSa1PUhV6Ks1K5zcSNWI9WgWG2U7rg_xQ/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyrPuCEEuzRon82pC8Zzc13bGojpDucXTFWMcdv0RM5ghwah3aeKndqJYkRBzI7A2Cd3Q/exec';
 
 
     // ============================================================
