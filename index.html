@@ -245,6 +245,18 @@
       .container { padding: 16px; border-radius: 18px; }
       .numbers-grid { grid-template-columns: repeat(5, 1fr); }
     }
+  
+    /* ============================================================
+       MEJORAS RECUPERADAS
+    ============================================================ */
+    .toggle-row { display:flex; align-items:center; gap:10px; margin-top:12px; font-weight:700; color:#334155; }
+    .toggle-row input { width:auto; transform:scale(1.25); }
+    .winner-box.animating { animation:winnerPulse .16s infinite alternate; background:linear-gradient(135deg,#667eea,#764ba2); }
+    @keyframes winnerPulse { from { transform:scale(1); } to { transform:scale(1.03); filter:brightness(1.15); } }
+    .reward-preview { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+    .reward-badge { display:inline-flex; align-items:center; gap:6px; padding:8px 10px; border-radius:999px; background:#fff7ed; color:#9a3412; border:1px solid #fed7aa; font-weight:900; font-size:.9rem; }
+    .capture-card { background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:14px; margin-top:14px; }
+
   </style>
 </head>
 
@@ -330,7 +342,9 @@
         <div class="actions">
           <button class="btn btn-success" onclick="saveSale()">💾 Guardar venta</button>
           <button class="btn" onclick="clearSaleForm()">Limpiar</button>
-          <button class="btn" onclick="exportSalesCSV()">📤 Exportar ventas</button>
+          <button class="btn" onclick="exportSalesCSV()">📤 Exportar CSV</button>
+          <button class="btn" onclick="guardarTodoEnSheets()">☁️ Enviar a Google Sheets</button>
+          <button class="btn" onclick="captureNumbersGridAsImage()">🖼️ Capturar visualizador JPG</button>
         </div>
       </div>
 
@@ -339,7 +353,11 @@
         <div class="status">
           Vendidos: <strong id="soldCount">0</strong> · Disponibles: <strong id="availableCount">100</strong>
         </div>
-        <div id="numbersGrid" class="numbers-grid"></div>
+        <div id="numbersCaptureArea" class="capture-card">
+          <h3>Estado visual de números</h3>
+          <div class="status">Verde = disponible · Rojo = vendido</div>
+          <div id="numbersGrid" class="numbers-grid"></div>
+        </div>
       </div>
 
       <div class="panel">
@@ -390,6 +408,14 @@
               <option value="semilla">Con semilla visible</option>
             </select>
           </div>
+        </div>
+        <div class="toggle-row">
+          <input type="checkbox" id="excludeWinnerAfterDraw" checked>
+          <label for="excludeWinnerAfterDraw">Quitar del siguiente sorteo a quien ya ganó</label>
+        </div>
+        <div class="toggle-row">
+          <input type="checkbox" id="useWinnerAnimation" checked>
+          <label for="useWinnerAnimation">Usar animación tipo tómbola antes de mostrar ganador</label>
         </div>
         <div class="actions">
           <button class="btn btn-warning" onclick="drawWater()">🌊 Tirar al agua</button>
@@ -484,6 +510,27 @@
         </div>
       </div>
 
+
+      <div class="panel">
+        <h3>📥 Importar entrenadores / asistentes a evento</h3>
+        <p>Permite cargar entrenadores desde listados externos, incluso si no se registraron con QR.</p>
+        <div class="form-group">
+          <label>Listado a importar</label>
+          <textarea id="trainerImportText" placeholder="Ej:
+pabloca3050, 6011 3024 6134
+601130246134
+nickJugador - 1234 5678 9012"></textarea>
+        </div>
+        <div class="toggle-row">
+          <input type="checkbox" id="importAssignToEvent" checked>
+          <label for="importAssignToEvent">Asignar importados al evento activo</label>
+        </div>
+        <div class="actions">
+          <button class="btn btn-success" onclick="importTrainersToCurrentEvent()">📥 Importar y asignar</button>
+        </div>
+        <div class="status" id="importStatus">Importación: esperando datos.</div>
+      </div>
+
       <div class="panel">
         <h3>👤 Registro de entrenadores</h3>
         <p>Completa datos pendientes. El contacto es obligatorio para premios.</p>
@@ -516,6 +563,29 @@
         </div>
       </div>
 
+
+      <div class="panel">
+        <h3>🏆 Insignias y medallas por asistencia</h3>
+        <p>Crea recompensas virtuales por cantidad mínima de asistencias. El panel calcula automáticamente qué entrenadores cumplen cada regla.</p>
+        <div class="grid">
+          <div class="form-group"><label>Icono</label><input id="rewardIcon" placeholder="Ej: 🥉, 🥈, 🥇, 🏆"></div>
+          <div class="form-group"><label>Nombre recompensa</label><input id="rewardName" placeholder="Ej: Medalla Bronce"></div>
+          <div class="form-group"><label>Asistencias mínimas</label><input type="number" id="rewardMinAttendance" min="1" value="3"></div>
+          <div class="form-group"><label>Descripción</label><input id="rewardDescription" placeholder="Ej: Por participar en 3 eventos"></div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-success" onclick="saveRewardRule()">💾 Crear recompensa</button>
+          <button class="btn" onclick="exportRewardStats()">📤 Exportar estadísticas</button>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Icono</th><th>Nombre</th><th>Meta</th><th>Descripción</th><th>Acciones</th></tr></thead><tbody id="rewardRulesTable"></tbody></table>
+        </div>
+        <h3>Entrenadores con recompensas</h3>
+        <div class="table-wrap">
+          <table><thead><tr><th>Código</th><th>Nick</th><th>Asistencias</th><th>Recompensas</th></tr></thead><tbody id="rewardStatsTable"></tbody></table>
+        </div>
+      </div>
+
       <div class="panel">
         <h3>Panel admin</h3>
         <div class="grid">
@@ -541,6 +611,7 @@
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 
   <script>
+
     /* ============================================================
        CONFIGURACIÓN
        ------------------------------------------------------------
@@ -1181,6 +1252,236 @@
       if (navigator.vibrate) navigator.vibrate(120);
     }
 
+
+    /* ============================================================
+       FUNCIONES RECUPERADAS: CAPTURA, SORTEO AVANZADO, IMPORTACIÓN Y RECOMPENSAS
+    ============================================================ */
+
+    async function captureNumbersGridAsImage() {
+      const area = document.getElementById('numbersCaptureArea');
+      if (!area || !window.html2canvas) {
+        alert('No se pudo preparar la captura.');
+        return;
+      }
+      const canvas = await html2canvas(area, { backgroundColor: '#ffffff', scale: 2 });
+      const link = document.createElement('a');
+      link.download = `estado-numeros-rifa-${new Date().toISOString().slice(0,10)}.jpg`;
+      link.href = canvas.toDataURL('image/jpeg', 0.92);
+      link.click();
+    }
+
+    function drawWater() {
+      const p = drawRandom();
+      if (!p) return alert('Carga participantes primero.');
+      p.active = false;
+      document.getElementById('winnerBox').textContent = `🌊 Al agua: ${p.text}`;
+      addDrawHistory('Al agua', '-', p);
+      document.getElementById('drawStatus').textContent = `Participantes activos: ${drawParticipants.filter(x => x.active).length}`;
+    }
+
+    function drawWinner() {
+      const p = drawRandom();
+      if (!p) return alert('Carga participantes primero.');
+
+      const prize = document.getElementById('drawPrizeName').value.trim() || 'Premio';
+      const useAnimation = document.getElementById('useWinnerAnimation')?.checked !== false;
+      const excludeAfter = document.getElementById('excludeWinnerAfterDraw')?.checked !== false;
+      const box = document.getElementById('winnerBox');
+
+      const finish = () => {
+        box.classList.remove('animating');
+        box.textContent = `🏆 ${p.text}`;
+        if (excludeAfter) p.active = false;
+        addDrawHistory('Ganador', prize, p);
+        document.getElementById('drawStatus').textContent = `Participantes activos: ${drawParticipants.filter(x => x.active).length}`;
+      };
+
+      if (!useAnimation) {
+        finish();
+        return;
+      }
+
+      const active = drawParticipants.filter(x => x.active);
+      box.classList.add('animating');
+      let spins = 0;
+
+      const interval = setInterval(() => {
+        const random = active[Math.floor(Math.random() * active.length)];
+        box.textContent = `🎰 ${random.text}`;
+        spins++;
+        if (spins >= 24) {
+          clearInterval(interval);
+          finish();
+        }
+      }, 85);
+    }
+
+    function parseTrainerImportLine(line) {
+      const raw = String(line || '').trim();
+      if (!raw) return null;
+
+      const code = normalizeTrainerCode(raw);
+      if (!code) return null;
+
+      const codeDigits = code.replace(/\D/g, '');
+      let nick = raw
+        .replace(code, ' ')
+        .replace(codeDigits, ' ')
+        .replace(new RegExp(codeDigits.slice(0,4), 'g'), ' ')
+        .replace(new RegExp(codeDigits.slice(4,8), 'g'), ' ')
+        .replace(new RegExp(codeDigits.slice(8,12), 'g'), ' ')
+        .replace(/[^a-zA-Z0-9_ -]/g, ' ')
+        .trim();
+
+      nick = (nick.match(/[a-zA-Z0-9_ -]{3,}/) || [''])[0].trim();
+      return { code, nick };
+    }
+
+    async function importTrainersToCurrentEvent() {
+      const text = document.getElementById('trainerImportText').value;
+      const assignToEvent = document.getElementById('importAssignToEvent').checked;
+      const lines = text.split('\n').map(x => x.trim()).filter(Boolean);
+      const parsed = lines.map(parseTrainerImportLine).filter(Boolean);
+
+      if (!parsed.length) {
+        document.getElementById('importStatus').textContent = 'Importación: no se detectaron códigos válidos.';
+        return;
+      }
+
+      let created = 0;
+      let assigned = 0;
+
+      for (const item of parsed) {
+        let trainer = findTrainerByCode(item.code);
+
+        if (!trainer && item.nick) {
+          trainer = { code: item.code, nick: item.nick, name: '', contact: '', updatedAt: new Date().toISOString() };
+          trainers.push(trainer);
+          created++;
+          guardarEntrenadorEnSheets(trainer);
+        }
+
+        if (assignToEvent) {
+          const event = ensureTodayEventSelected();
+          if (event) {
+            const exists = eventParticipants.some(p => p.eventId === event.eventId && normalizeTrainerCode(p.code) === item.code);
+            if (!exists) {
+              const record = {
+                eventId: event.eventId,
+                eventDate: event.date,
+                eventName: event.name,
+                eventStartTime: event.startTime || '',
+                eventEndTime: event.endTime || '',
+                eventCreator: event.creator || '',
+                code: item.code,
+                nick: trainer ? trainer.nick : (item.nick || ''),
+                name: trainer ? (trainer.name || '') : '',
+                contact: trainer ? (trainer.contact || '') : '',
+                status: trainer && trainer.name && trainer.contact ? 'completo' : 'pendiente',
+                registeredAt: new Date().toISOString()
+              };
+              eventParticipants.push(record);
+              guardarParticipanteEnSheets(record);
+              assigned++;
+            }
+          }
+        }
+      }
+
+      localStorage.setItem('trainerProfiles', JSON.stringify(trainers));
+      localStorage.setItem('eventParticipants', JSON.stringify(eventParticipants));
+      renderEventParticipantsTable();
+      renderAdminStatsDashboard();
+      renderRewardTables();
+      document.getElementById('importStatus').textContent =
+        `Importación: ${parsed.length} códigos detectados · ${created} entrenadores creados · ${assigned} asignados al evento.`;
+    }
+
+    let rewardRules = JSON.parse(localStorage.getItem('rewardRules') || '[]');
+
+    function saveRewardRule() {
+      const icon = document.getElementById('rewardIcon').value.trim() || '🏅';
+      const name = document.getElementById('rewardName').value.trim();
+      const minAttendance = parseInt(document.getElementById('rewardMinAttendance').value, 10);
+      const description = document.getElementById('rewardDescription').value.trim();
+
+      if (!name || !minAttendance || minAttendance < 1) {
+        alert('Completa nombre y asistencia mínima.');
+        return;
+      }
+
+      rewardRules.push({ id: Date.now().toString(), icon, name, minAttendance, description });
+      localStorage.setItem('rewardRules', JSON.stringify(rewardRules));
+
+      document.getElementById('rewardIcon').value = '';
+      document.getElementById('rewardName').value = '';
+      document.getElementById('rewardMinAttendance').value = '3';
+      document.getElementById('rewardDescription').value = '';
+
+      renderRewardTables();
+    }
+
+    function deleteRewardRule(id) {
+      rewardRules = rewardRules.filter(r => r.id !== id);
+      localStorage.setItem('rewardRules', JSON.stringify(rewardRules));
+      renderRewardTables();
+    }
+
+    function getAttendanceMap() {
+      const map = new Map();
+      eventParticipants.forEach(p => {
+        const code = normalizeTrainerCode(p.code);
+        if (!code) return;
+        if (!map.has(code)) map.set(code, { code, total: 0, events: new Set() });
+        const item = map.get(code);
+        item.total += 1;
+        if (p.eventId) item.events.add(p.eventId);
+      });
+      return map;
+    }
+
+    function renderRewardTables() {
+      const rulesBody = document.getElementById('rewardRulesTable');
+      const statsBody = document.getElementById('rewardStatsTable');
+
+      if (rulesBody) {
+        rulesBody.innerHTML = rewardRules.length ? '' : '<tr><td colspan="5" style="text-align:center;color:#64748b;">Aún no hay recompensas creadas</td></tr>';
+        rewardRules.slice().sort((a, b) => a.minAttendance - b.minAttendance).forEach(r => {
+          const row = rulesBody.insertRow();
+          row.innerHTML = `<td>${r.icon}</td><td>${r.name}</td><td>${r.minAttendance} asistencias</td><td>${r.description || '-'}</td><td><button class="btn btn-danger" onclick="deleteRewardRule('${r.id}')">Eliminar</button></td>`;
+        });
+      }
+
+      if (statsBody) {
+        const attendance = [...getAttendanceMap().values()].sort((a, b) => b.total - a.total);
+        statsBody.innerHTML = attendance.length ? '' : '<tr><td colspan="4" style="text-align:center;color:#64748b;">Sin asistencias registradas</td></tr>';
+        attendance.forEach(item => {
+          const trainer = findTrainerByCode(item.code);
+          const earned = rewardRules.filter(r => item.total >= r.minAttendance).sort((a, b) => a.minAttendance - b.minAttendance);
+          const badges = earned.length ? earned.map(r => `<span class="reward-badge">${r.icon} ${r.name}</span>`).join(' ') : '<span style="color:#64748b;">Sin recompensas aún</span>';
+          const row = statsBody.insertRow();
+          row.innerHTML = `<td>${item.code}</td><td>${trainer ? trainer.nick : '-'}</td><td>${item.total}</td><td><div class="reward-preview">${badges}</div></td>`;
+        });
+      }
+    }
+
+    function exportRewardStats() {
+      const attendance = [...getAttendanceMap().values()].sort((a, b) => b.total - a.total);
+      let csv = 'Codigo,Nick,Nombre,Asistencias,Recompensas\n';
+      attendance.forEach(item => {
+        const trainer = findTrainerByCode(item.code);
+        const earned = rewardRules.filter(r => item.total >= r.minAttendance).map(r => `${r.icon} ${r.name}`).join(' | ');
+        csv += `"${item.code}","${trainer ? trainer.nick : ''}","${trainer ? trainer.name : ''}","${item.total}","${earned}"\n`;
+      });
+      descargarArchivo(csv, 'estadisticas-recompensas.csv', 'text/csv');
+    }
+
+    const _renderAdminStatsDashboardBase = renderAdminStatsDashboard;
+    renderAdminStatsDashboard = function() {
+      _renderAdminStatsDashboardBase();
+      renderRewardTables();
+    };
+
     /* ============================================================
        INICIALIZACIÓN
     ============================================================ */
@@ -1189,9 +1490,11 @@
       document.getElementById('adminEventCreator').value = localStorage.getItem('lastEventCreator') || '';
       renderSales();
       renderDrawHistory();
+      renderRewardTables();
       syncEventsFromSheets();
       syncStatsFromSheets();
     });
+  
   </script>
 </body>
 </html>
