@@ -1155,140 +1155,34 @@ table {
 }
 
 
-/* --- Panel admin para tema público --- */
-.public-theme-panel {
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  border: 1px solid #e2e8f0;
-  border-radius: 18px;
-  padding: 22px;
-  margin: 20px 0;
-  box-shadow: 0 10px 30px rgba(15,23,42,.08);
-}
-.theme-preview-box {
-  min-height: 150px;
-  border-radius: 18px;
-  padding: 20px;
-  display: grid;
-  place-items: center;
-  text-align: center;
-  color: #fff;
-  overflow: hidden;
-  background-size: cover;
-  background-position: center;
-  border: 1px solid rgba(0,0,0,.08);
-}
-.theme-preview-box strong {
-  display: block;
-  font-size: 1.5rem;
-  margin-bottom: 6px;
-}
-.theme-option-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 12px;
-  margin-top: 12px;
-}
-.theme-chip {
-  border: 2px solid #e2e8f0;
-  background: #fff;
-  border-radius: 14px;
-  padding: 12px;
-  cursor: pointer;
-  font-weight: 800;
-}
-.theme-chip.active {
-  border-color: #2563eb;
-  background: #eff6ff;
-  color: #1d4ed8;
-}
-
-
-/* --- Gestión profesional de eventos con fecha --- */
-.event-manager-panel {
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  border: 1px solid #e2e8f0;
-  border-radius: 18px;
-  padding: 22px;
-  margin: 20px 0;
-  box-shadow: 0 10px 30px rgba(15,23,42,.08);
-}
-.event-today-badge {
-  display: inline-block;
-  padding: 5px 10px;
-  border-radius: 999px;
-  background: #ecfdf5;
-  color: #065f46;
-  border: 1px solid #a7f3d0;
-  font-size: 12px;
-  font-weight: 900;
-}
-.event-other-badge {
-  display: inline-block;
-  padding: 5px 10px;
-  border-radius: 999px;
-  background: #f1f5f9;
-  color: #475569;
-  border: 1px solid #cbd5e1;
-  font-size: 12px;
-  font-weight: 900;
-}
-
-
-/* --- Eventos: activos/futuros y búsqueda histórica --- */
-.event-history-tools {
+/* --- Login admin limpio --- */
+.admin-login-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: linear-gradient(135deg, rgba(15,23,42,.96), rgba(30,41,59,.94));
   display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  align-items: end;
-  margin: 16px 0;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
 }
-.event-history-tools .form-group {
-  min-width: 230px;
+.admin-login-card {
+  width: 100%;
+  max-width: 430px;
+  background: #fff;
+  border-radius: 22px;
+  padding: 28px;
+  box-shadow: 0 24px 80px rgba(0,0,0,.35);
 }
-.event-section-title {
-  margin-top: 22px;
-  color: #334155;
+.admin-login-card input {
+  width: 100%;
+  padding: 14px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  margin: 12px 0;
+  font-size: 16px;
 }
-.event-live-badge {
-  display:inline-block;
-  padding:5px 10px;
-  border-radius:999px;
-  background:#dbeafe;
-  color:#1d4ed8;
-  border:1px solid #93c5fd;
-  font-size:12px;
-  font-weight:900;
-}
-.event-future-badge {
-  display:inline-block;
-  padding:5px 10px;
-  border-radius:999px;
-  background:#ecfdf5;
-  color:#065f46;
-  border:1px solid #a7f3d0;
-  font-size:12px;
-  font-weight:900;
-}
-.event-finished-badge {
-  display:inline-block;
-  padding:5px 10px;
-  border-radius:999px;
-  background:#f1f5f9;
-  color:#475569;
-  border:1px solid #cbd5e1;
-  font-size:12px;
-  font-weight:900;
-}
-
-
-/* --- Fix login admin --- */
 .admin-hidden,
-.admin-login-overlay.admin-hidden {
-  display: none !important;
-}
-
-
-/* Login hard-hide fallback */
 #adminLoginOverlay.admin-hidden {
   display: none !important;
   visibility: hidden !important;
@@ -1303,80 +1197,18 @@ table {
      Cambia ADMIN_PASSWORD dentro del script si quieres otra clave.
      Esto oculta la interfaz para usuarios casuales; la seguridad real sigue estando en no publicar la URL de edición. -->
 
-<!-- Login simple de administrador:
-     Se muestra al entrar a la página admin. Al ingresar la clave correcta,
-     se oculta la pantalla de acceso y queda disponible el portal. -->
+<!-- Login simple de administrador.
+     Este acceso solo protege visualmente la página admin.
+     Clave inicial: admin123. Cambiar en SIMPLE_ADMIN_PASSWORD. -->
 <div class="admin-login-overlay" id="adminLoginOverlay">
   <div class="admin-login-card">
     <h2>🔐 Acceso administrador</h2>
-    <p>Ingresa la clave para usar gestión de ventas, sorteo y estadísticas.</p>
-
+    <p>Ingresa la clave para entrar al panel.</p>
     <input type="password" id="adminPasswordInput" placeholder="Clave de administrador" autocomplete="current-password">
-
-    <button class="btn btn-success" type="button" id="adminLoginButton" onclick="__simpleAdminUnlock()">Entrar</button>
-
-    <div id="adminLoginError" style="color:#dc2626; margin-top:10px; display:none;">
-      Clave incorrecta.
-    </div>
-
-    <div style="margin-top:12px; color:#64748b; font-size:14px;">
-      Clave inicial: <strong>admin123</strong>. Cámbiala en el código antes de publicar.
-    </div>
+    <button class="btn btn-success" type="button" onclick="simpleAdminUnlock()">Entrar</button>
+    <div id="adminLoginError" style="color:#dc2626; margin-top:10px; display:none;">Clave incorrecta.</div>
   </div>
 </div>
-
-
-<script>
-/* Login mínimo independiente.
-   Este bloque se ejecuta antes que el resto del sistema, para que el acceso
-   no dependa de que otros scripts grandes carguen sin errores. */
-window.__simpleAdminUnlock = function () {
-  var input = document.getElementById('adminPasswordInput');
-  var error = document.getElementById('adminLoginError');
-  var overlay = document.getElementById('adminLoginOverlay');
-  var value = input && input.value ? input.value.trim() : '';
-
-  if (value === 'admin123') {
-    try { sessionStorage.setItem('rifaAdminLogged', '1'); } catch (e) {}
-    if (overlay) {
-      overlay.classList.add('admin-hidden');
-      overlay.style.display = 'none';
-      overlay.style.visibility = 'hidden';
-      overlay.style.pointerEvents = 'none';
-    }
-    if (error) error.style.display = 'none';
-    return true;
-  }
-
-  if (error) error.style.display = 'block';
-  return false;
-};
-
-window.__simpleAdminInit = function () {
-  var input = document.getElementById('adminPasswordInput');
-  var overlay = document.getElementById('adminLoginOverlay');
-
-  try {
-    if (sessionStorage.getItem('rifaAdminLogged') === '1' && overlay) {
-      overlay.classList.add('admin-hidden');
-      overlay.style.display = 'none';
-      overlay.style.visibility = 'hidden';
-      overlay.style.pointerEvents = 'none';
-    }
-  } catch (e) {}
-
-  if (input) {
-    input.addEventListener('keydown', function (event) {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        window.__simpleAdminUnlock();
-      }
-    });
-  }
-};
-
-document.addEventListener('DOMContentLoaded', window.__simpleAdminInit);
-</script>
 
 <div class="container">
     
@@ -2169,9 +2001,6 @@ async function recognizeCanvas(canvas, mode) {
     const baseConfig = {
         tessedit_pageseg_mode: 7,
         preserve_interword_spaces: '<script>
-
-
-
 
 
 
@@ -4026,6 +3855,86 @@ function renderRecordsHistory() {
      El QR solo entrega el código; nick, nombre y contacto se pueden
      completar después si durante el evento se necesita avanzar rápido.
 ============================================================ -->
+
+<!-- Gestión de eventos para estadísticas.
+     Los eventos se crean con fecha, horario y creador interno.
+     Solo los eventos de hoy pueden usarse para escanear QR. -->
+<div class="pro-panel" id="eventManagerPanel">
+    <h3>📅 Gestión de eventos</h3>
+    <p class="pro-subtitle">
+        Crea eventos con fecha y rango horario. El día del evento podrás seleccionar solo eventos de hoy para registrar QR.
+    </p>
+
+    <div class="pro-grid">
+        <div class="form-group">
+            <label for="adminEventName">Nombre del evento</label>
+            <input type="text" id="adminEventName" placeholder="Ej: Liga sábado tarde">
+        </div>
+        <div class="form-group">
+            <label for="adminEventDate">Fecha</label>
+            <input type="date" id="adminEventDate">
+        </div>
+        <div class="form-group">
+            <label for="adminEventStartTime">Hora inicio</label>
+            <input type="time" id="adminEventStartTime">
+        </div>
+        <div class="form-group">
+            <label for="adminEventEndTime">Hora término</label>
+            <input type="time" id="adminEventEndTime">
+        </div>
+        <div class="form-group">
+            <label for="adminEventLocation">Lugar</label>
+            <input type="text" id="adminEventLocation" placeholder="Lugar o referencia">
+        </div>
+        <div class="form-group">
+            <label for="adminEventCreator">Creador del evento (no público)</label>
+            <input type="text" id="adminEventCreator" placeholder="Admin responsable">
+        </div>
+    </div>
+
+    <div class="pro-actions">
+        <button class="btn btn-success" type="button" onclick="createAdminEvent()">➕ Crear evento</button>
+        <button class="btn" type="button" onclick="syncEventsFromSheets()">🔄 Cargar eventos</button>
+    </div>
+
+    <div class="pro-status" id="eventManagerStatus">Eventos: esperando carga.</div>
+
+    <div class="form-group" style="margin-top:16px;">
+        <label for="currentEventSelector">Evento activo para escaneo de hoy</label>
+        <select id="currentEventSelector" onchange="setCurrentScanEventFromSelector()">
+            <option value="">Selecciona evento de hoy</option>
+        </select>
+    </div>
+
+    <h3 style="margin-top:18px;">Eventos de hoy y futuros</h3>
+    <div class="pro-table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th><th>Hora</th><th>Evento</th><th>Lugar</th><th>Creador</th><th>Estado</th><th>Usar</th>
+                </tr>
+            </thead>
+            <tbody id="eventsTable"></tbody>
+        </table>
+    </div>
+
+    <h3 style="margin-top:18px;">Eventos finalizados</h3>
+    <div class="form-group">
+        <label for="finishedEventSearch">Buscar evento finalizado</label>
+        <input type="search" id="finishedEventSearch" placeholder="Nombre, fecha, lugar, creador..." oninput="renderFinishedEventsTable()">
+    </div>
+    <div class="pro-table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th><th>Hora</th><th>Evento</th><th>Lugar</th><th>Creador</th><th>Registros</th>
+                </tr>
+            </thead>
+            <tbody id="finishedEventsTable"></tbody>
+        </table>
+    </div>
+</div>
+
 <div class="pro-panel soft" id="trainerRegistryCard">
     <h3>👤 Registro maestro de entrenadores</h3>
     <p class="pro-subtitle">
@@ -4086,116 +3995,6 @@ function renderRecordsHistory() {
      al escanear un QR, el código se registra automáticamente.
      Si no existen datos personales, queda como pendiente.
 ============================================================ -->
-
-<!-- ============================================================
-     ADMIN: CREACIÓN Y SELECCIÓN DE EVENTOS
-     ------------------------------------------------------------
-     Un evento puede crearse el mismo día o días antes.
-     El día del evento, el admin solo puede registrar participantes
-     en eventos cuya fecha sea igual a la fecha actual.
-     Esto permite que varios admin registren en paralelo sin mezclar
-     eventos de otros días.
-============================================================ -->
-<div class="event-manager-panel" id="eventManagerPanel">
-    <h3>📅 Gestión de eventos</h3>
-    <p class="pro-subtitle">
-        Crea eventos con fecha. El día del evento, el escáner solo permitirá registrar en eventos creados
-        para esa misma fecha. Si hay más de un evento el mismo día, selecciona cuál corresponde.
-    </p>
-
-    <div class="pro-grid">
-        <div class="form-group">
-            <label for="adminEventName">Nombre del evento</label>
-            <input type="text" id="adminEventName" placeholder="Ej: Liga sábado tarde">
-        </div>
-        <div class="form-group">
-            <label for="adminEventDate">Fecha del evento</label>
-            <input type="date" id="adminEventDate">
-        </div>
-        <div class="form-group">
-            <label for="adminEventStartTime">Hora inicio</label>
-            <input type="time" id="adminEventStartTime">
-        </div>
-        <div class="form-group">
-            <label for="adminEventEndTime">Hora término</label>
-            <input type="time" id="adminEventEndTime">
-        </div>
-        <div class="form-group">
-            <label for="adminEventLocation">Lugar / referencia</label>
-            <input type="text" id="adminEventLocation" placeholder="Ej: Plaza, tienda, gimnasio">
-        </div>
-        <div class="form-group">
-            <label for="adminEventCreator">Creador del evento (solo admin)</label>
-            <input type="text" id="adminEventCreator" placeholder="Nombre del admin responsable">
-        </div>
-    </div>
-
-    <div class="pro-actions">
-        <button class="btn btn-success" type="button" onclick="createAdminEvent()">➕ Crear evento</button>
-        <button class="btn" type="button" onclick="syncEventsFromSheets()">🔄 Cargar eventos</button>
-    </div>
-
-    <div class="pro-status" id="eventManagerStatus">
-        Eventos: esperando carga desde Sheets...
-    </div>
-
-    <div class="pro-grid" style="margin-top:16px;">
-        <div class="form-group">
-            <label for="currentEventSelector">Evento activo para escaneo de hoy</label>
-            <select id="currentEventSelector" onchange="setCurrentScanEventFromSelector()">
-                <option value="">Cargando eventos de hoy...</option>
-            </select>
-        </div>
-    </div>
-
-    <h3 class="event-section-title">✅ Eventos de hoy y futuros</h3>
-    <div class="pro-table-wrap">
-        <table>
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Hora</th>
-                    <th>Evento</th>
-                    <th>Lugar</th>
-                    <th>Creador</th>
-                    <th>Estado</th>
-                    <th>Usar</th>
-                </tr>
-            </thead>
-            <tbody id="eventsTable"></tbody>
-        </table>
-    </div>
-
-    <h3 class="event-section-title">🗂️ Eventos finalizados</h3>
-    <p class="pro-subtitle">
-        Busca eventos antiguos por nombre, fecha, lugar, creador, hora o cualquier texto asociado.
-    </p>
-
-    <div class="event-history-tools">
-        <div class="form-group">
-            <label for="finishedEventSearch">Buscar evento finalizado</label>
-            <input type="search" id="finishedEventSearch" placeholder="Buscar por cualquier dato..." oninput="renderFinishedEventsTable()">
-        </div>
-        <button class="btn" type="button" onclick="renderFinishedEventsTable()">🔎 Buscar</button>
-    </div>
-
-    <div class="pro-table-wrap">
-        <table>
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Hora</th>
-                    <th>Evento</th>
-                    <th>Lugar</th>
-                    <th>Creador</th>
-                    <th>Registros</th>
-                </tr>
-            </thead>
-            <tbody id="finishedEventsTable"></tbody>
-        </table>
-    </div>
-</div>
-
 <div class="pro-panel" id="eventParticipantsCard">
     <h3>📌 Participantes del evento actual</h3>
     <p class="pro-subtitle">
@@ -4213,63 +4012,6 @@ function renderRecordsHistory() {
      Permite ver todos los eventos, registros pendientes/completos,
      entrenadores y ranking general. Solo aparece en página admin.
 ============================================================ -->
-
-<!-- ============================================================
-     PANEL ADMIN: TEMA DE LA PÁGINA PÚBLICA
-     ------------------------------------------------------------
-     Desde aquí se cambia el estilo visual que verán los jugadores.
-     La configuración se guarda en Google Sheets mediante Apps Script.
-     La imagen se guarda como DataURL en la hoja de configuración:
-     sirve para banners livianos; para imágenes muy pesadas conviene usar
-     URL externa o comprimir antes.
-============================================================ -->
-<div class="public-theme-panel" id="publicThemePanel">
-    <h3>🎨 Tema de página pública</h3>
-    <p class="pro-subtitle">
-        Cambia el estilo de la página pública de estadísticas. Puedes elegir un tema Pokémon
-        y opcionalmente subir una imagen de cabecera.
-    </p>
-
-    <div class="theme-option-grid">
-        <button class="theme-chip active" type="button" data-theme="pikachu" onclick="selectPublicTheme('pikachu')">⚡ Pikachu eléctrico</button>
-        <button class="theme-chip" type="button" data-theme="pokeball" onclick="selectPublicTheme('pokeball')">🔴 Poké Ball clásico</button>
-        <button class="theme-chip" type="button" data-theme="bulbasaur" onclick="selectPublicTheme('bulbasaur')">🌿 Bulbasaur bosque</button>
-        <button class="theme-chip" type="button" data-theme="gengar" onclick="selectPublicTheme('gengar')">👻 Gengar nocturno</button>
-    </div>
-
-    <div class="pro-grid" style="margin-top:16px;">
-        <div class="form-group">
-            <label for="publicThemeTitle">Título público</label>
-            <input type="text" id="publicThemeTitle" placeholder="Ej: Liga de Entrenadores Conce">
-        </div>
-        <div class="form-group">
-            <label for="publicThemeSubtitle">Subtítulo público</label>
-            <input type="text" id="publicThemeSubtitle" placeholder="Ej: Revisa tus asistencias y ranking">
-        </div>
-        <div class="form-group">
-            <label for="publicThemeImage">Imagen/banner público</label>
-            <input type="file" id="publicThemeImage" accept="image/*" onchange="loadPublicThemeImage(event)">
-        </div>
-    </div>
-
-    <div class="theme-preview-box" id="publicThemePreview">
-        <div>
-            <strong id="publicThemePreviewTitle">Liga de Entrenadores</strong>
-            <span id="publicThemePreviewSubtitle">Estadísticas, asistencia y ranking</span>
-        </div>
-    </div>
-
-    <div class="pro-actions">
-        <button class="btn btn-success" type="button" onclick="savePublicThemeConfig()">💾 Guardar tema público</button>
-        <button class="btn" type="button" onclick="clearPublicThemeImage()">🖼️ Quitar imagen</button>
-        <button class="btn" type="button" onclick="loadPublicThemeConfig()">🔄 Cargar tema actual</button>
-    </div>
-
-    <div class="pro-status" id="publicThemeStatus">
-        Tema público: listo para configurar.
-    </div>
-</div>
-
 <div class="pro-panel" id="adminStatsDashboard">
     <h3>📊 Panel admin de estadísticas</h3>
     <p class="pro-subtitle">
@@ -4798,10 +4540,7 @@ function registerParticipantInCurrentEvent(code) {
     const normalized = normalizeTrainerCode(code);
     if (!normalized) return;
 
-    const eventObj = ensureTodayEventSelected();
-    if (!eventObj) return;
-    const eventId = eventObj.eventId;
-    const eventDate = eventObj.date;
+    const eventId = getCurrentEventIdForParticipants();
     const trainer = findTrainerByCode(normalized);
 
     const alreadyExists = eventParticipants.some(p => p.eventId === eventId && normalizeTrainerCode(p.code) === normalized);
@@ -4813,11 +4552,6 @@ function registerParticipantInCurrentEvent(code) {
 
     const participantRecord = {
         eventId,
-        eventDate,
-        eventName: eventObj.name,
-        eventStartTime: eventObj.startTime || '',
-        eventEndTime: eventObj.endTime || '',
-        eventCreator: eventObj.creator || '',
         code: normalized,
         nick: trainer ? trainer.nick : '',
         name: trainer ? trainer.name : '',
@@ -5116,7 +4850,24 @@ async function guardarEntrenadorEnSheets(profile) {
     }
 }
 
-
+async function guardarParticipanteEnSheets(participantRecord) {
+    try {
+        mostrarEstadoSyncStats('Estado Sheets: guardando participante...');
+        await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                accion: 'registrarParticipanteEvento',
+                datos: JSON.stringify(participantRecord)
+            })
+        });
+        mostrarEstadoSyncStats('Estado Sheets: participante enviado correctamente.');
+    } catch (error) {
+        console.error('Error guardando participante en Sheets:', error);
+        mostrarEstadoSyncStats('Estado Sheets: error al guardar participante. Quedó respaldo local.', true);
+    }
+}
 
 async function syncStatsFromSheets() {
     try {
@@ -5148,7 +4899,6 @@ async function syncStatsFromSheets() {
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         syncStatsFromSheets();
-        syncEventsFromSheets();
     }, 900);
 });
 
@@ -5166,7 +4916,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // Si ya inició sesión en esta pestaña, no vuelve a pedir clave.
-
+document.addEventListener('DOMContentLoaded', function() {
+    if (sessionStorage.getItem('rifaAdminLogged') === '1') {
+        document.getElementById('adminLoginOverlay')?.classList.add('admin-hidden');
+    }
+});
 
 // ============================================================
 // PANEL ADMIN: EVENTOS, PENDIENTES Y TOP
@@ -5318,193 +5072,71 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // ============================================================
-// ADMIN: CONFIGURACIÓN DEL TEMA PÚBLICO
+// LOGIN ADMIN SIMPLE E INDEPENDIENTE
 // ============================================================
-// Este bloque permite cambiar el aspecto de la página pública.
-// Se guarda en Google Sheets usando la acción guardarTemaPublico.
-// La página pública lo lee con obtenerTemaPublico.
+const SIMPLE_ADMIN_PASSWORD = 'admin123';
 
-let publicThemeConfig = {
-    theme: 'pikachu',
-    title: 'Liga de Entrenadores',
-    subtitle: 'Estadísticas, asistencia y ranking',
-    imageDataUrl: ''
-};
+function simpleAdminUnlock() {
+    const input = document.getElementById('adminPasswordInput');
+    const error = document.getElementById('adminLoginError');
+    const overlay = document.getElementById('adminLoginOverlay');
+    const value = (input?.value || '').trim();
 
-// Cambia el tema elegido en el panel admin y actualiza la vista previa.
-function selectPublicTheme(themeName) {
-    publicThemeConfig.theme = themeName;
-
-    document.querySelectorAll('.theme-chip').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.theme === themeName);
-    });
-
-    previewPublicTheme();
-}
-
-// Lee una imagen subida por el admin y la guarda temporalmente como DataURL.
-// Nota: sirve para imágenes livianas; si pesa mucho, puede superar límites de Apps Script.
-function loadPublicThemeImage(event) {
-    const file = event.target.files && event.target.files[0];
-    if (!file) return;
-
-    if (file.size > 900000) {
-        alert('La imagen es muy pesada. Usa una imagen menor a 900 KB para que Google Sheets la guarde bien.');
-        event.target.value = '';
-        return;
+    if (value === SIMPLE_ADMIN_PASSWORD) {
+        sessionStorage.setItem('rifaAdminLogged', '1');
+        if (overlay) {
+            overlay.classList.add('admin-hidden');
+            overlay.style.display = 'none';
+        }
+        if (error) error.style.display = 'none';
+        return true;
     }
 
-    const reader = new FileReader();
-
-    reader.onload = () => {
-        publicThemeConfig.imageDataUrl = reader.result;
-        previewPublicTheme();
-    };
-
-    reader.readAsDataURL(file);
+    if (error) error.style.display = 'block';
+    return false;
 }
 
-// Quita la imagen personalizada y deja solo el tema de color.
-function clearPublicThemeImage() {
-    publicThemeConfig.imageDataUrl = '';
-    const input = document.getElementById('publicThemeImage');
-    if (input) input.value = '';
-    previewPublicTheme();
-}
+function simpleAdminInit() {
+    const input = document.getElementById('adminPasswordInput');
+    const overlay = document.getElementById('adminLoginOverlay');
 
-// Muestra una previsualización rápida dentro del admin.
-function previewPublicTheme() {
-    const titleInput = document.getElementById('publicThemeTitle');
-    const subtitleInput = document.getElementById('publicThemeSubtitle');
-    const titlePreview = document.getElementById('publicThemePreviewTitle');
-    const subtitlePreview = document.getElementById('publicThemePreviewSubtitle');
-    const box = document.getElementById('publicThemePreview');
-
-    publicThemeConfig.title = titleInput?.value || publicThemeConfig.title || 'Liga de Entrenadores';
-    publicThemeConfig.subtitle = subtitleInput?.value || publicThemeConfig.subtitle || 'Estadísticas, asistencia y ranking';
-
-    if (titlePreview) titlePreview.textContent = publicThemeConfig.title;
-    if (subtitlePreview) subtitlePreview.textContent = publicThemeConfig.subtitle;
-
-    const gradients = {
-        pikachu: 'linear-gradient(135deg, #facc15, #f97316)',
-        pokeball: 'linear-gradient(135deg, #ef4444 0%, #ef4444 45%, #111827 46%, #111827 54%, #ffffff 55%, #e5e7eb 100%)',
-        bulbasaur: 'linear-gradient(135deg, #22c55e, #14b8a6)',
-        gengar: 'linear-gradient(135deg, #312e81, #9333ea)'
-    };
-
-    if (box) {
-        box.style.background = publicThemeConfig.imageDataUrl
-            ? `${gradients[publicThemeConfig.theme] || gradients.pikachu}`
-            : `${gradients[publicThemeConfig.theme] || gradients.pikachu}`;
-
-        box.style.backgroundImage = publicThemeConfig.imageDataUrl
-            ? `linear-gradient(rgba(0,0,0,.38), rgba(0,0,0,.38)), url('${publicThemeConfig.imageDataUrl}')`
-            : '';
-
-        box.style.backgroundSize = 'cover';
-        box.style.backgroundPosition = 'center';
+    if (sessionStorage.getItem('rifaAdminLogged') === '1') {
+        if (overlay) {
+            overlay.classList.add('admin-hidden');
+            overlay.style.display = 'none';
+        }
     }
-}
 
-// Muestra estado de guardado/carga.
-function setThemeStatus(message, error = false) {
-    const el = document.getElementById('publicThemeStatus');
-    if (!el) return;
-    el.textContent = message;
-    el.style.background = error ? '#fee2e2' : '#ecfdf5';
-    el.style.color = error ? '#991b1b' : '#065f46';
-    el.style.borderColor = error ? '#fecaca' : '#a7f3d0';
-}
-
-// Guarda la configuración del tema en Sheets.
-async function savePublicThemeConfig() {
-    try {
-        previewPublicTheme();
-        setThemeStatus('Guardando tema público...');
-
-        await fetch(APPS_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({
-                accion: 'guardarTemaPublico',
-                datos: JSON.stringify(publicThemeConfig)
-            })
+    if (input) {
+        input.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                simpleAdminUnlock();
+            }
         });
-
-        setThemeStatus('Tema público enviado correctamente.');
-    } catch (error) {
-        console.error(error);
-        setThemeStatus('No se pudo guardar el tema público.', true);
     }
 }
 
-// Carga desde Sheets la configuración visual actual.
-async function loadPublicThemeConfig() {
-    try {
-        setThemeStatus('Cargando tema público...');
-
-        const response = await fetch(`${APPS_SCRIPT_URL}?accion=obtenerTemaPublico&t=${Date.now()}`);
-        const data = await response.json();
-
-        if (!data.success) throw new Error(data.error || 'No se pudo cargar tema');
-
-        publicThemeConfig = data.theme || publicThemeConfig;
-
-        const titleInput = document.getElementById('publicThemeTitle');
-        const subtitleInput = document.getElementById('publicThemeSubtitle');
-
-        if (titleInput) titleInput.value = publicThemeConfig.title || '';
-        if (subtitleInput) subtitleInput.value = publicThemeConfig.subtitle || '';
-
-        selectPublicTheme(publicThemeConfig.theme || 'pikachu');
-        previewPublicTheme();
-
-        setThemeStatus('Tema público cargado correctamente.');
-    } catch (error) {
-        console.error(error);
-        setThemeStatus('No se pudo cargar el tema; usando valores locales.', true);
-        previewPublicTheme();
-    }
-}
-
-// Inicializa la vista previa cuando carga el admin.
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(() => {
-        const titleInput = document.getElementById('publicThemeTitle');
-        const subtitleInput = document.getElementById('publicThemeSubtitle');
-
-        if (titleInput) titleInput.addEventListener('input', previewPublicTheme);
-        if (subtitleInput) subtitleInput.addEventListener('input', previewPublicTheme);
-
-        loadPublicThemeConfig();
-    }, 1200);
-});
-
-
+document.addEventListener('DOMContentLoaded', simpleAdminInit);
 
 // ============================================================
-// ADMIN: EVENTOS CON FECHA Y REGISTRO SOLO DEL DÍA
+// EVENTOS CON FECHA, HORARIO Y CREADOR
 // ============================================================
-// Regla operativa:
-// - Los eventos se crean antes o durante el día.
-// - Para escanear, el admin debe elegir un evento cuya fecha sea hoy.
-// - Si dos admin escanean el mismo QR para el mismo evento/fecha,
-//   Apps Script responde "alreadyExists" y la web avisa.
-
 let adminEvents = JSON.parse(localStorage.getItem('adminEvents') || '[]');
 let currentScanEventId = localStorage.getItem('currentScanEventId') || '';
 
 function todayLocalISO() {
     const d = new Date();
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 
-
+function createEventId(date, name, startTime = '') {
+    const cleanName = String(name || '').toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
+    const cleanHour = String(startTime || '').replace(/[^0-9]/g, '') || 'sinhorario';
+    return `${date}__${cleanHour}__${cleanName || Date.now()}`;
+}
 
 function setEventStatus(message, error = false) {
     const el = document.getElementById('eventManagerStatus');
@@ -5515,21 +5147,53 @@ function setEventStatus(message, error = false) {
     el.style.borderColor = error ? '#fecaca' : '#a7f3d0';
 }
 
+async function createAdminEvent() {
+    const name = (document.getElementById('adminEventName')?.value || '').trim();
+    const date = document.getElementById('adminEventDate')?.value || todayLocalISO();
+    const startTime = document.getElementById('adminEventStartTime')?.value || '';
+    const endTime = document.getElementById('adminEventEndTime')?.value || '';
+    const location = (document.getElementById('adminEventLocation')?.value || '').trim();
+    const creator = (document.getElementById('adminEventCreator')?.value || '').trim();
 
+    if (!name || !date) {
+        alert('Ingresa nombre y fecha del evento.');
+        return;
+    }
+
+    if (startTime && endTime && startTime >= endTime) {
+        alert('La hora de término debe ser posterior a la hora de inicio.');
+        return;
+    }
+
+    if (creator) localStorage.setItem('lastEventCreator', creator);
+
+    const event = {
+        eventId: createEventId(date, name, startTime),
+        name, date, startTime, endTime, location, creator,
+        createdAt: new Date().toISOString()
+    };
+
+    if (!adminEvents.some(e => e.eventId === event.eventId)) {
+        adminEvents.push(event);
+        localStorage.setItem('adminEvents', JSON.stringify(adminEvents));
+    }
+
+    await guardarEventoEnSheets(event);
+    renderEventsTable();
+    renderFinishedEventsTable();
+    renderTodayEventSelector();
+    setEventStatus(`Evento guardado: ${name} (${date})`);
+}
 
 async function guardarEventoEnSheets(event) {
     try {
         await fetch(APPS_SCRIPT_URL, {
             method: 'POST',
-            mode: 'no-cors',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({
-                accion: 'guardarEvento',
-                datos: JSON.stringify(event)
-            })
+            body: new URLSearchParams({ accion: 'guardarEvento', datos: JSON.stringify(event) })
         });
     } catch (error) {
-        console.error('Error guardando evento en Sheets:', error);
+        console.error(error);
         setEventStatus('Evento guardado localmente, pero no se pudo enviar a Sheets.', true);
     }
 }
@@ -5539,16 +5203,13 @@ async function syncEventsFromSheets() {
         setEventStatus('Cargando eventos desde Sheets...');
         const response = await fetch(`${APPS_SCRIPT_URL}?accion=obtenerEventos&t=${Date.now()}`);
         const data = await response.json();
-
-        if (!data.success) throw new Error(data.error || 'No se pudieron cargar eventos');
+        if (!data.success) throw new Error(data.error || 'Error cargando eventos');
 
         adminEvents = data.eventos || [];
         localStorage.setItem('adminEvents', JSON.stringify(adminEvents));
-
         renderEventsTable();
         renderFinishedEventsTable();
         renderTodayEventSelector();
-
         setEventStatus('Eventos sincronizados correctamente.');
     } catch (error) {
         console.error(error);
@@ -5559,13 +5220,101 @@ async function syncEventsFromSheets() {
     }
 }
 
+function eventStatusLabel(event) {
+    const today = todayLocalISO();
+    if (event.date > today) return '<span class="registered-pill">Futuro</span>';
+    if (event.date < today) return '<span class="pending-pill">Finalizado</span>';
+    return '<span class="registered-pill">Disponible hoy</span>';
+}
 
+function renderEventsTable() {
+    const tbody = document.getElementById('eventsTable');
+    if (!tbody) return;
 
+    const today = todayLocalISO();
+    const active = adminEvents.filter(e => e.date >= today)
+        .sort((a,b) => String(a.date + (a.startTime || '')).localeCompare(String(b.date + (b.startTime || ''))));
 
+    tbody.innerHTML = active.length ? '' : '<tr><td colspan="7" style="text-align:center;color:#718096;">No hay eventos de hoy ni futuros</td></tr>';
 
+    active.forEach(e => {
+        const row = tbody.insertRow();
+        const time = `${e.startTime || '--:--'} - ${e.endTime || '--:--'}`;
+        row.innerHTML = `
+            <td>${e.date}</td><td>${time}</td><td>${e.name}</td><td>${e.location || '-'}</td>
+            <td>${e.creator || '-'}</td><td>${eventStatusLabel(e)}</td>
+            <td>${e.date === today ? `<button class="edit-btn" onclick="selectScanEvent('${e.eventId}')">Usar hoy</button>` : '-'}</td>
+        `;
+    });
+}
 
+function eventMatchesSearch(event, search) {
+    if (!search) return true;
+    const text = [event.eventId,event.name,event.date,event.startTime,event.endTime,event.location,event.creator,event.createdAt]
+        .join(' ').toLowerCase();
+    return text.includes(search.toLowerCase());
+}
 
+function renderFinishedEventsTable() {
+    const tbody = document.getElementById('finishedEventsTable');
+    if (!tbody) return;
 
+    const search = document.getElementById('finishedEventSearch')?.value || '';
+    const today = todayLocalISO();
+    const finished = adminEvents.filter(e => e.date < today).filter(e => eventMatchesSearch(e, search))
+        .sort((a,b) => String(b.date + (b.startTime || '')).localeCompare(String(a.date + (a.startTime || ''))));
+
+    tbody.innerHTML = finished.length ? '' : '<tr><td colspan="6" style="text-align:center;color:#718096;">No hay eventos finalizados para esta búsqueda</td></tr>';
+
+    finished.forEach(e => {
+        const count = (typeof eventParticipants !== 'undefined' ? eventParticipants : []).filter(p => p.eventId === e.eventId).length;
+        const row = tbody.insertRow();
+        row.innerHTML = `<td>${e.date}</td><td>${e.startTime || '--:--'} - ${e.endTime || '--:--'}</td><td>${e.name}</td><td>${e.location || '-'}</td><td>${e.creator || '-'}</td><td>${count}</td>`;
+    });
+}
+
+function renderTodayEventSelector() {
+    const select = document.getElementById('currentEventSelector');
+    if (!select) return;
+
+    const today = todayLocalISO();
+    const todays = adminEvents.filter(e => e.date === today)
+        .sort((a,b) => String(a.startTime || '').localeCompare(String(b.startTime || '')));
+
+    if (!todays.length) {
+        select.innerHTML = '<option value="">No hay eventos creados para hoy</option>';
+        currentScanEventId = '';
+        localStorage.removeItem('currentScanEventId');
+        return;
+    }
+
+    select.innerHTML = '<option value="">Selecciona evento de hoy</option>' +
+        todays.map(e => `<option value="${e.eventId}">${e.startTime || '--:--'}-${e.endTime || '--:--'} · ${e.name}</option>`).join('');
+
+    if (todays.some(e => e.eventId === currentScanEventId)) select.value = currentScanEventId;
+}
+
+function setCurrentScanEventFromSelector() {
+    const id = document.getElementById('currentEventSelector')?.value || '';
+    if (id) selectScanEvent(id);
+}
+
+function selectScanEvent(eventId) {
+    const event = adminEvents.find(e => e.eventId === eventId);
+    if (!event) return;
+
+    if (event.date !== todayLocalISO()) {
+        alert('Solo puedes registrar participantes en eventos con fecha de hoy.');
+        return;
+    }
+
+    currentScanEventId = event.eventId;
+    localStorage.setItem('currentScanEventId', event.eventId);
+    const select = document.getElementById('currentEventSelector');
+    if (select) select.value = event.eventId;
+    setEventStatus(`Evento activo: ${event.name} · ${event.startTime || '--:--'}-${event.endTime || '--:--'}`);
+    try { renderEventParticipantsTable(); } catch(e) {}
+}
 
 function ensureTodayEventSelected() {
     const event = adminEvents.find(e => e.eventId === currentScanEventId);
@@ -5586,366 +5335,17 @@ function getCurrentEventDateForParticipants() {
     return event ? event.date : todayLocalISO();
 }
 
-
-// Guarda participante en Sheets y avisa si ya estaba registrado.
-// Importante: en Apps Script se evita duplicado por evento + fecha + código.
-async function guardarParticipanteEnSheets(participantRecord) {
-    try {
-        mostrarEstadoSyncStats('Estado Sheets: guardando participante...');
-
-        const response = await fetch(APPS_SCRIPT_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({
-                accion: 'registrarParticipanteEvento',
-                datos: JSON.stringify(participantRecord)
-            })
-        });
-
-        const data = await response.json();
-
-        if (data.alreadyExists) {
-            mostrarEstadoSyncStats('Estado Sheets: esta persona ya estaba registrada en este evento.', true);
-            alert('Esta persona ya está registrada en este evento de hoy.');
-            return { alreadyExists: true };
-        }
-
-        if (!data.success) throw new Error(data.error || 'No se pudo registrar participante');
-
-        mostrarEstadoSyncStats('Estado Sheets: participante guardado correctamente.');
-        return { success: true };
-
-    } catch (error) {
-        console.error('Error guardando participante en Sheets:', error);
-        mostrarEstadoSyncStats('Estado Sheets: error al guardar participante. Quedó respaldo local.', true);
-        return { error: true };
-    }
-}
-
-
 document.addEventListener('DOMContentLoaded', function() {
     const dateInput = document.getElementById('adminEventDate');
     if (dateInput && !dateInput.value) dateInput.value = todayLocalISO();
+
     const creatorInput = document.getElementById('adminEventCreator');
     if (creatorInput && !creatorInput.value) creatorInput.value = localStorage.getItem('lastEventCreator') || '';
 
     setTimeout(() => {
-        renderEventsTable();
-        renderFinishedEventsTable();
-        renderTodayEventSelector();
-    }, 1300);
+        syncEventsFromSheets();
+    }, 1000);
 });
-
-
-
-// Crea un ID estable del evento considerando fecha, nombre y hora de inicio.
-function createEventId(date, name, startTime = '') {
-    const cleanName = String(name || '')
-        .toLowerCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '')
-        .slice(0, 40);
-
-    const cleanHour = String(startTime || '').replace(/[^0-9]/g, '') || 'sinhorario';
-    return `${date}__${cleanHour}__${cleanName || Date.now()}`;
-}
-
-// Determina si un evento está en vivo, futuro o finalizado.
-function getEventStatusInfo(event) {
-    const today = todayLocalISO();
-
-    if (event.date > today) {
-        return { key: 'future', label: '<span class="event-future-badge">Futuro</span>' };
-    }
-
-    if (event.date < today) {
-        return { key: 'finished', label: '<span class="event-finished-badge">Finalizado</span>' };
-    }
-
-    return { key: 'today', label: '<span class="event-live-badge">Disponible hoy</span>' };
-}
-
-// Crea un evento con nombre, fecha, rango horario, lugar y creador interno.
-async function createAdminEvent() {
-    const name = (document.getElementById('adminEventName')?.value || '').trim();
-    const date = document.getElementById('adminEventDate')?.value || todayLocalISO();
-    const startTime = document.getElementById('adminEventStartTime')?.value || '';
-    const endTime = document.getElementById('adminEventEndTime')?.value || '';
-    const location = (document.getElementById('adminEventLocation')?.value || '').trim();
-    const creator = (document.getElementById('adminEventCreator')?.value || '').trim();
-    if (creator) localStorage.setItem('lastEventCreator', creator);
-
-    if (!name || !date) {
-        alert('Ingresa nombre y fecha del evento.');
-        return;
-    }
-
-    if (startTime && endTime && startTime >= endTime) {
-        alert('La hora de término debe ser posterior a la hora de inicio.');
-        return;
-    }
-
-    const event = {
-        eventId: createEventId(date, name, startTime),
-        name,
-        date,
-        startTime,
-        endTime,
-        location,
-        creator,
-        createdAt: new Date().toISOString()
-    };
-
-    const exists = adminEvents.some(e => e.eventId === event.eventId);
-
-    if (!exists) {
-        adminEvents.push(event);
-        localStorage.setItem('adminEvents', JSON.stringify(adminEvents));
-    }
-
-    await guardarEventoEnSheets(event);
-
-    document.getElementById('adminEventName').value = '';
-    document.getElementById('adminEventLocation').value = '';
-
-    renderEventsTable();
-    renderFinishedEventsTable();
-    renderTodayEventSelector();
-
-    setEventStatus(`Evento guardado: ${name} (${date})`);
-}
-
-// Tabla principal: solo muestra eventos de hoy y futuros como primeras opciones.
-function renderEventsTable() {
-    const tbody = document.getElementById('eventsTable');
-    if (!tbody) return;
-
-    tbody.innerHTML = '';
-
-    const today = todayLocalISO();
-    const activeEvents = adminEvents
-        .filter(e => e.date >= today)
-        .sort((a, b) => String(a.date + ' ' + (a.startTime || '')).localeCompare(String(b.date + ' ' + (b.startTime || ''))));
-
-    if (!activeEvents.length) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#718096;">No hay eventos de hoy ni futuros</td></tr>';
-        return;
-    }
-
-    activeEvents.forEach(e => {
-        const status = getEventStatusInfo(e);
-        const timeRange = `${e.startTime || '--:--'} - ${e.endTime || '--:--'}`;
-
-        const row = tbody.insertRow();
-        row.innerHTML = `
-            <td>${e.date}</td>
-            <td>${timeRange}</td>
-            <td>${e.name}</td>
-            <td>${e.location || '-'}</td>
-            <td>${e.creator || '-'}</td>
-            <td>${status.label}</td>
-            <td>
-                ${status.key === 'today' ? `<button class="edit-btn" onclick="selectScanEvent('${e.eventId}')">Usar hoy</button>` : '-'}
-            </td>
-        `;
-    });
-}
-
-// Busca en eventos finalizados por cualquier campo útil.
-function eventMatchesSearch(event, search) {
-    if (!search) return true;
-
-    const text = [
-        event.eventId,
-        event.name,
-        event.date,
-        event.startTime,
-        event.endTime,
-        event.location,
-        event.creator,
-        event.createdAt
-    ].join(' ').toLowerCase();
-
-    return text.includes(search.toLowerCase());
-}
-
-// Tabla de eventos finalizados con buscador.
-function renderFinishedEventsTable() {
-    const tbody = document.getElementById('finishedEventsTable');
-    if (!tbody) return;
-
-    const search = document.getElementById('finishedEventSearch')?.value || '';
-    const today = todayLocalISO();
-
-    const finished = adminEvents
-        .filter(e => e.date < today)
-        .filter(e => eventMatchesSearch(e, search))
-        .sort((a, b) => String(b.date + ' ' + (b.startTime || '')).localeCompare(String(a.date + ' ' + (a.startTime || ''))));
-
-    tbody.innerHTML = '';
-
-    if (!finished.length) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#718096;">No hay eventos finalizados para esta búsqueda</td></tr>';
-        return;
-    }
-
-    finished.forEach(e => {
-        const count = eventParticipants.filter(p => p.eventId === e.eventId).length;
-        const timeRange = `${e.startTime || '--:--'} - ${e.endTime || '--:--'}`;
-
-        const row = tbody.insertRow();
-        row.innerHTML = `
-            <td>${e.date}</td>
-            <td>${timeRange}</td>
-            <td>${e.name}</td>
-            <td>${e.location || '-'}</td>
-            <td>${e.creator || '-'}</td>
-            <td>${count}</td>
-        `;
-    });
-}
-
-// Selector usado por el escáner: solo eventos del día actual.
-function renderTodayEventSelector() {
-    const select = document.getElementById('currentEventSelector');
-    if (!select) return;
-
-    const today = todayLocalISO();
-    const todaysEvents = adminEvents
-        .filter(e => e.date === today)
-        .sort((a, b) => String(a.startTime || '').localeCompare(String(b.startTime || '')));
-
-    if (!todaysEvents.length) {
-        select.innerHTML = '<option value="">No hay eventos creados para hoy</option>';
-        currentScanEventId = '';
-        localStorage.removeItem('currentScanEventId');
-        return;
-    }
-
-    select.innerHTML = '<option value="">Selecciona evento de hoy</option>' +
-        todaysEvents.map(e => {
-            const timeRange = `${e.startTime || '--:--'}-${e.endTime || '--:--'}`;
-            return `<option value="${e.eventId}">${timeRange} · ${e.name} — ${e.location || 'Sin lugar'}</option>`;
-        }).join('');
-
-    if (todaysEvents.some(e => e.eventId === currentScanEventId)) {
-        select.value = currentScanEventId;
-    } else if (todaysEvents.length === 1) {
-        select.value = todaysEvents[0].eventId;
-        selectScanEvent(todaysEvents[0].eventId);
-    }
-}
-
-function setCurrentScanEventFromSelector() {
-    const id = document.getElementById('currentEventSelector')?.value || '';
-    if (id) selectScanEvent(id);
-}
-
-function selectScanEvent(eventId) {
-    const event = adminEvents.find(e => e.eventId === eventId);
-    if (!event) return;
-
-    if (event.date !== todayLocalISO()) {
-        alert('Solo puedes registrar participantes en eventos con fecha de hoy.');
-        return;
-    }
-
-    currentScanEventId = event.eventId;
-    localStorage.setItem('currentScanEventId', currentScanEventId);
-
-    const select = document.getElementById('currentEventSelector');
-    if (select) select.value = event.eventId;
-
-    const timeRange = `${event.startTime || '--:--'} - ${event.endTime || '--:--'}`;
-    setEventStatus(`Evento activo para escaneo: ${event.name} · ${timeRange} · ${event.date}`);
-    renderEventParticipantsTable();
-}
-
-
-
-// ============================================================
-// LOGIN ADMIN ROBUSTO
-// ============================================================
-// Esta versión no depende de onclick en el HTML.
-// El botón y la tecla Enter se conectan al cargar la página.
-
-var ADMIN_PASSWORD = 'admin123';
-
-function adminLogin() {
-    const input = document.getElementById('adminPasswordInput');
-    const error = document.getElementById('adminLoginError');
-    const overlay = document.getElementById('adminLoginOverlay');
-    const value = (input && input.value ? input.value : '').trim();
-
-    if (value === ADMIN_PASSWORD) {
-        sessionStorage.setItem('rifaAdminLogged', '1');
-
-        if (overlay) {
-            overlay.classList.add('admin-hidden');
-            overlay.style.display = 'none';
-        }
-
-        if (error) error.style.display = 'none';
-
-        try { renderEventsTable(); } catch (e) {}
-        try { renderFinishedEventsTable(); } catch (e) {}
-        try { renderTodayEventSelector(); } catch (e) {}
-        try { renderAdminStatsDashboard(); } catch (e) {}
-
-        return true;
-    }
-
-    if (error) error.style.display = 'block';
-    return false;
-}
-
-function adminLogout() {
-    sessionStorage.removeItem('rifaAdminLogged');
-
-    const overlay = document.getElementById('adminLoginOverlay');
-    if (overlay) {
-        overlay.classList.remove('admin-hidden');
-        overlay.style.display = 'flex';
-    }
-}
-
-function initAdminLogin() {
-    const overlay = document.getElementById('adminLoginOverlay');
-    const input = document.getElementById('adminPasswordInput');
-    const button = document.getElementById('adminLoginButton');
-
-    if (sessionStorage.getItem('rifaAdminLogged') === '1') {
-        if (overlay) {
-            overlay.classList.add('admin-hidden');
-            overlay.style.display = 'none';
-        }
-    } else {
-        if (overlay) {
-            overlay.classList.remove('admin-hidden');
-            overlay.style.display = 'flex';
-        }
-
-        setTimeout(() => {
-            if (input) input.focus();
-        }, 200);
-    }
-
-    if (button) {
-        button.addEventListener('click', adminLogin);
-    }
-
-    if (input) {
-        input.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                adminLogin();
-            }
-        });
-    }
-}
-
-document.addEventListener('DOMContentLoaded', initAdminLogin);
 
 </script>;
             const maxX = qrDetectedInCrop ? (base.x + Math.min(base.w, Math.max(...xs))) : Math.min(frame.width, Math.max(...xs));
