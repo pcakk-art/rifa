@@ -185,7 +185,44 @@
       <div id="publicStatus" class="status">Ingresa tu código para consultar tus registros.</div>
     </div>
 
-    <div class="card" id="profileCard" style="display:none;">
+    
+    <div class="card" id="registerCard">
+      <h2>📝 Registrarse / actualizar datos</h2>
+      <p style="color:#64748b; margin:8px 0 14px;">
+        Si un admin ya escaneó tu QR, tu asistencia quedó registrada aunque tus datos estén pendientes.
+        Ingresa tu código para completar nick, nombre y contacto. Si ya estás registrado, te avisaremos.
+      </p>
+
+      <div class="grid">
+        <div>
+          <label for="registerCode">Código de entrenador</label>
+          <input id="registerCode" placeholder="Ej: 6011 3024 6134">
+        </div>
+        <div>
+          <label for="registerNick">Nick</label>
+          <input id="registerNick" placeholder="Tu nick de entrenador">
+        </div>
+        <div>
+          <label for="registerName">Nombre real</label>
+          <input id="registerName" placeholder="Nombre y apellido">
+        </div>
+        <div>
+          <label for="registerContact">Contacto obligatorio</label>
+          <input id="registerContact" placeholder="Teléfono, WhatsApp o correo">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn" onclick="checkRegistrationStatus()">🔎 Revisar si ya estoy registrado</button>
+        <button class="btn btn-success" onclick="saveRegistrationFromPublic()">💾 Registrarme / actualizar</button>
+      </div>
+
+      <div id="registerStatus" class="status">
+        Ingresa tu código para revisar o completar tus datos.
+      </div>
+    </div>
+
+<div class="card" id="profileCard" style="display:none;">
       <h2>👤 Mis datos</h2>
       <p style="color:#64748b; margin:8px 0 14px;">Completa o actualiza tus datos para quedar registrado correctamente.</p>
       <div class="grid">
@@ -258,6 +295,7 @@
   </div>
 
   <script>
+
     // ============================================================
     // PÁGINA PÚBLICA DE ESTADÍSTICAS
     // ------------------------------------------------------------
@@ -266,7 +304,7 @@
     // ============================================================
 
     // Misma URL del Apps Script usado por la página admin.
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyrPuCEEuzRon82pC8Zzc13bGojpDucXTFWMcdv0RM5ghwah3aeKndqJYkRBzI7A2Cd3Q/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwDku2ssDSmiGEp8QKMohsBKKSZrXtC037VreOjKonEg5YfwafOVQDuyTs1eHPJ1ScdsQ/exec';
 
 
     // ============================================================
@@ -539,6 +577,119 @@
     });
 
   
+
+
+    // ============================================================
+    // REGISTRO PÚBLICO DE ENTRENADOR
+    // ============================================================
+    // Importante:
+    // - El admin puede registrar asistencia solo con QR.
+    // - Si el entrenador no tiene datos, su asistencia queda pendiente.
+    // - Cuando aquí guarda sus datos, Apps Script actualiza sus registros
+    //   pendientes en participantes_evento y los marca como completo.
+
+    function setRegisterStatus(message, type = '') {
+      const el = document.getElementById('registerStatus');
+      if (!el) return;
+      el.className = 'status ' + type;
+      el.textContent = message;
+    }
+
+    function fillRegisterFormFromTrainer(code, trainer) {
+      document.getElementById('registerCode').value = normalizeTrainerCode(code);
+      document.getElementById('registerNick').value = trainer ? (trainer.nick || '') : '';
+      document.getElementById('registerName').value = trainer ? (trainer.name || '') : '';
+      document.getElementById('registerContact').value = trainer ? (trainer.contact || '') : '';
+    }
+
+    async function checkRegistrationStatus() {
+      const code = normalizeTrainerCode(
+        document.getElementById('registerCode').value ||
+        document.getElementById('publicTrainerCode')?.value ||
+        ''
+      );
+
+      if (!code) {
+        setRegisterStatus('Ingresa un código válido de 12 dígitos.', 'pending');
+        return null;
+      }
+
+      document.getElementById('registerCode').value = code;
+
+      try {
+        await fetchPublicData();
+        const trainer = findTrainer(code);
+        const rows = getRowsForCode(code);
+
+        if (trainer) {
+          fillRegisterFormFromTrainer(code, trainer);
+          setRegisterStatus('Este código ya está registrado. Puedes actualizar tus datos si lo necesitas.', 'ok');
+          return trainer;
+        }
+
+        if (rows.length) {
+          setRegisterStatus(`Este código tiene ${rows.length} asistencia(s) pendiente(s). Completa tus datos para asociarlas a tu perfil.`, 'pending');
+        } else {
+          setRegisterStatus('Este código aún no tiene asistencias registradas, pero puedes completar tus datos igual.', 'pending');
+        }
+
+        fillRegisterFormFromTrainer(code, null);
+        return null;
+
+      } catch (error) {
+        console.error(error);
+        setRegisterStatus('No se pudo revisar el registro. Intenta nuevamente.', 'pending');
+        return null;
+      }
+    }
+
+    async function saveRegistrationFromPublic() {
+      const code = normalizeTrainerCode(
+        document.getElementById('registerCode').value ||
+        document.getElementById('publicTrainerCode')?.value ||
+        ''
+      );
+      const nick = document.getElementById('registerNick').value.trim();
+      const name = document.getElementById('registerName').value.trim();
+      const contact = document.getElementById('registerContact').value.trim();
+
+      if (!code || !nick || !name || !contact) {
+        setRegisterStatus('Completa código, nick, nombre y contacto.', 'pending');
+        return;
+      }
+
+      const profile = {
+        code,
+        nick,
+        name,
+        contact,
+        updatedAt: new Date().toISOString()
+      };
+
+      try {
+        setRegisterStatus('Guardando datos...', '');
+
+        await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            accion: 'guardarEntrenador',
+            datos: JSON.stringify(profile)
+          })
+        });
+
+        setRegisterStatus('Datos enviados correctamente. Tus asistencias pendientes quedarán asociadas a este perfil.', 'ok');
+
+        document.getElementById('publicTrainerCode').value = code;
+        setTimeout(loadMyStats, 1200);
+
+      } catch (error) {
+        console.error(error);
+        setRegisterStatus('No se pudieron guardar los datos. Intenta nuevamente.', 'pending');
+      }
+    }
+
 </script>
 </body>
 </html>
