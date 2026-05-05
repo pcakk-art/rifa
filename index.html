@@ -498,7 +498,7 @@
 
       <div class="panel">
         <h3>📷 Escaneo QR</h3>
-        <p>Escanea solo el QR. Si el código no tiene datos, igual queda inscrito como pendiente.</p>
+        <p>Escanea solo el QR para registrar asistencia al evento activo. Si el entrenador no tiene datos, queda como pendiente y los completa desde la página pública.</p>
         <div class="scan-zone">
           <video id="scanVideo" autoplay muted playsinline></video>
           <div class="actions">
@@ -507,9 +507,21 @@
             <button class="btn btn-danger" onclick="stopCamera()">Cerrar cámara</button>
           </div>
           <div class="status" id="scanDetectedText">Escáner detenido.</div>
+          <div class="status" id="statsSyncStatus">Estado Sheets: esperando sincronización.</div>
         </div>
       </div>
 
+
+      
+      <div class="panel">
+        <h3>ℹ️ Flujo de asistencia</h3>
+        <p>
+          El admin solo escanea QR para registrar asistencia al evento activo. Si el código no tiene datos,
+          igual queda inscrito como <strong>pendiente</strong>. Luego el entrenador entra a la página pública
+          <strong>Estadísticas entrenadores PoGO</strong>, se registra con su código y sus asistencias anteriores
+          se actualizan automáticamente.
+        </p>
+      </div>
 
       <div class="panel">
         <h3>📥 Importar entrenadores / asistentes a evento</h3>
@@ -531,23 +543,6 @@ nickJugador - 1234 5678 9012"></textarea>
         <div class="status" id="importStatus">Importación: esperando datos.</div>
       </div>
 
-      <div class="panel">
-        <h3>👤 Registro de entrenadores</h3>
-        <p>Completa datos pendientes. El contacto es obligatorio para premios.</p>
-        <input type="hidden" id="trainerEditCode">
-        <div class="grid">
-          <div class="form-group"><label>Nick</label><input id="trainerNick" placeholder="Ej: pabloca3050"></div>
-          <div class="form-group"><label>Código</label><input id="trainerCode" placeholder="Ej: 6011 3024 6134"></div>
-          <div class="form-group"><label>Nombre real</label><input id="trainerName" placeholder="Nombre y apellido"></div>
-          <div class="form-group"><label>Contacto obligatorio</label><input id="trainerContact" placeholder="Teléfono, WhatsApp o correo"></div>
-        </div>
-        <div class="actions">
-          <button class="btn btn-success" onclick="saveTrainerProfile()">💾 Guardar / completar datos</button>
-          <button class="btn" onclick="clearTrainerForm()">Limpiar</button>
-        </div>
-        <div class="status" id="trainerMatchBox">Último QR leído: sin datos.</div>
-        <div class="status" id="statsSyncStatus">Estado Sheets: esperando sincronización.</div>
-      </div>
 
       <div class="panel">
         <h3>Participantes del evento actual</h3>
@@ -617,7 +612,7 @@ nickJugador - 1234 5678 9012"></textarea>
        ------------------------------------------------------------
        Reemplaza esta URL si redeployas el Apps Script.
     ============================================================ */
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyrPuCEEuzRon82pC8Zzc13bGojpDucXTFWMcdv0RM5ghwah3aeKndqJYkRBzI7A2Cd3Q/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwDku2ssDSmiGEp8QKMohsBKKSZrXtC037VreOjKonEg5YfwafOVQDuyTs1eHPJ1ScdsQ/exec';
 
     /* ============================================================
        NAVEGACIÓN ENTRE MÓDULOS
@@ -1240,15 +1235,8 @@ nickJugador - 1234 5678 9012"></textarea>
 
       qrScanLocked = true;
       stopAutoQrScanner();
-      document.getElementById('trainerCode').value = code;
-      const trainer = findTrainerByCode(code);
-      if (trainer) {
-        document.getElementById('trainerNick').value = trainer.nick;
-        document.getElementById('trainerName').value = trainer.name;
-        document.getElementById('trainerContact').value = trainer.contact;
-      }
       registerParticipantInCurrentEvent(code);
-      document.getElementById('scanDetectedText').textContent = `QR detectado: ${code}`;
+      document.getElementById('scanDetectedText').textContent = `QR detectado e inscrito en evento: ${code}`;
       if (navigator.vibrate) navigator.vibrate(120);
     }
 
