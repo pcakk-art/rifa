@@ -3,327 +3,542 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Estadísticas públicas de jugadores</title>
+  <title>Mis estadísticas de entrenador</title>
   <style>
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
       padding: 20px;
-      color: #1e293b;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #1f2937;
     }
     .container {
-      width: min(1250px, 100%);
+      width: 100%;
+      max-width: 980px;
       margin: 0 auto;
       background: #fff;
-      border-radius: 18px;
-      padding: 28px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
     }
-    h1 { margin: 0 0 8px; text-align: center; color: #1e293b; }
-    .subtitle { text-align:center; color:#64748b; margin-bottom: 24px; }
-    .header-box {
-      background: #eef2ff;
-      border: 2px solid #c7d2fe;
-      border-radius: 14px;
-      padding: 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
+    .hero {
+      text-align: center;
+      padding: 18px 8px 24px;
     }
-    .filters, .kpis { display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap:16px; margin-bottom:20px; }
+    .hero h1 {
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      margin-bottom: 8px;
+    }
+    .hero p { color: #64748b; line-height: 1.45; }
     .card {
-      background: #fff;
-      border: 2px solid #e2e8f0;
-      border-radius: 14px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      border-radius: 18px;
       padding: 18px;
+      margin: 16px 0;
     }
-    .kpi .value { font-size: 2rem; font-weight: 800; color:#4338ca; margin-top:6px; }
-    label { display:block; margin-bottom:6px; color:#475569; font-weight:600; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    label { display: block; font-weight: 700; margin-bottom: 6px; color: #334155; }
     input {
-      width:100%; padding:12px; border-radius:10px; border:2px solid #cbd5e1; font-size:15px;
+      width: 100%;
+      padding: 13px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 16px;
+      background: #fff;
     }
-    .layout { display:grid; grid-template-columns: 1.15fr 0.85fr; gap:20px; }
-    .table-wrap { overflow:auto; border:2px solid #e2e8f0; border-radius: 12px; }
-    table { width:100%; border-collapse:collapse; }
+    .btn {
+      border: none;
+      background: #667eea;
+      color: #fff;
+      padding: 13px 18px;
+      border-radius: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      min-height: 48px;
+    }
+    .btn:hover { background: #5a67d8; }
+    .btn-success { background: #16a34a; }
+    .btn-success:hover { background: #15803d; }
+    .actions { display:flex; gap:10px; flex-wrap:wrap; margin-top: 12px; }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .metric {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+    }
+    .metric strong {
+      display: block;
+      color: #2563eb;
+      font-size: 2rem;
+      margin-top: 6px;
+    }
+    .status {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      background: #eff6ff;
+      color: #1e40af;
+      border: 1px solid #bfdbfe;
+    }
+    .pending {
+      background: #fff7ed;
+      color: #9a3412;
+      border-color: #fed7aa;
+    }
+    .ok {
+      background: #ecfdf5;
+      color: #065f46;
+      border-color: #a7f3d0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
     th { background:#667eea; color:#fff; padding:12px; text-align:left; }
-    td { padding:12px; border-bottom:1px solid #e2e8f0; vertical-align: top; }
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; letter-spacing: 1px; }
-    .badge {
-      display:inline-flex; align-items:center; gap:6px; padding:7px 11px; border-radius:999px;
-      background:#fef3c7; color:#92400e; font-weight:700; margin:4px 6px 4px 0;
+    td { padding:11px 12px; border-bottom:1px solid #e2e8f0; }
+    .table-wrap { overflow-x:auto; }
+  
+    .top-rank {
+      font-weight: 900;
+      color: #2563eb;
     }
-    .history-list { display:flex; flex-direction:column; gap:12px; max-height:720px; overflow:auto; }
-    .history-item {
-      background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px;
+    .muted-code {
+      color: #64748b;
+      font-size: 0.9rem;
     }
-    .small { color:#64748b; font-size:0.92em; }
-    .rank { font-weight:800; color:#4338ca; }
-    @media (max-width: 980px) { .layout { grid-template-columns:1fr; } }
+
+  
+    /* ============================================================
+       TEMAS PÚBLICOS
+       ------------------------------------------------------------
+       La clase del body cambia según lo configurado por el admin.
+       Cada tema usa una paleta inspirada en Pokémon, sin depender
+       de imágenes externas.
+    ============================================================ */
+    body.theme-pikachu {
+      background: linear-gradient(135deg, #facc15 0%, #f97316 100%);
+    }
+    body.theme-pokeball {
+      background: linear-gradient(135deg, #ef4444 0%, #ef4444 48%, #111827 49%, #111827 53%, #f8fafc 54%, #e5e7eb 100%);
+    }
+    body.theme-bulbasaur {
+      background: linear-gradient(135deg, #22c55e 0%, #14b8a6 100%);
+    }
+    body.theme-gengar {
+      background: linear-gradient(135deg, #312e81 0%, #9333ea 100%);
+    }
+    .public-theme-hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 20px;
+      padding: 28px 18px;
+      margin-bottom: 18px;
+      color: #fff;
+      background: linear-gradient(135deg, rgba(0,0,0,.25), rgba(0,0,0,.12));
+      background-size: cover;
+      background-position: center;
+    }
+    .public-theme-hero h1 {
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 2px 10px rgba(0,0,0,.25);
+    }
+    .public-theme-hero p {
+      position: relative;
+      z-index: 1;
+      color: rgba(255,255,255,.92);
+      text-shadow: 0 2px 8px rgba(0,0,0,.18);
+    }
+
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>🏅 Estadísticas públicas de jugadores</h1>
-    <div class="subtitle">Consulta el top 50, busca por entrenador, revisa tu historial y ve recompensas ganadas.</div>
-
-    <div class="header-box">
-      <div>
-        <strong>Vista solo lectura</strong><br>
-        <span class="small">Pensada para compartir con jugadores sin permisos de edición.</span>
-      </div>
-      <div class="small">Última carga: <span id="lastUpdate">-</span></div>
+    <div class="hero public-theme-hero" id="publicThemeHero">
+      <h1 id="publicThemeTitleText">📊 Mis estadísticas</h1>
+      <p id="publicThemeSubtitleText">Consulta tu avance con tu código de entrenador. Los registros hechos por admin aparecen incluso el mismo día.</p>
     </div>
 
-    <div class="kpis">
-      <div class="card kpi"><div>Jugadores únicos</div><div class="value" id="kpiPlayers">0</div></div>
-      <div class="card kpi"><div>Registros totales</div><div class="value" id="kpiRecords">0</div></div>
-      <div class="card kpi"><div>Eventos</div><div class="value" id="kpiEvents">0</div></div>
-      <div class="card kpi"><div>Entrenadores</div><div class="value" id="kpiCoaches">0</div></div>
+    <div class="card">
+      <label for="publicTrainerCode">Código de entrenador</label>
+      <input id="publicTrainerCode" placeholder="Ej: 6011 3024 6134">
+      <div class="actions">
+        <button class="btn" onclick="loadMyStats()">🔎 Ver mis estadísticas</button>
+      </div>
+      <div id="publicStatus" class="status">Ingresa tu código para consultar tus registros.</div>
     </div>
 
-    <div class="filters">
-      <div class="card">
-        <label for="coachFilter">Buscar por entrenador</label>
-        <input id="coachFilter" type="text" placeholder="Ej: Coach Pablo" oninput="renderPublicView()">
-      </div>
-      <div class="card">
-        <label for="playerFilter">Buscar jugador</label>
-        <input id="playerFilter" type="text" placeholder="Nick o código" oninput="renderPublicView()">
-      </div>
-    </div>
-
-    <div class="layout">
-      <div class="card">
-        <h3>🏆 Top 50</h3>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Jugador</th>
-                <th>Código</th>
-                <th>Asistencias</th>
-                <th>Entrenadores</th>
-                <th>Recompensas</th>
-              </tr>
-            </thead>
-            <tbody id="rankingTable"></tbody>
-          </table>
+    <div class="card" id="profileCard" style="display:none;">
+      <h2>👤 Mis datos</h2>
+      <p style="color:#64748b; margin:8px 0 14px;">Completa o actualiza tus datos para quedar registrado correctamente.</p>
+      <div class="grid">
+        <div>
+          <label for="publicNick">Nick</label>
+          <input id="publicNick" placeholder="Tu nick">
+        </div>
+        <div>
+          <label for="publicName">Nombre real</label>
+          <input id="publicName" placeholder="Nombre y apellido">
+        </div>
+        <div>
+          <label for="publicContact">Contacto obligatorio</label>
+          <input id="publicContact" placeholder="Teléfono, WhatsApp o correo">
         </div>
       </div>
-
-      <div class="card">
-        <h3>🕘 Registros antiguos</h3>
-        <div id="historyList" class="history-list"></div>
+      <div class="actions">
+        <button class="btn btn-success" onclick="saveMyProfile()">💾 Guardar mis datos</button>
       </div>
     </div>
+
+    <div class="card" id="statsCard" style="display:none;">
+      <h2>🏆 Mi avance</h2>
+      <div class="metrics">
+        <div class="metric">Participaciones<strong id="myTotal">0</strong></div>
+        <div class="metric">Eventos únicos<strong id="myEvents">0</strong></div>
+        <div class="metric">Ranking general<strong id="myRank">-</strong></div>
+        <div class="metric">Estado<strong id="myProfileState">-</strong></div>
+      </div>
+
+      <h3 style="margin-top:20px;">📅 Historial de eventos</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Evento</th>
+              <th>Fecha evento</th>
+              <th>Horario</th>
+              <th>Fecha registro</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="myHistoryTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" id="top20Card">
+      <h2>🏅 Top 20 asistencia</h2>
+      <p style="color:#64748b; margin:8px 0 14px;">
+        Ranking público según cantidad de participaciones registradas en eventos.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Posición</th>
+              <th>Entrenador</th>
+              <th>Eventos únicos</th>
+              <th>Asistencias</th>
+            </tr>
+          </thead>
+          <tbody id="publicTop20Table">
+            <tr><td colspan="5" style="text-align:center; color:#64748b;">Cargando ranking...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 
   <script>
+    // ============================================================
+    // PÁGINA PÚBLICA DE ESTADÍSTICAS
+    // ------------------------------------------------------------
+    // Los jugadores solo ven sus propios datos al ingresar código,
+    // más un Top 20 general de asistencia sin herramientas admin.
+    // ============================================================
+
+    // Misma URL del Apps Script usado por la página admin.
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxod31sMOu8JD0KdAyQhFUVlyc2CD14dFYmIjSa1PUhV6Ks1K5zcSNWI9WgWG2U7rg_xQ/exec';
-    let statsData = { eventTemplate: { name:'', date:'', coach:'', location:'' }, events: [], records: [], rewards: [] };
 
-    document.addEventListener('DOMContentLoaded', cargarDatos);
 
-    function formatCode(code) {
-      const digits = String(code || '').replace(/\D/g, '').slice(0, 12);
-      return digits ? digits.replace(/(\d{4})(\d{0,4})(\d{0,4})/, (_, a, b, c) => [a,b,c].filter(Boolean).join(' ')) : '';
+    // ============================================================
+    // TEMA PÚBLICO
+    // ============================================================
+    // La página pública pide a Google Sheets la configuración visual
+    // definida desde el panel admin. Si falla, usa tema Pikachu.
+
+    function applyPublicTheme(themeConfig) {
+      const config = themeConfig || {};
+      const theme = config.theme || 'pikachu';
+
+      document.body.classList.remove('theme-pikachu', 'theme-pokeball', 'theme-bulbasaur', 'theme-gengar');
+      document.body.classList.add(`theme-${theme}`);
+
+      const title = document.getElementById('publicThemeTitleText');
+      const subtitle = document.getElementById('publicThemeSubtitleText');
+      const hero = document.getElementById('publicThemeHero');
+
+      if (title && config.title) title.textContent = config.title;
+      if (subtitle && config.subtitle) subtitle.textContent = config.subtitle;
+
+      if (hero && config.imageDataUrl) {
+        hero.style.backgroundImage = `linear-gradient(rgba(0,0,0,.42), rgba(0,0,0,.34)), url('${config.imageDataUrl}')`;
+      }
     }
 
-    function normalizarStatsData(data) {
-      const base = { eventTemplate: { name:'', date:'', coach:'', location:'' }, events: [], records: [], rewards: [] };
-      if (!data || typeof data !== 'object') return base;
-      base.eventTemplate = {
-        name: String(data.eventTemplate?.name || '').trim(),
-        date: String(data.eventTemplate?.date || '').trim(),
-        coach: String(data.eventTemplate?.coach || '').trim(),
-        location: String(data.eventTemplate?.location || '').trim()
-      };
-      base.events = Array.isArray(data.events) ? data.events : [];
-      base.records = Array.isArray(data.records) ? data.records.map((r, idx) => ({
-        id: r.id || `rec_${idx}`,
-        eventId: r.eventId || '',
-        eventName: String(r.eventName || '').trim(),
-        eventDate: String(r.eventDate || '').trim(),
-        coach: String(r.coach || '').trim(),
-        nick: String(r.nick || '').trim(),
-        code: formatCode(r.code || ''),
-        createdAt: r.createdAt || new Date().toISOString()
-      })).filter(r => r.nick && r.code) : [];
-      base.rewards = Array.isArray(data.rewards) ? data.rewards : [];
-      return base;
-    }
-
-    async function cargarDatos() {
+    async function loadPublicTheme() {
       try {
-        const res = await fetch(`${APPS_SCRIPT_URL}?accion=obtenerTodo`);
-        const data = await res.json();
-        statsData = normalizarStatsData(data.statsData || {});
-        document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
-        renderPublicView();
-      } catch (e) {
-        document.getElementById('historyList').innerHTML = '<div class="history-item">No fue posible cargar los datos.</div>';
-      }
-    }
+        const response = await fetch(`${APPS_SCRIPT_URL}?accion=obtenerTemaPublico&t=${Date.now()}`);
+        const data = await response.json();
 
-    function escapeHtml(text) {
-      return String(text)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
-function normalizeReward(raw) {
-  return {
-    id: raw.id || '',
-    name: raw.name || 'Recompensa',
-    icon: raw.icon || '🏆',
-    criterion: raw.criterion || 'attendance_total',
-    threshold: Math.max(1, Number(raw.threshold || 1)),
-    coachTarget: raw.coachTarget || '',
-    startDate: raw.startDate || '',
-    endDate: raw.endDate || '',
-    description: raw.description || '',
-    active: raw.active !== false
-  };
-}
-
-function getPlayerMetric(player, reward) {
-  const history = [...(player.history || [])].filter(h => {
-    const d = (h.eventDate || '').slice(0, 10);
-    if (reward.startDate && d && d < reward.startDate) return false;
-    if (reward.endDate && d && d > reward.endDate) return false;
-    return true;
-  });
-  switch (reward.criterion) {
-    case 'attendance_total': return history.length;
-    case 'unique_events': return new Set(history.map(h => h.eventId)).size;
-    case 'attendance_with_coach': {
-      const q = (reward.coachTarget || '').trim().toLowerCase();
-      return history.filter(h => !q || (h.coach || '').trim().toLowerCase() === q).length;
-    }
-    case 'distinct_coaches': return new Set(history.map(h => (h.coach || '').trim().toLowerCase()).filter(Boolean)).size;
-    case 'attendance_since_date': return history.length;
-    case 'streak_event_days': {
-      const days = [...new Set(history.map(h => (h.eventDate || '').slice(0, 10)).filter(Boolean))].sort();
-      let best = 0, current = 0, prev = null;
-      for (const day of days) {
-        if (!prev) current = 1;
-        else {
-          const diff = Math.round((new Date(day) - new Date(prev)) / 86400000);
-          current = diff === 1 ? current + 1 : 1;
+        if (data.success) {
+          applyPublicTheme(data.theme);
+        } else {
+          applyPublicTheme({ theme: 'pikachu' });
         }
-        best = Math.max(best, current);
-        prev = day;
+      } catch (error) {
+        console.warn('No se pudo cargar tema público:', error);
+        applyPublicTheme({ theme: 'pikachu' });
       }
-      return best;
     }
-    default: return history.length;
-  }
-}
 
-function getRewardCriterionLabel(reward) {
-  switch (reward.criterion) {
-    case 'attendance_total': return `Asistencias ≥ ${reward.threshold}`;
-    case 'unique_events': return `Eventos únicos ≥ ${reward.threshold}`;
-    case 'attendance_with_coach': return `Con ${reward.coachTarget || 'coach'} ≥ ${reward.threshold}`;
-    case 'distinct_coaches': return `Coaches distintos ≥ ${reward.threshold}`;
-    case 'attendance_since_date': return `Desde ${reward.startDate || 'fecha'} ≥ ${reward.threshold}`;
-    case 'streak_event_days': return `Racha ≥ ${reward.threshold}`;
-    default: return `Meta ≥ ${reward.threshold}`;
-  }
-}
+    let publicData = { entrenadores: [], participantesEvento: [] };
+    let currentCode = '';
 
-function getPlayerSummaries() {
-      const byCode = new Map();
-      statsData.records.forEach(record => {
-        const key = record.code;
-        if (!byCode.has(key)) {
-          byCode.set(key, {
-            nick: record.nick,
-            code: record.code,
-            totalAttendances: 0,
-            coaches: new Set(),
-            history: []
+    function normalizeTrainerCode(value) {
+      const digits = String(value || '').replace(/\D/g, '');
+      if (digits.length < 12) return '';
+      const last12 = digits.slice(-12);
+      return `${last12.slice(0,4)} ${last12.slice(4,8)} ${last12.slice(8,12)}`;
+    }
+
+    function setStatus(msg, type = '') {
+      const el = document.getElementById('publicStatus');
+      el.className = 'status ' + type;
+      el.textContent = msg;
+    }
+
+    async function fetchPublicData() {
+      const response = await fetch(`${APPS_SCRIPT_URL}?accion=obtenerEstadisticasJugadores&t=${Date.now()}`);
+      const data = await response.json();
+      if (!data.success) throw new Error(data.error || 'No se pudieron cargar datos');
+      publicData = data;
+    }
+
+    function findTrainer(code) {
+      const normalized = normalizeTrainerCode(code);
+      return (publicData.entrenadores || []).find(t => normalizeTrainerCode(t.code) === normalized) || null;
+    }
+
+    function getRowsForCode(code) {
+      const normalized = normalizeTrainerCode(code);
+      return (publicData.participantesEvento || []).filter(p => normalizeTrainerCode(p.code) === normalized);
+    }
+
+    function calculateRank(code) {
+      const map = new Map();
+      (publicData.participantesEvento || []).forEach(p => {
+        const c = normalizeTrainerCode(p.code);
+        if (!c) return;
+        map.set(c, (map.get(c) || 0) + 1);
+      });
+      const sorted = [...map.entries()].sort((a,b) => b[1] - a[1]);
+      const idx = sorted.findIndex(([c]) => c === normalizeTrainerCode(code));
+      return idx >= 0 ? idx + 1 : '-';
+    }
+
+
+    function maskCode(code) {
+      const digits = String(code || '').replace(/\D/g, '');
+      if (digits.length < 12) return '';
+      return `${digits.slice(0,4)} **** ${digits.slice(8,12)}`;
+    }
+
+    // ============================================================
+    // TOP 20 PÚBLICO
+    // ============================================================
+    // 1. Recorre todos los registros de participantes.
+    // 2. Agrupa por código de entrenador.
+    // 3. Cuenta asistencias totales y eventos únicos.
+    // 4. Ordena de mayor a menor asistencia.
+    // 5. Muestra solo los primeros 20.
+    function renderPublicTop20() {
+      const tbody = document.getElementById('publicTop20Table');
+      if (!tbody) return;
+
+      const map = new Map();
+
+      (publicData.participantesEvento || []).forEach(p => {
+        const code = normalizeTrainerCode(p.code);
+        if (!code) return;
+
+        if (!map.has(code)) {
+          map.set(code, {
+            code,
+            total: 0,
+            events: new Set()
           });
         }
-        const entry = byCode.get(key);
-        entry.nick = entry.nick || record.nick;
-        entry.totalAttendances += 1;
-        if (record.coach) entry.coaches.add(record.coach);
-        entry.history.push(record);
+
+        const item = map.get(code);
+        item.total += 1;
+        if (p.eventId) item.events.add(p.eventId);
       });
 
-      return [...byCode.values()].map(entry => {
-        const rewards = (statsData.rewards || []).filter(r => r.active !== false).filter(r => entry.totalAttendances >= Number(r.threshold || 1));
-        return {
-          nick: entry.nick,
-          code: entry.code,
-          totalAttendances: entry.totalAttendances,
-          coaches: [...entry.coaches],
-          history: entry.history.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)),
-          rewards
-        };
-      }).sort((a,b) => b.totalAttendances - a.totalAttendances || a.nick.localeCompare(b.nick, 'es'));
-    }
+      const top = [...map.values()]
+        .sort((a, b) => b.total - a.total || b.events.size - a.events.size)
+        .slice(0, 20);
 
-    function renderPublicView() {
-      const coachQ = (document.getElementById('coachFilter').value || '').trim().toLowerCase();
-      const playerQ = (document.getElementById('playerFilter').value || '').trim().toLowerCase();
-      const players = getPlayerSummaries().filter(player => {
-        const coachOk = !coachQ || player.coaches.some(c => c.toLowerCase().includes(coachQ));
-        const playerOk = !playerQ || player.nick.toLowerCase().includes(playerQ) || player.code.replace(/\s/g, '').includes(playerQ.replace(/\s/g, ''));
-        return coachOk && playerOk;
+      if (!top.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#64748b;">Aún no hay registros para mostrar</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = '';
+
+      top.forEach((item, index) => {
+        const trainer = findTrainer(item.code);
+        const displayName = trainer
+          ? (trainer.nick || trainer.name || 'Entrenador registrado')
+          : 'Entrenador pendiente';
+
+        const row = tbody.insertRow();
+        row.innerHTML = `
+          <td class="top-rank">#${index + 1}</td>
+          <td>
+            <strong>${displayName}</strong><br>
+            <span class="muted-code">${maskCode(item.code)}</span>
+          </td>
+          <td>${item.events.size}</td>
+          <td><strong>${item.total}</strong></td>
+        `;
       });
+    }
 
-      document.getElementById('kpiPlayers').textContent = getPlayerSummaries().length;
-      document.getElementById('kpiRecords').textContent = statsData.records.length;
-      document.getElementById('kpiEvents').textContent = statsData.events.length;
-      document.getElementById('kpiCoaches').textContent = new Set(statsData.records.map(r => r.coach).filter(Boolean)).size;
 
-      const ranking = document.getElementById('rankingTable');
-      if (!players.length) {
-        ranking.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#64748b;">No hay resultados para este filtro</td></tr>';
-      } else {
-        ranking.innerHTML = players.slice(0, 50).map((player, idx) => `
-          <tr>
-            <td class="rank">${idx + 1}</td>
-            <td><strong>${escapeHtml(player.nick)}</strong></td>
-            <td class="mono">${escapeHtml(player.code)}</td>
-            <td>${player.totalAttendances}</td>
-            <td>${escapeHtml(player.coaches.join(', '))}</td>
-            <td>${player.rewards.map(r => `<span class="badge" title="${escapeHtml(getRewardCriterionLabel(r))}">${escapeHtml(r.icon || '🏆')} ${escapeHtml(r.name || '')}</span>`).join('') || '-'}</td>
-          </tr>
-        `).join('');
+    async function loadMyStats() {
+      const code = normalizeTrainerCode(document.getElementById('publicTrainerCode').value);
+      if (!code) {
+        setStatus('Ingresa un código válido de 12 dígitos.', 'pending');
+        return;
       }
 
-      const historyItems = players.flatMap(player => player.history.map(h => ({...h, playerRewards: player.rewards, nick: player.nick, code: player.code})))
-        .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .slice(0, 120);
+      currentCode = code;
+      setStatus('Cargando estadísticas...', '');
 
-      const historyWrap = document.getElementById('historyList');
-      if (!historyItems.length) {
-        historyWrap.innerHTML = '<div class="history-item">No hay registros antiguos para este filtro.</div>';
-      } else {
-        historyWrap.innerHTML = historyItems.map(item => `
-          <div class="history-item">
-            <strong>${escapeHtml(item.nick)}</strong> · <span class="mono">${escapeHtml(item.code)}</span><br>
-            <span class="small">Evento: ${escapeHtml(item.eventName || '-')}</span><br>
-            <span class="small">Entrenador: ${escapeHtml(item.coach || '-')}</span><br>
-            <span class="small">Fecha del evento: ${escapeHtml(item.eventDate || '-')}</span><br>
-            <span class="small">Registrado: ${new Date(item.createdAt).toLocaleString()}</span>
-          </div>
-        `).join('');
+      try {
+        await fetchPublicData();
+        renderPublicTop20();
+
+        const trainer = findTrainer(code);
+        const rows = getRowsForCode(code);
+
+        document.getElementById('profileCard').style.display = 'block';
+        document.getElementById('statsCard').style.display = 'block';
+
+        document.getElementById('publicTrainerCode').value = code;
+        document.getElementById('publicNick').value = trainer ? trainer.nick : '';
+        document.getElementById('publicName').value = trainer ? trainer.name : '';
+        document.getElementById('publicContact').value = trainer ? trainer.contact : '';
+
+        const events = new Set(rows.map(r => r.eventId).filter(Boolean));
+        document.getElementById('myTotal').textContent = rows.length;
+        document.getElementById('myEvents').textContent = events.size;
+        document.getElementById('myRank').textContent = calculateRank(code);
+        document.getElementById('myProfileState').textContent = trainer ? 'Completo' : 'Pendiente';
+
+        const tbody = document.getElementById('myHistoryTable');
+        tbody.innerHTML = rows.length ? '' : '<tr><td colspan="5" style="text-align:center; color:#64748b;">Aún no hay eventos registrados para este código</td></tr>';
+
+        rows.sort((a,b) => new Date(b.registeredAt) - new Date(a.registeredAt)).forEach(r => {
+          const row = tbody.insertRow();
+          row.innerHTML = `
+            <td>${r.eventName || r.eventId || '-'}</td>
+            <td>${r.eventDate || '-'}</td>
+            <td>${(r.eventStartTime || '--:--') + ' - ' + (r.eventEndTime || '--:--')}</td>
+            <td>${r.registeredAt ? new Date(r.registeredAt).toLocaleString() : '-'}</td>
+            <td>${trainer ? 'Completo' : 'Pendiente'}</td>
+          `;
+        });
+
+        if (trainer) {
+          setStatus(`Datos cargados para ${trainer.nick}.`, 'ok');
+        } else {
+          setStatus('Tu código tiene registros pendientes. Completa tus datos para quedar registrado.', 'pending');
+        }
+
+      } catch (error) {
+        console.error(error);
+        setStatus('No se pudo cargar la información. Intenta nuevamente.', 'pending');
       }
     }
-  </script>
+
+    async function saveMyProfile() {
+      if (!currentCode) {
+        currentCode = normalizeTrainerCode(document.getElementById('publicTrainerCode').value);
+      }
+
+      const nick = document.getElementById('publicNick').value.trim();
+      const name = document.getElementById('publicName').value.trim();
+      const contact = document.getElementById('publicContact').value.trim();
+
+      if (!currentCode || !nick || !name || !contact) {
+        setStatus('Completa código, nick, nombre y contacto.', 'pending');
+        return;
+      }
+
+      const profile = {
+        code: currentCode,
+        nick,
+        name,
+        contact,
+        updatedAt: new Date().toISOString()
+      };
+
+      try {
+        setStatus('Guardando datos...', '');
+
+        await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            accion: 'guardarEntrenador',
+            datos: JSON.stringify(profile)
+          })
+        });
+
+        setStatus('Datos enviados correctamente. Actualizando estadísticas...', 'ok');
+        setTimeout(loadMyStats, 1200);
+
+      } catch (error) {
+        console.error(error);
+        setStatus('No se pudieron guardar los datos. Intenta nuevamente.', 'pending');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', async function() {
+      loadPublicTheme();
+      try {
+        await fetchPublicData();
+        renderPublicTop20();
+      } catch (error) {
+        const tbody = document.getElementById('publicTop20Table');
+        if (tbody) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#64748b;">No se pudo cargar el ranking</td></tr>';
+        }
+      }
+    });
+
+  
+</script>
 </body>
 </html>
